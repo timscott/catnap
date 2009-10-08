@@ -7,7 +7,7 @@ using ShouldIt.Clr.Fluent;
 
 namespace Catnap.UnitTests
 {
-    public class behaves_like_integration_test
+    public class behaves_like_unit_test_requiring_domain_context
     {
         Establish context = () => DomainMap.Configure
         (
@@ -29,26 +29,27 @@ namespace Catnap.UnitTests
         );
     }
 
-    public class when_creating_sql_command_from_expression : behaves_like_integration_test
+    public class when_creating_sql_command_from_expression : behaves_like_unit_test_requiring_domain_context
     {
         static DbCommandSpec command;
         static bool? isActive = true;
-        static DateTime? memberAtLeastSince = new DateTime(2008, 1, 1);
+        static DateTime? joinedBy = new DateTime(2008, 1, 1);
 
         Because of = () =>
         {
-            var foo = isActive;
-            var bar = memberAtLeastSince;
+            var isActiveLocalScope = isActive;
+            var joinedByLocalScope = joinedBy;
+            var memberBeforeLocalScope = DateTime.Today.AddDays(-10);
             command =
-                //new PersonQuerySpec()
+                //new PersonFindSpec()
                 //    .Active(isActive.Value)
-                //    .MemberSince(memberAtLeastSince, DateTime.Today)
+                //    .MemberSince(joinedBy, DateTime.Today)
                 //    .FirstName("Tim")
                 //    .LastName("Scott")
                 //    .ToCommand();
                 new FindCommandBuilder<Person>()
-                    .AddCondition(x => x.Active == foo.Value)
-                    .AddCondition(x => x.MemberSince >= bar && x.MemberSince <= DateTime.Today)
+                    .AddCondition(x => x.Active == isActiveLocalScope.Value)
+                    .AddCondition(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
                     .AddCondition(x => x.FirstName == "Tim")
                     .AddCondition(x => x.LastName == "Scott")
                     .Build();
@@ -61,8 +62,8 @@ namespace Catnap.UnitTests
         {
             command.Parameters.Should().Count.Exactly(5);
             command.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1));
-            command.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(memberAtLeastSince));
-            command.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals(DateTime.Today));
+            command.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(joinedBy));
+            command.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals(DateTime.Today.AddDays(-10)));
             command.Parameters.Should().Contain.One(x => x.Name == "@3" && x.Value.Equals("Tim"));
             command.Parameters.Should().Contain.One(x => x.Name == "@4" && x.Value.Equals("Scott"));
         };

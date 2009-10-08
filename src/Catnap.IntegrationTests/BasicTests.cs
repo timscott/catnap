@@ -32,6 +32,7 @@ namespace Catnap.IntegrationTests
             DatabaseMigrator.Execute();
         };
 
+        //TODO: Why is this running beofer Establish?
         //Cleanup after_each = UnitOfWork.Current.Dispose;
     }
 

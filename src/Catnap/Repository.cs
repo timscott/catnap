@@ -19,9 +19,9 @@ namespace Catnap
             return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().Build());
         }
 
-        public virtual IEnumerable<T> Find(IQuerySpec<T> querySpec)
+        public virtual IEnumerable<T> Find(IFindSpec<T> findSpec)
         {
-            return UnitOfWork.Current.Session.List<T>(querySpec.ToCommand());
+            return UnitOfWork.Current.Session.List<T>(findSpec.ToCommand());
         }
 
         public virtual IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
