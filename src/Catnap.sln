@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.Sqlite", "Catnap.Sqlite\Catnap.Sqlite.csproj", "{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.IntegrationTests", "Catnap.IntegrationTests\Catnap.IntegrationTests.csproj", "{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap", "Catnap\Catnap.csproj", "{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.UnitTests", "Catnap.UnitTests\Catnap.UnitTests.csproj", "{FCF48990-7CA3-41FB-B016-62931FEECFAF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C0093C27-BCC8-4D0F-B882-C9E8F1286375}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.Common", "Catnap.Common\Catnap.Common.csproj", "{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FCF48990-7CA3-41FB-B016-62931FEECFAF} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
+		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = ..
+	EndGlobalSection
+EndGlobal
