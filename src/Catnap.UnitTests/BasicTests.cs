@@ -1,5 +1,6 @@
 ﻿using System;
 using Catnap.Common;
+using Catnap.Find;
 using Catnap.Maps;
 using Catnap.UnitTests.Models;
 using Machine.Specifications;

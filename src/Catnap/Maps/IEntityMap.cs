@@ -25,5 +25,6 @@ namespace Catnap.Maps
     {
         IList<IPropertyMap<T>> PropertyMaps { get; }
         T BuildFrom(IDictionary<string, object> record, ISession session);
+        string GetColumnNameForProperty(Expression<Func<T, object>> property);
     }
 }

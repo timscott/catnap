@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Catnap.Common;
 using Catnap.Maps;
 
-namespace Catnap
+namespace Catnap.Find
 {
     public class FindCommandBuilder<T> where T : class, IEntity, new()
     {
@@ -18,6 +18,18 @@ namespace Catnap
         {
             dbCommandPredicate.AddCondition(predicate);
             return this;
+        }
+
+        public FindCommandBuilder<T> AddCondition(ICondition condition)
+        {
+            var columnName = condition.Left == null ? null : condition.Left.ToString();
+            return AddCondition(columnName, condition.Operator, condition.Right);
+        }
+
+        public FindCommandBuilder<T> AddCondition(Expression<Func<T, object>> property, string @operator, object value)
+        {
+            var columnName = DomainMap.GetMapFor<T>().GetColumnNameForProperty(property);
+            return AddCondition(columnName, @operator, value);
         }
 
         public FindCommandBuilder<T> AddCondition(string columnName, string @operator, object value)

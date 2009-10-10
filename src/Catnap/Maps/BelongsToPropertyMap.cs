@@ -18,15 +18,15 @@ namespace Catnap.Maps
         {
             var parent = getter.Invoke(instance, null);
             return parent == null
-                       ? null
-                       : (int?)((IEntity)(parent)).Id;
+               ? null
+               : (int?)((IEntity)(parent)).Id;
         }
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
             value = value == null
-                        ? default(TProperty)
-                        : GetEntity(session, (int)value);
+                ? default(TProperty)
+                : GetEntity(session, (int)value);
             setter.Invoke(instance, new [] { value });
         }
 

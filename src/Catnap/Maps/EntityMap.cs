@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Common;
+using Catnap.Extensions;
 
 namespace Catnap.Maps
 {
@@ -33,6 +34,11 @@ namespace Catnap.Maps
             var map = propertyMaps.Where(x => x is IPropertyMapWithColumn<T> &&  x.MemberExpression.Member == memberExpression.Member)
                 .Cast<IPropertyMapWithColumn<T>>().FirstOrDefault();
             return map.ColumnName;
+        }
+
+        public string GetColumnNameForProperty(Expression<Func<T, object>> property)
+        {
+            return GetColumnNameForProperty(property.GetMemberExpression());
         }
 
         public EntityMap<T> Property<TProperty>(Expression<Func<T, TProperty>> property)

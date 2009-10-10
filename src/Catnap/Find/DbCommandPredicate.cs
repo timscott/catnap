@@ -6,7 +6,7 @@ using System.Text;
 using Catnap.Common;
 using Catnap.Maps;
 
-namespace Catnap
+namespace Catnap.Find
 {
     public class DbCommandPredicate<T> where T : class, IEntity, new()
     {

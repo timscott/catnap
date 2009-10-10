@@ -37,12 +37,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Find\BaseCondition.cs" />
+    <Compile Include="Find\Condition.cs" />
+    <Compile Include="Equal.cs" />
+    <Compile Include="Find\ICondition.cs" />
     <Compile Include="Maps\BelongsToPropertyMap.cs" />
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="Maps\DomainMap.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
-    <Compile Include="FindCommandBuilder.cs" />
+    <Compile Include="Find\FindCommandBuilder.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
@@ -51,19 +55,19 @@
     <Compile Include="Maps\IListPropertyMap.cs" />
     <Compile Include="Maps\IPropertyMap.cs" />
     <Compile Include="Maps\IPropertyMapWithColumn.cs" />
-    <Compile Include="IFindSpec.cs" />
+    <Compile Include="Find\IFindSpec.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Maps\EntityMap.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="LazyList.cs" />
     <Compile Include="Maps\ListPropertyMap.cs" />
-    <Compile Include="PredicateBuilder.cs" />
+    <Compile Include="Find\PredicateBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Maps\BasePropertyMap.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionFactory.cs" />
-    <Compile Include="DbCommandPredicate.cs" />
+    <Compile Include="Find\DbCommandPredicate.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Maps\ValuePropertyMap.cs" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 using Catnap.Common;
 
-namespace Catnap
+namespace Catnap.Find
 {
     public interface IFindSpec<T> where T : class, IEntity, new()
     {

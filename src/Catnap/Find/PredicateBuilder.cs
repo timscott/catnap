@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Catnap
+namespace Catnap.Find
 {
     public class PredicateBuilder<T>
     {

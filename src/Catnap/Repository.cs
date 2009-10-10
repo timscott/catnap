@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Catnap.Find;
 using Catnap.Maps;
 
 namespace Catnap

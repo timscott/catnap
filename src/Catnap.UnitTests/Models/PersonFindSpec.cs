@@ -1,5 +1,6 @@
 using System;
 using Catnap.Common;
+using Catnap.Find;
 
 namespace Catnap.UnitTests.Models
 {
