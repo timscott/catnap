@@ -37,16 +37,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Find\BaseCondition.cs" />
+    <Compile Include="Find\Conditions\And.cs" />
+    <Compile Include="Find\Conditions\ColumnCondition.cs" />
     <Compile Include="Find\Condition.cs" />
-    <Compile Include="Equal.cs" />
-    <Compile Include="Find\ICondition.cs" />
+    <Compile Include="Find\Conditions\Criteria.cs" />
+    <Compile Include="Find\Conditions\Equal.cs" />
+    <Compile Include="Find\Conditions\GreaterThan.cs" />
+    <Compile Include="Find\Conditions\GreaterThanOrEqual.cs" />
+    <Compile Include="Find\Conditions\ICondition.cs" />
+    <Compile Include="Find\Conditions\ICriteria.cs" />
+    <Compile Include="Find\Conditions\Junction.cs" />
+    <Compile Include="Find\Conditions\LeftRightCondition.cs" />
+    <Compile Include="Find\Conditions\LessThan.cs" />
+    <Compile Include="Find\Conditions\LessThanOrEqual.cs" />
+    <Compile Include="Find\Conditions\NotEqual.cs" />
+    <Compile Include="Find\Conditions\Or.cs" />
     <Compile Include="Maps\BelongsToPropertyMap.cs" />
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="Maps\DomainMap.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
     <Compile Include="Find\FindCommandBuilder.cs" />
+    <Compile Include="Extensions\TypeUtility.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />

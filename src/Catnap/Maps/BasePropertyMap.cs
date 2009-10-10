@@ -52,12 +52,12 @@ namespace Catnap.Maps
             {
                 try
                 {
-                    value = ChangeType(value, propertyInfo.PropertyType);
+                    value = value.ChangeType(propertyInfo.PropertyType);
                 }
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException(string.Format("Failed to assign value to property: {0}.  Error converting '{1}' from type {2} to {3}",
-                                                                      propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
+                        propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
                 }
             }
             try
@@ -67,7 +67,7 @@ namespace Catnap.Maps
             catch (Exception ex)
             {
                 throw new InvalidOperationException(string.Format("Failed to assign the value to property '{0}'. Value is of type {1}",
-                                                                  propertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
+                    propertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
             }
         }
 
@@ -79,23 +79,6 @@ namespace Catnap.Maps
         protected virtual void InnerSetValue(TEntity instance, object value, ISession session)
         {
             setter.Invoke(instance, new[] { value });
-        }
-
-        protected static object ChangeType(object value, Type conversionType)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            if (conversionType.IsGenericType)
-            {
-                var genericType = conversionType.GetGenericTypeDefinition();
-                if (genericType.Equals(typeof(Nullable<>)))
-                {
-                    conversionType = conversionType.GetGenericArguments()[0];
-                }
-            }
-            return Convert.ChangeType(value, conversionType);
         }
     }
 }

@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicTests.cs" />
+    <Compile Include="ConditionTests.cs" />
     <Compile Include="Models\Forum.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\PersonFindSpec.cs" />

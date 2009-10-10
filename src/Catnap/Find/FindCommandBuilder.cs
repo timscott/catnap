@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using Catnap.Common;
+using Catnap.Find.Conditions;
 using Catnap.Maps;
 
 namespace Catnap.Find
@@ -20,10 +21,10 @@ namespace Catnap.Find
             return this;
         }
 
-        public FindCommandBuilder<T> AddCondition(ICondition condition)
+        public FindCommandBuilder<T> AddCriteria(ICriteria criteria)
         {
-            var columnName = condition.Left == null ? null : condition.Left.ToString();
-            return AddCondition(columnName, condition.Operator, condition.Right);
+            dbCommandPredicate.AddCriteria(criteria);
+            return this;
         }
 
         public FindCommandBuilder<T> AddCondition(Expression<Func<T, object>> property, string @operator, object value)

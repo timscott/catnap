@@ -4,14 +4,15 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using Catnap.Common;
+using Catnap.Find.Conditions;
 using Catnap.Maps;
 
 namespace Catnap.Find
 {
     public class DbCommandPredicate<T> where T : class, IEntity, new()
     {
-        private readonly IList<string> conditions = new List<string>();
-        private readonly IList<Parameter> parameters = new List<Parameter>();
+        private readonly List<string> conditions = new List<string>();
+        private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterNumber;
 
         public IList<string> Conditions
@@ -28,7 +29,7 @@ namespace Catnap.Find
         {
             var sql = new StringBuilder();
             Visit(sql, predicate, false);
-            Conditions.Add(sql.ToString());
+            conditions.Add(sql.ToString());
             return this;
         }
 
@@ -36,9 +37,17 @@ namespace Catnap.Find
         {
             if (value != null)
             {
-                Conditions.Add(string.Format("{0}{1}@{0}", columnName, @operator));
-                Parameters.Add(new Parameter(string.Format("@{0}", columnName), value));
+                conditions.Add(string.Format("{0}{1}@{0}", columnName, @operator));
+                parameters.Add(new Parameter(string.Format("@{0}", columnName), value));
             }
+            return this;
+        }
+
+        public DbCommandPredicate<T> AddCriteria(ICriteria criteria)
+        {
+            criteria.Build();
+            conditions.Add(criteria.ToString());
+            parameters.AddRange(criteria.Parameters);
             return this;
         }
 

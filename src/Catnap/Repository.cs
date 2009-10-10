@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Catnap.Find;
+using Catnap.Find.Conditions;
 using Catnap.Maps;
 
 namespace Catnap
@@ -18,6 +19,11 @@ namespace Catnap
         public IEnumerable<T> Find()
         {
             return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().Build());
+        }
+
+        public IEnumerable<T> Find(ICriteria criteria)
+        {
+            return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().AddCriteria(criteria).Build());
         }
 
         public virtual IEnumerable<T> Find(IFindSpec<T> findSpec)
@@ -45,17 +51,17 @@ namespace Catnap
             UnitOfWork.Current.Session.Delete<T>(id);
         }
 
-        protected void DeleteCollection<T>(IEnumerable<T> collection, IEntityMap map)
-            where T : class, IEntity, new()
+        protected void DeleteCollection<TList>(IEnumerable<TList> collection, IEntityMap map)
+            where TList : class, IEntity, new()
         {
             foreach (var entity in collection)
             {
-                UnitOfWork.Current.Session.Delete<T>(entity.Id);
+                UnitOfWork.Current.Session.Delete<TList>(entity.Id);
             }
         }
 
-        protected void SaveCollection<T>(int parentId, IEnumerable<T> collection, IEntityMap map)
-            where T : class, IEntity, new()
+        protected void SaveCollection<TList>(int parentId, IEnumerable<TList> collection, IEntityMap map)
+            where TList : class, IEntity, new()
         {
             foreach (var entity in collection)
             {
