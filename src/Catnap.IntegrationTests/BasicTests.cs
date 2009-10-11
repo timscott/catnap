@@ -44,7 +44,7 @@ namespace Catnap.IntegrationTests
         protected static void save_person()
         {
             person = new Person { FirstName = "Joe", LastName = "Smith" };
-            UnitOfWork.Current.Session.Save(person);
+            UnitOfWork.Current.Session.SaveOrUpdate(person);
         }
 
         protected static void get_person()
@@ -79,7 +79,7 @@ namespace Catnap.IntegrationTests
                 Poster = person
             };
             forum = new Forum { Name = "Annoying Complaints", Posts = new List<Post> { post } };
-            UnitOfWork.Current.Session.Save(forum);
+            UnitOfWork.Current.Session.SaveOrUpdate(forum);
         }
 
         protected static void get_forum()

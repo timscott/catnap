@@ -85,7 +85,6 @@
     <Compile Include="ConditionTests.cs" />
     <Compile Include="Models\Forum.cs" />
     <Compile Include="Models\Person.cs" />
-    <Compile Include="Models\PersonFindSpec.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

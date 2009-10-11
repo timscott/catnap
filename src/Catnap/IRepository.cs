@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Catnap.Find;
 using Catnap.Find.Conditions;
 
 namespace Catnap
@@ -14,6 +13,5 @@ namespace Catnap
         T Get(int id);
         void Delete(int id);
         IEnumerable<T> Find(ICriteria criteria);
-        IEnumerable<T> Find(IFindSpec<T> findSpec);
     }
 }

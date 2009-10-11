@@ -1,4 +1,3 @@
-using System;
 using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.Maps;
@@ -8,36 +7,6 @@ using ShouldIt.Clr.Fluent;
 
 namespace Catnap.UnitTests
 {
-    //public class when_creating_an_equal_condition
-    //{
-    //    static Equal target;
-
-    //    Because of = () => target = new Equal("Foo", 100);
-
-    //    It should_render_correct_string = () => target.ToString().Should().Equal("(Foo = @Foo)");
-
-    //    It should_contain_expected_parameters = () =>
-    //    {
-    //        target.Parameters.Should().Count.Exactly(1);
-    //        target.Parameters.Should().Contain.One(x => x.Name == "@Foo" && (int)x.Value == 100);
-    //    };
-    //}
-
-    //public class when_creating_a_not_equal_condition
-    //{
-    //    static NotEqual target;
-
-    //    Because of = () => target = new NotEqual("Foo", 100);
-
-    //    It should_render_correct_string = () => target.ToString().Should().Equal("(Foo != @Foo)");
-
-    //    It should_contain_expected_parameters = () =>
-    //    {
-    //        target.Parameters.Should().Count.Exactly(1);
-    //        target.Parameters.Should().Contain.One(x => x.Name == "@Foo" && (int)x.Value == 100);
-    //    };
-    //}
-
     public class when_creating_an_complex_condition
     {
         static Criteria target;
@@ -66,6 +35,7 @@ namespace Catnap.UnitTests
 
         It should_contain_expected_parameters = () =>
         {
+            target.Build();
             target.Parameters.Should().Count.Exactly(5);
             target.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1000));
             target.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(300));

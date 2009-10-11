@@ -42,7 +42,7 @@ namespace Catnap.Maps
             }
             foreach (var item in list)
             {
-                session.Save(item, parent.Id);
+                session.SaveOrUpdate(item, parent.Id);
             }
         }
 

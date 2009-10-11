@@ -26,11 +26,6 @@ namespace Catnap
             return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().AddCriteria(criteria).Build());
         }
 
-        public virtual IEnumerable<T> Find(IFindSpec<T> findSpec)
-        {
-            return UnitOfWork.Current.Session.List<T>(findSpec.ToCommand());
-        }
-
         public virtual IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
         {
             return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().AddCondition(predicate).Build());
@@ -38,7 +33,7 @@ namespace Catnap
 
         public virtual void Save(T entity)
         {
-            UnitOfWork.Current.Session.Save(entity);
+            UnitOfWork.Current.Session.SaveOrUpdate(entity);
         }
 
         public virtual T Get(int id)
@@ -65,7 +60,7 @@ namespace Catnap
         {
             foreach (var entity in collection)
             {
-                UnitOfWork.Current.Session.Save(entity, parentId);
+                UnitOfWork.Current.Session.SaveOrUpdate(entity, parentId);
             }
         }
     }

@@ -67,7 +67,6 @@
     <Compile Include="Maps\IListPropertyMap.cs" />
     <Compile Include="Maps\IPropertyMap.cs" />
     <Compile Include="Maps\IPropertyMapWithColumn.cs" />
-    <Compile Include="Find\IFindSpec.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Maps\EntityMap.cs" />
     <Compile Include="ISession.cs" />

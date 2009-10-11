@@ -43,12 +43,12 @@ namespace Catnap
             return List(entityMap.GetGetCommand(id)).Select(x => BuildFrom(entityMap, x)).FirstOrDefault();
         }
 
-        public void Save<T>(T entity) where T : class, IEntity, new()
+        public void SaveOrUpdate<T>(T entity) where T : class, IEntity, new()
         {
-            Save(entity, null);
+            SaveOrUpdate(entity, null);
         }
 
-        public void Save<T>(T entity, int? parentId) where T : class, IEntity, new()
+        public void SaveOrUpdate<T>(T entity, int? parentId) where T : class, IEntity, new()
         {
             var entityMap = DomainMap.GetMapFor<T>();
             if (entity.IsTransient)
