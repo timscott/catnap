@@ -1,4 +1,4 @@
-﻿namespace Catnap.Common
+﻿namespace Catnap.Common.Database
 {
     public class Parameter
     {

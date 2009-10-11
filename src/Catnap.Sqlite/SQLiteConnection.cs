@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
-using Catnap.Common;
+using Catnap.Common.Database;
+using Catnap.Common.Logging;
 
 namespace Catnap.Sqlite
 {
@@ -24,7 +25,7 @@ namespace Catnap.Sqlite
                 throw new SqliteException(string.Format("Could not open database file: {0}({1})", DatabaseName, result));
             }
             isOpen = true;
-            Console.WriteLine("Connection opened");
+            Log.Debug("Connection opened");
         }
 
         public IDbCommand CreateCommand(DbCommandSpec commandSpec)
@@ -61,7 +62,7 @@ namespace Catnap.Sqlite
                 Sqlite3.Close(databasePointer);
                 databasePointer = IntPtr.Zero;
                 isOpen = false;
-                Console.WriteLine("Connection closed");
+                Log.Debug("Connection closed");
             }
         }
     }

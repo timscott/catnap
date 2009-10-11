@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using Catnap.Common;
+using Catnap.Common.Database;
 using Catnap.Find.Conditions;
 using Catnap.Maps;
 

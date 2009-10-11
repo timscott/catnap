@@ -37,10 +37,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbCommandSpec.cs" />
-    <Compile Include="IDbCommand.cs" />
-    <Compile Include="IDbConnection.cs" />
-    <Compile Include="Parameter.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
+    <Compile Include="Database\DbCommandSpec.cs" />
+    <Compile Include="Database\IDbCommand.cs" />
+    <Compile Include="Database\IDbConnection.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Database\Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

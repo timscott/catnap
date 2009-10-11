@@ -9,7 +9,7 @@ namespace Catnap.UnitTests
 {
     public class when_creating_an_complex_condition
     {
-        static Criteria target;
+        static ICriteria target;
 
         private Because of = () =>
         {

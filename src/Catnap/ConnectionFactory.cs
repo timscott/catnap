@@ -1,4 +1,4 @@
-using Catnap.Common;
+using Catnap.Common.Database;
 using Catnap.Sqlite;
 
 namespace Catnap

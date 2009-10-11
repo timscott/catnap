@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Common;
+using Catnap.Common.Database;
+using Catnap.Common.Logging;
 
 namespace Catnap.Sqlite
 {
@@ -24,10 +25,9 @@ namespace Catnap.Sqlite
             {
                 case SqliteResult.Done:
                     var rowsAffected = Sqlite3.Changes(database);
-                    Console.WriteLine(string.Format("{0} rows affected", rowsAffected));
+                    Log.Debug(string.Format("{0} rows affected", rowsAffected));
                     return rowsAffected;
                 default:
-                    Console.WriteLine();
                     throw new SqliteException(Sqlite3.Errmsg(database));
             }
         }
@@ -47,7 +47,7 @@ namespace Catnap.Sqlite
                 yield return row;
                 count++;
             }
-            Console.WriteLine("Returning {0} rows", count);
+            Log.Debug("Returning {0} rows", count);
         }
 
         public override string ToString()
@@ -58,7 +58,7 @@ namespace Catnap.Sqlite
         private IntPtr Prepare()
         {
             var parameters = commandSpec.Parameters.Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToArray();
-            Console.Write("Preparing query: {0}{1}. ", commandSpec,  parameters.Count() == 0
+            Log.Debug("Preparing query: {0}{1}. ", commandSpec,  parameters.Count() == 0
                                                                          ? string.Empty
                                                                          : string.Format(" [PARAMETERS: {0}]", string.Join(", ", parameters)));
 

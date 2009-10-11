@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Catnap.Common;
+using Catnap.Common.Database;
 using Catnap.Extensions;
 
 namespace Catnap.Maps

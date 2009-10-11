@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Common;
+using Catnap.Common.Database;
 using Catnap.Migration;
 
 namespace Catnap.IntegrationTests.Models

@@ -1,6 +1,6 @@
 using System;
 
-namespace Catnap.Common
+namespace Catnap.Common.Database
 {
     public interface IDbConnection : IDisposable
     {

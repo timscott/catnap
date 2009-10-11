@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Catnap.Common
+namespace Catnap.Common.Database
 {
     public interface IDbCommand
     {

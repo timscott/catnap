@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Catnap.Common;
+using Catnap.Common.Database;
 using Catnap.Maps;
 
 namespace Catnap

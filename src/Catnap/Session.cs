@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Common;
+using Catnap.Common.Database;
+using Catnap.Common.Logging;
 using Catnap.Maps;
 
 namespace Catnap
@@ -87,7 +88,7 @@ namespace Catnap
             catch (Exception ex)
             {
                 RollbackTransaction();
-                Console.WriteLine(ex);
+                Log.Error(ex);
                 throw;
             }
         }
@@ -101,7 +102,7 @@ namespace Catnap
             catch (Exception ex)
             {
                 RollbackTransaction();
-                Console.WriteLine(ex);
+                Log.Error(ex);
                 throw;
             }
         }
