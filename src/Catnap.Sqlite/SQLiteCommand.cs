@@ -50,6 +50,29 @@ namespace Catnap.Sqlite
             Log.Debug("Returning {0} rows", count);
         }
 
+        public T ExecuteScalar<T>()
+        {
+            var result = ExecuteQuery();
+            if (result.Count() > 1)
+            {
+                throw new SqliteException(string.Format("Expected one row. Got {0}.", result.Count()));
+            }
+            if (result.Count() == 0)
+            {
+                return default(T);
+            }
+            var value = result.ToList()[0].ToList()[0].Value;
+            if (value == null)
+            {
+                return default(T);
+            }
+            if (value is T)
+            {
+                return (T) value;  
+            }
+            throw new SqliteException(string.Format("The value returned is not of the expected type. Expected: {0}.  Actual: {1}", typeof(T).Name, value.GetType()));
+        }
+
         public override string ToString()
         {
             return commandSpec.ToString();

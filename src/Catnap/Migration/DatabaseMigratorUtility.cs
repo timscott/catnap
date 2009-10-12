@@ -1,5 +1,6 @@
 using System.Linq;
 using Catnap.Common.Database;
+using Catnap.Common.Logging;
 using Catnap.Sqlite;
 
 namespace Catnap.Migration
@@ -21,6 +22,7 @@ namespace Catnap.Migration
             {
                 if (!PreviouslyRun(migration))
                 {
+                    Log.Debug("Running migration '{0}'", migration.Name);
                     migration.Action();
                     RecordMigration(migration);
                 }
@@ -38,10 +40,10 @@ namespace Catnap.Migration
         private bool PreviouslyRun(IDatabaseMigration migration)
         {
             var command = new DbCommandSpec()
-                .SetCommandText(string.Format(@"select * from {0} where Name = @name", MIGRATIONS_TABLE_NAME))
+                .SetCommandText(string.Format(@"select count(*) from {0} where Name = @name", MIGRATIONS_TABLE_NAME))
                 .AddParameter(migration.Name);
-            var result = UnitOfWork.Current.Session.ExecuteQuery(command);
-            return result.Count() > 0;
+            var result = UnitOfWork.Current.Session.ExecuteScalar<int>(command);
+            return result > 0;
         }
 
         private void CreateMigrationsTableIfNotExists()
@@ -53,6 +55,7 @@ namespace Catnap.Migration
                 var createMigrationsTable = new DbCommandSpec()
                     .SetCommandText(string.Format("create table {0} (Name varchar(200))", MIGRATIONS_TABLE_NAME));
                 UnitOfWork.Current.Session.ExecuteNonQuery(createMigrationsTable);
+                Log.Debug("Migrations table created");
             }
         }
     }

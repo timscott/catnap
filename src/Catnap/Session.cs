@@ -107,6 +107,20 @@ namespace Catnap
             }
         }
 
+        public T ExecuteScalar<T>(DbCommandSpec commandSpec)
+        {
+            try
+            {
+                return CreateCommand(commandSpec).ExecuteScalar<T>();
+            }
+            catch (Exception ex)
+            {
+                RollbackTransaction();
+                Log.Error(ex);
+                throw;
+            }
+        }
+
         public void RollbackTransaction()
         {
             connection.RollbackTransaction();

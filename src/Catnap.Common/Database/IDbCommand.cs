@@ -6,5 +6,6 @@ namespace Catnap.Common.Database
     {
         int ExecuteNonQuery();
         IEnumerable<IDictionary<string, object>> ExecuteQuery();
+        T ExecuteScalar<T>();
     }
 }

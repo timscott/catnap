@@ -19,5 +19,6 @@ namespace Catnap
         IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec);
         void RollbackTransaction();
         T BuildFrom<T>(IEntityMap<T> entityMap, IDictionary<string, object> record) where T : class, IEntity, new();
+        T ExecuteScalar<T>(DbCommandSpec commandSpec);
     }
 }
