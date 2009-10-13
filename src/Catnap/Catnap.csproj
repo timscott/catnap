@@ -54,11 +54,13 @@
     <Compile Include="Find\Conditions\Or.cs" />
     <Compile Include="Maps\BelongsToPropertyMap.cs" />
     <Compile Include="ConnectionFactory.cs" />
-    <Compile Include="Maps\DomainMap.cs" />
+    <Compile Include="Maps\Domain.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
     <Compile Include="Find\FindCommandBuilder.cs" />
     <Compile Include="Extensions\TypeUtility.cs" />
+    <Compile Include="Maps\DomainMap.cs" />
+    <Compile Include="Maps\IDomainMap.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />

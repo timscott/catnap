@@ -11,9 +11,11 @@ namespace Catnap
     {
         private IEntityMap<T> entityMap;
 
-        protected Repository()
+        protected Repository() : this(Domain.Map.GetMapFor<T>()) { }
+
+        protected Repository(IEntityMap<T> entityMap)
         {
-            entityMap = DomainMap.GetMapFor<T>();
+            this.entityMap = entityMap;
         }
 
         public IEnumerable<T> Find()

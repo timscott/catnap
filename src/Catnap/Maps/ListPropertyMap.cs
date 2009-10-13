@@ -12,7 +12,7 @@ namespace Catnap.Maps
     {
         private readonly Expression<Func<TListMember, bool>> filter;
 
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter) 
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter)
             : base(property)
         {
             this.filter = filter;
@@ -60,9 +60,10 @@ namespace Catnap.Maps
 
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
-            var listMap = DomainMap.GetMapFor<TListMember>();
+            //TODO: Make this c-tor injected for testability.  Do this in the map configuration by mapping list properties after the entity property for the list members.
+            var listEntityMap = Domain.Map.GetMapFor<TListMember>();
             var builder = new FindCommandBuilder<TListMember>()
-                .AddCondition(listMap.ParentColumnName, "=", parent.Id);
+                .AddCondition(listEntityMap.ParentColumnName, "=", parent.Id);
             if (filter != null)
             {
                 builder.AddCondition(filter);

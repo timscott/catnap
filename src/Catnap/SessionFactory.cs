@@ -11,7 +11,7 @@ namespace Catnap
 
         public static Session New()
         {
-            return new Session(connString);
+            return new Session(ConnectionFactory.New(connString));
         }
     }
 }

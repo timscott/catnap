@@ -13,7 +13,7 @@ namespace Catnap.UnitTests
 
         private Because of = () =>
         {
-            DomainMap.Configure(new EntityMap<Person>().Property(x => x.FirstName));
+            Domain.Configure(new EntityMap<Person>().Property(x => x.FirstName));
             target = new Criteria
             (
                 Condition.Less("Bar", 1000),

@@ -10,10 +10,14 @@ namespace Catnap
     public class Session : ISession
     {
         private IDbConnection connection;
+        private readonly IDomainMap domainMap;
 
-        public Session(string connectionString)
+        public Session(IDbConnection connection) : this(connection, Domain.Map) { }
+
+        public Session(IDbConnection connection, IDomainMap domainMap)
         {
-            connection = ConnectionFactory.New(connectionString);
+            this.connection = connection;
+            this.domainMap = domainMap;
         }
 
         public void Open()
@@ -34,13 +38,13 @@ namespace Catnap
 
         public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, IEntity, new()
         {
-            var entityMap = DomainMap.GetMapFor<T>();
+            var entityMap = domainMap.GetMapFor<T>();
             return List(commandSpec).Select(x => BuildFrom(entityMap, x)).ToList();
         }
 
         public T Get<T>(int id) where T : class, IEntity, new()
         {
-            var entityMap = DomainMap.GetMapFor<T>();
+            var entityMap = domainMap.GetMapFor<T>();
             return List(entityMap.GetGetCommand(id)).Select(x => BuildFrom(entityMap, x)).FirstOrDefault();
         }
 
@@ -51,7 +55,7 @@ namespace Catnap
 
         public void SaveOrUpdate<T>(T entity, int? parentId) where T : class, IEntity, new()
         {
-            var entityMap = DomainMap.GetMapFor<T>();
+            var entityMap = domainMap.GetMapFor<T>();
             if (entity.IsTransient)
             {
                 ExecuteNonQuery(entityMap.GetInsertCommand(entity, parentId));
@@ -75,7 +79,7 @@ namespace Catnap
 
         public void Delete<T>(int id) where T : class, IEntity, new()
         {
-            var map = DomainMap.GetMapFor<T>();
+            var map = domainMap.GetMapFor<T>();
             ExecuteNonQuery(map.GetDeleteCommand(id));
         }
 

@@ -10,7 +10,7 @@ namespace Catnap.UnitTests
 {
     public class behaves_like_unit_test_requiring_domain_context
     {
-        Establish context = () => DomainMap.Configure
+        Establish context = () => Domain.Configure
         (
             new EntityMap<Person>()
               .Property(x => x.Id)

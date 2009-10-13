@@ -4,21 +4,21 @@ using System.Linq;
 
 namespace Catnap.Maps
 {
-    public static class DomainMap
+    public class DomainMap : IDomainMap
     {
-        private static IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
+        private IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
 
-        public static void Configure(params IEntityMap[] maps)
+        public DomainMap(params IEntityMap[] entityMaps)
         {
-            foreach (var map in maps)
+            foreach (var map in entityMaps)
             {
-                entityMaps.Add(map.EntityType, map);
+                this.entityMaps.Add(map.EntityType, map);
             }
         }
 
-        public static IEntityMap<T> GetMapFor<T>() where T : class, IEntity, new()
+        public IEntityMap<T> GetMapFor<T>() where T : class, IEntity, new()
         {
             return (IEntityMap<T>)entityMaps.Where(x => x.Key == typeof(T)).First().Value;
-        }
+        }  
     }
 }

@@ -11,9 +11,17 @@ namespace Catnap.Find
 {
     public class DbCommandPredicate<T> where T : class, IEntity, new()
     {
+        private readonly IDomainMap domainMap;
         private readonly List<string> conditions = new List<string>();
         private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterNumber;
+
+        public DbCommandPredicate() : this(Domain.Map) { }
+
+        public DbCommandPredicate(IDomainMap domainMap)
+        {
+            this.domainMap = domainMap;
+        }
 
         public IList<string> Conditions
         {
@@ -121,7 +129,7 @@ namespace Catnap.Find
             }
             else
             {
-                var columnName = DomainMap.GetMapFor<T>().GetColumnNameForProperty(expression);
+                var columnName = domainMap.GetMapFor<T>().GetColumnNameForProperty(expression);
                 sql.Append(columnName);
             }
         }

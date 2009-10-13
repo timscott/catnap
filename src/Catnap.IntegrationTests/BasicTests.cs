@@ -7,12 +7,12 @@ using ShouldIt.Clr.Fluent;
 
 namespace Catnap.IntegrationTests
 {
-    public class behaves_like_integration_test
+    public abstract class behaves_like_integration_test
     {
         Establish context = () =>
         {
             SessionFactory.Initialize(":memory:");
-            DomainMap.Configure
+            Domain.Configure
                 (
                 new EntityMap<Person>()
                     .Property(x => x.Id)
@@ -32,8 +32,7 @@ namespace Catnap.IntegrationTests
             DatabaseMigrator.Execute();
         };
 
-        //TODO: Why is this running beofer Establish?
-        //Cleanup after_each = UnitOfWork.Current.Dispose;
+        Cleanup after_each = () => UnitOfWork.Current.Dispose();
     }
 
     public abstract class behaves_like_person_test : behaves_like_integration_test

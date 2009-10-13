@@ -8,10 +8,14 @@ namespace Catnap.Find
 {
     public class FindCommandBuilder<T> where T : class, IEntity, new()
     {
+        private readonly IDomainMap domainMap;
         private DbCommandPredicate<T> dbCommandPredicate;
 
-        public FindCommandBuilder()
+        public FindCommandBuilder() : this(Domain.Map) { }
+
+        public FindCommandBuilder(IDomainMap domainMap)
         {
+            this.domainMap = domainMap;
             dbCommandPredicate = new DbCommandPredicate<T>();
         }
 
@@ -29,7 +33,7 @@ namespace Catnap.Find
 
         public FindCommandBuilder<T> AddCondition(Expression<Func<T, object>> property, string @operator, object value)
         {
-            var columnName = DomainMap.GetMapFor<T>().GetColumnNameForProperty(property);
+            var columnName = domainMap.GetMapFor<T>().GetColumnNameForProperty(property);
             return AddCondition(columnName, @operator, value);
         }
 
@@ -41,7 +45,7 @@ namespace Catnap.Find
 
         public DbCommandSpec Build()
         {
-            return DomainMap.GetMapFor<T>().GetFindCommand(dbCommandPredicate.Parameters, dbCommandPredicate.Conditions);
+            return domainMap.GetMapFor<T>().GetFindCommand(dbCommandPredicate.Parameters, dbCommandPredicate.Conditions);
         }
     }
 }
