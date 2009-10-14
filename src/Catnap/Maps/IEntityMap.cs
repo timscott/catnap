@@ -19,6 +19,7 @@ namespace Catnap.Maps
         DbCommandSpec GetUpdateCommand(IEntity entity);
         DbCommandSpec GetUpdateCommand(IEntity entity, int? parentId);
         string GetColumnNameForProperty(MemberExpression memberExpression);
+        void Done(IDomainMap map);
     }
 
     public interface IEntityMap<T> : IEntityMap where T : class, IEntity, new()

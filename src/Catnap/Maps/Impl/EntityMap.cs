@@ -5,20 +5,16 @@ using System.Linq.Expressions;
 using Catnap.Common.Database;
 using Catnap.Extensions;
 
-namespace Catnap.Maps
+namespace Catnap.Maps.Impl
 {
-    public class EntityMap<T> : IEntityMap<T> where T : class, IEntity, new()
+    internal class EntityMap<T> : IEntityMap<T>, IEntityMappable<T> where T : class, IEntity, new()
     {
         private IList<IPropertyMap<T>> propertyMaps = new List<IPropertyMap<T>>();
-        public EntityMap() : this(null) { }
 
-        public EntityMap(string parentColumnName) : this(typeof(T).Name, parentColumnName) { }
-
-        public EntityMap(string tableName, string parentColumnName)
+        public EntityMap()
         {
-            TableName = tableName;
             EntityType = typeof(T);
-            ParentColumnName = parentColumnName;
+            TableName = typeof (T).Name;
         }
 
         public string TableName { get; private set; }
@@ -41,39 +37,39 @@ namespace Catnap.Maps
             return GetColumnNameForProperty(property.GetMemberExpression());
         }
 
-        public EntityMap<T> Property<TProperty>(Expression<Func<T, TProperty>> property)
+        public IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property)
         {
             var map = new ValuePropertyMap<T, TProperty>(property, null);
             propertyMaps.Add(map);
             return this;
         }
 
-        public EntityMap<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName)
+        public IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName)
         {
             var map = new ValuePropertyMap<T, TProperty>(property, columnName);
             propertyMaps.Add(map);
             return this;
         }
 
-        public EntityMap<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
+        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
             where TListMember : class, IEntity, new()
         {
             return List(property, true);
         }
 
-        public EntityMap<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy)
+        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy)
             where TListMember : class, IEntity, new()
         {
             return List(property, isLazy, true, true);
         }
 
-        public EntityMap<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes)
+        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes)
             where TListMember : class, IEntity, new()
         {
             return List(property, isLazy, cascadeSaves, cascaseDeletes, null);
         }
 
-        public EntityMap<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes, Expression<Func<TListMember, bool>> filter)
+        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes, Expression<Func<TListMember, bool>> filter)
             where TListMember : class, IEntity, new()
         {
             var map = new ListPropertyMap<T, TListMember>(property, isLazy, cascadeSaves, cascaseDeletes, filter);
@@ -81,12 +77,33 @@ namespace Catnap.Maps
             return this;
         }
 
-        public EntityMap<T> BelongsTo<TPropertyType>(Expression<Func<T, TPropertyType>> property, string columnName) 
+        public IEntityMappable<T> BelongsTo<TPropertyType>(Expression<Func<T, TPropertyType>> property, string columnName) 
             where TPropertyType : class, IEntity, new()
         {
             var map = new BelongsToPropertyMap<T, TPropertyType>(property, columnName);
             propertyMaps.Add(map);
             return this;
+        }
+
+        public IEntityMappable<T> ParentColumn(string parentColumnName)
+        {
+            ParentColumnName = parentColumnName;
+            return this;
+        }
+
+        public IEntityMappable<T> Table(string tableName)
+        {
+            TableName = tableName;
+            return this;
+        }
+
+        public void Done(IDomainMap domainMap)
+        {
+            var listMaps = propertyMaps.Where(x => x is IListPropertyMap<T>);
+            foreach (IListPropertyMap<T> map in listMaps)
+            { 
+                map.SetListMap(domainMap.GetMapFor(map.ItemTpye));
+            }
         }
 
         public T BuildFrom(IDictionary<string, object> record, ISession session)

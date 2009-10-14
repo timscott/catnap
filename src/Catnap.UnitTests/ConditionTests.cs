@@ -13,7 +13,7 @@ namespace Catnap.UnitTests
 
         private Because of = () =>
         {
-            Domain.Configure(new EntityMap<Person>().Property(x => x.FirstName));
+            Domain.Configure(Map.Entity<Person>().Property(x => x.FirstName));
             target = new Criteria
             (
                 Condition.Less("Bar", 1000),
@@ -28,14 +28,14 @@ namespace Catnap.UnitTests
                     )
                 )
             );
+            target.Build();
         };
 
-        It should_render_correct_string = () => target.Build().ToString().Should()
+        It should_render_correct_string = () => target.ToString().Should()
             .Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))))");
 
         It should_contain_expected_parameters = () =>
         {
-            target.Build();
             target.Parameters.Should().Count.Exactly(5);
             target.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1000));
             target.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(300));

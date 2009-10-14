@@ -3,11 +3,12 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Catnap.Extensions;
 
-namespace Catnap.Maps
+namespace Catnap.Maps.Impl
 {
-    public abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
+    internal abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
         where TEntity : class, IEntity, new()
     {
+        protected IDomainMap domainMap;
         protected PropertyInfo propertyInfo;
         protected MethodInfo setter;
         protected MethodInfo getter;
@@ -57,7 +58,7 @@ namespace Catnap.Maps
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException(string.Format("Failed to assign value to property: {0}.  Error converting '{1}' from type {2} to {3}",
-                        propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
+                                                                      propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
                 }
             }
             try
@@ -67,13 +68,18 @@ namespace Catnap.Maps
             catch (Exception ex)
             {
                 throw new InvalidOperationException(string.Format("Failed to assign the value to property '{0}'. Value is of type {1}",
-                    propertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
+                                                                  propertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
             }
         }
 
         public bool SetterIsPrivate
         {
             get { return setter.IsPrivate; }
+        }
+
+        public void SetDomainMap(IDomainMap value)
+        {
+            domainMap = value;
         }
 
         protected virtual void InnerSetValue(TEntity instance, object value, ISession session)

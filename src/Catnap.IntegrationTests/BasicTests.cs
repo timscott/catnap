@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Catnap.Common.Logging;
 using Catnap.IntegrationTests.Models;
 using Catnap.Maps;
 using Machine.Specifications;
@@ -11,23 +12,25 @@ namespace Catnap.IntegrationTests
     {
         Establish context = () =>
         {
+            Log.Level = LogLevel.Debug;
             SessionFactory.Initialize(":memory:");
             Domain.Configure
-                (
-                new EntityMap<Person>()
+            (
+                Map.Entity<Person>()
                     .Property(x => x.Id)
                     .Property(x => x.FirstName)
                     .Property(x => x.LastName),
-                new EntityMap<Forum>()
+                Map.Entity<Forum>()
                     .Property(x => x.Id)
                     .List(x => x.Posts)
                     .Property(x => x.Name),
-                new EntityMap<Post>("ForumId")
+                Map.Entity<Post>()
+                    .ParentColumn("ForumId")
                     .Property(x => x.Id)
                     .Property(x => x.Title)
                     .Property(x => x.Body)
                     .BelongsTo(x => x.Poster, "PosterId")
-                );
+            );
             UnitOfWork.Start();
             DatabaseMigrator.Execute();
         };

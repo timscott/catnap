@@ -1,3 +1,5 @@
+using System;
+
 namespace Catnap.Maps
 {
     public interface IListPropertyMap<TEntity> : IPropertyMap<TEntity> 
@@ -7,5 +9,7 @@ namespace Catnap.Maps
         bool WillCascadeSaves { get; }
         bool WillCascadeDeletes { get; }
         void Cascade(ISession session, TEntity parent);
+        Type ItemTpye { get; }
+        void SetListMap(IEntityMap map);
     }
 }

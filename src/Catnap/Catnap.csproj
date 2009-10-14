@@ -52,15 +52,17 @@
     <Compile Include="Find\Conditions\LessThanOrEqual.cs" />
     <Compile Include="Find\Conditions\NotEqual.cs" />
     <Compile Include="Find\Conditions\Or.cs" />
-    <Compile Include="Maps\BelongsToPropertyMap.cs" />
+    <Compile Include="Maps\IEntityMappable.cs" />
+    <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="Maps\Domain.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
     <Compile Include="Find\FindCommandBuilder.cs" />
     <Compile Include="Extensions\TypeUtility.cs" />
-    <Compile Include="Maps\DomainMap.cs" />
+    <Compile Include="Maps\Impl\DomainMap.cs" />
     <Compile Include="Maps\IDomainMap.cs" />
+    <Compile Include="Maps\Map.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
@@ -70,19 +72,19 @@
     <Compile Include="Maps\IPropertyMap.cs" />
     <Compile Include="Maps\IPropertyMapWithColumn.cs" />
     <Compile Include="IRepository.cs" />
-    <Compile Include="Maps\EntityMap.cs" />
+    <Compile Include="Maps\Impl\EntityMap.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="LazyList.cs" />
-    <Compile Include="Maps\ListPropertyMap.cs" />
+    <Compile Include="Maps\Impl\ListPropertyMap.cs" />
     <Compile Include="Find\PredicateBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Maps\BasePropertyMap.cs" />
+    <Compile Include="Maps\Impl\BasePropertyMap.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="Find\DbCommandPredicate.cs" />
     <Compile Include="UnitOfWork.cs" />
-    <Compile Include="Maps\ValuePropertyMap.cs" />
+    <Compile Include="Maps\Impl\ValuePropertyMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catnap.Common\Catnap.Common.csproj">

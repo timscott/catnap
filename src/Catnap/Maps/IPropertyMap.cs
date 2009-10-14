@@ -7,5 +7,6 @@ namespace Catnap.Maps
         void SetValue(TEntity instance, object value, ISession session);
         bool SetterIsPrivate { get; }
         MemberExpression MemberExpression { get; }
+        void SetDomainMap(IDomainMap value);
     }
 }

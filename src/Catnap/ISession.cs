@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Catnap.Common.Database;
-using Catnap.Maps;
 
 namespace Catnap
 {
@@ -17,8 +16,7 @@ namespace Catnap
         void Delete<T>(int id) where T : class, IEntity, new();
         void ExecuteNonQuery(DbCommandSpec commandSpec);
         IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec);
-        void RollbackTransaction();
-        T BuildFrom<T>(IEntityMap<T> entityMap, IDictionary<string, object> record) where T : class, IEntity, new();
         T ExecuteScalar<T>(DbCommandSpec commandSpec);
+        void RollbackTransaction();
     }
 }

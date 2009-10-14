@@ -39,13 +39,13 @@ namespace Catnap
         public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, IEntity, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            return List(commandSpec).Select(x => BuildFrom(entityMap, x)).ToList();
+            return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
         public T Get<T>(int id) where T : class, IEntity, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            return List(entityMap.GetGetCommand(id)).Select(x => BuildFrom(entityMap, x)).FirstOrDefault();
+            return List(entityMap.GetGetCommand(id)).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
         }
 
         public void SaveOrUpdate<T>(T entity) where T : class, IEntity, new()
@@ -133,12 +133,6 @@ namespace Catnap
         public void Dispose()
         {
             connection.Dispose();
-        }
-
-        public T BuildFrom<T>(IEntityMap<T> entityMap, IDictionary<string, object> record) 
-            where T : class, IEntity, new()
-        {
-            return entityMap.BuildFrom(record, this);
         }
     }
 }

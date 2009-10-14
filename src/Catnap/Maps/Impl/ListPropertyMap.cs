@@ -4,13 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Find;
 
-namespace Catnap.Maps
+namespace Catnap.Maps.Impl
 {
-    public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>>, IListPropertyMap<TEntity>
+    internal class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>>, IListPropertyMap<TEntity>
         where TEntity : class, IEntity, new()
         where TListMember : class, IEntity, new()
     {
         private readonly Expression<Func<TListMember, bool>> filter;
+        private IEntityMap listMap;
 
         public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter)
             : base(property)
@@ -32,6 +33,16 @@ namespace Catnap.Maps
             var itemsToDelete = existingList.Except(list, new EntityEqualityComaparer<TListMember>());
             CascadeDeletes(session, itemsToDelete);
             CascadeSaves(session, parent, list);
+        }
+
+        public Type ItemTpye
+        {
+            get { return typeof(TListMember); }
+        }
+
+        public void SetListMap(IEntityMap map)
+        {
+            listMap = map;
         }
 
         private void CascadeSaves(ISession session, TEntity parent, IEnumerable<TListMember> list)
@@ -60,10 +71,8 @@ namespace Catnap.Maps
 
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
-            //TODO: Make this c-tor injected for testability.  Do this in the map configuration by mapping list properties after the entity property for the list members.
-            var listEntityMap = Domain.Map.GetMapFor<TListMember>();
             var builder = new FindCommandBuilder<TListMember>()
-                .AddCondition(listEntityMap.ParentColumnName, "=", parent.Id);
+                .AddCondition(listMap.ParentColumnName, "=", parent.Id);
             if (filter != null)
             {
                 builder.AddCondition(filter);

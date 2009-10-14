@@ -12,17 +12,18 @@ namespace Catnap.UnitTests
     {
         Establish context = () => Domain.Configure
         (
-            new EntityMap<Person>()
+            Map.Entity<Person>()
               .Property(x => x.Id)
               .Property(x => x.FirstName)
               .Property(x => x.LastName)
               .Property(x => x.Active)
               .Property(x => x.MemberSince),
-            new EntityMap<Forum>()
+            Map.Entity<Forum>()
               .Property(x => x.Id)
               .List(x => x.Posts)
               .Property(x => x.Name),
-            new EntityMap<Post>("ForumId")
+            Map.Entity<Post>()
+              .ParentColumn("ForumId")
               .Property(x => x.Id)
               .Property(x => x.Title)
               .Property(x => x.Body)
