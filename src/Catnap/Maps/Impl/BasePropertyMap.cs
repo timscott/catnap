@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Catnap.Common.Database;
 using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
@@ -53,7 +54,7 @@ namespace Catnap.Maps.Impl
             {
                 try
                 {
-                    value = value.ChangeType(propertyInfo.PropertyType);
+                    value = session.DbTypeConverter.ConvertFromDbType(value, propertyInfo.PropertyType);
                 }
                 catch (Exception ex)
                 {

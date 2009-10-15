@@ -10,11 +10,21 @@ namespace Catnap.Sqlite
     {
         private IntPtr database;
         private readonly DbCommandSpec commandSpec;
+        private SqliteTypeConverter typeConverter = new SqliteTypeConverter();
 
         internal SqliteCommand(IntPtr database, DbCommandSpec commandSpec)
         {
             this.database = database;
             this.commandSpec = commandSpec;
+            ConvertParameters();
+        }
+
+        private void ConvertParameters()
+        {
+            foreach(var parameter in commandSpec.Parameters)
+            {
+                parameter.Value = typeConverter.ConvertToDbType(parameter.Value);
+            }
         }
 
         public int ExecuteNonQuery()
@@ -82,8 +92,8 @@ namespace Catnap.Sqlite
         {
             var parameters = commandSpec.Parameters.Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToArray();
             Log.Debug("Preparing query: {0}{1}. ", commandSpec,  parameters.Count() == 0
-                                                                         ? string.Empty
-                                                                         : string.Format(" [PARAMETERS: {0}]", string.Join(", ", parameters)));
+                ? string.Empty
+                : string.Format(" [PARAMETERS: {0}]", string.Join(", ", parameters)));
 
             var statement = Sqlite3.Prepare(database, commandSpec.ToString());
             BindAll(statement);
@@ -96,8 +106,8 @@ namespace Catnap.Sqlite
             foreach (var b in commandSpec.Parameters)
             {
                 b.Index = b.Name != null
-                              ? Sqlite3.BindParameterIndex(statement, b.Name)
-                              : nextIdx++;
+                    ? Sqlite3.BindParameterIndex(statement, b.Name)
+                    : nextIdx++;
             }
             foreach (var parameter in commandSpec.Parameters)
             {
@@ -145,7 +155,12 @@ namespace Catnap.Sqlite
                 case SqliteColumnType.Text:
                     return Sqlite3.ColumnText(statement, index);
                 case SqliteColumnType.Integer:
-                    return Sqlite3.ColumnInt(statement, index);
+                    var val = Sqlite3.ColumnInt64(statement, index);
+                    if (val >= int.MinValue && val <= int.MaxValue)
+                    {
+                        return (int) val;
+                    }
+                    return val;
                 case SqliteColumnType.Float:
                     return Sqlite3.ColumnDouble(statement, index);
                 case SqliteColumnType.Blob:

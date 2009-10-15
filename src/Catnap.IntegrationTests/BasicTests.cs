@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Catnap.Common.Logging;
 using Catnap.IntegrationTests.Models;
@@ -23,12 +24,14 @@ namespace Catnap.IntegrationTests
                 Map.Entity<Forum>()
                     .Property(x => x.Id)
                     .List(x => x.Posts)
-                    .Property(x => x.Name),
+                    .Property(x => x.Name)
+                    .Property(x => x.TimeOfDayLastUpdated),
                 Map.Entity<Post>()
                     .ParentColumn("ForumId")
                     .Property(x => x.Id)
                     .Property(x => x.Title)
                     .Property(x => x.Body)
+                    .Property(x => x.DatePosted)
                     .BelongsTo(x => x.Poster, "PosterId")
             );
             UnitOfWork.Start();
@@ -78,9 +81,15 @@ namespace Catnap.IntegrationTests
             {
                 Title = "It Doesn't Work",
                 Body = "Someone help, it doesnt work",
-                Poster = person
+                Poster = person,
+                DatePosted = new DateTime(2000, 1, 1)
             };
-            forum = new Forum { Name = "Annoying Complaints", Posts = new List<Post> { post } };
+            forum = new Forum
+            {
+                Name = "Annoying Complaints",
+                TimeOfDayLastUpdated = new TimeSpan(10, 0, 0),
+                Posts = new List<Post> { post }
+            };
             UnitOfWork.Current.Session.SaveOrUpdate(forum);
         }
 
@@ -101,5 +110,7 @@ namespace Catnap.IntegrationTests
         It forum_should_contain_the_post = () => actualForum.Posts.ToList()[0].Should().Equal(post);
         
         It poster_should_be_the_person = () => actualForum.Posts.ToList()[0].Poster.Should().Equal(person);
+
+        It forum_last_updated_should_be_same = () => actualForum.TimeOfDayLastUpdated.Should().Equal(forum.TimeOfDayLastUpdated);
     }
 }

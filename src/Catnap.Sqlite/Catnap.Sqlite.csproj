@@ -46,6 +46,7 @@
     <Compile Include="SQLiteCommand.cs" />
     <Compile Include="SQLiteConnection.cs" />
     <Compile Include="SQLiteException.cs" />
+    <Compile Include="SqliteTypeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catnap.Common\Catnap.Common.csproj">

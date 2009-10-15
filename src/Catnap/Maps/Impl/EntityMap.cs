@@ -180,9 +180,9 @@ namespace Catnap.Maps.Impl
             }
 
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
-                                    TableName,
-                                    string.Join(",", columnNames.ToArray()),
-                                    string.Join(",", paramterNames.ToArray()));
+                TableName,
+                string.Join(",", columnNames.ToArray()),
+                string.Join(",", paramterNames.ToArray()));
 
             command.SetCommandText(sql);
 

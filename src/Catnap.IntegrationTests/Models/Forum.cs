@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Catnap.IntegrationTests.Models
 {
@@ -7,6 +8,7 @@ namespace Catnap.IntegrationTests.Models
         private IEnumerable<Post> posts = new List<Post>();
 
         public string Name { get; set; }
+        public TimeSpan? TimeOfDayLastUpdated { get; set; }
         public IEnumerable<Post> Posts
         {
             get { return posts;  }

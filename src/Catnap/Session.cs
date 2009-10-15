@@ -12,13 +12,17 @@ namespace Catnap
         private IDbConnection connection;
         private readonly IDomainMap domainMap;
 
-        public Session(IDbConnection connection) : this(connection, Domain.Map) { }
+        public Session(IDbConnection connection, IDbTypeConverter dbTypeConverter) : 
+            this(connection, Domain.Map, dbTypeConverter) { }
 
-        public Session(IDbConnection connection, IDomainMap domainMap)
+        public Session(IDbConnection connection, IDomainMap domainMap, IDbTypeConverter dbTypeConverter)
         {
+            DbTypeConverter = dbTypeConverter;
             this.connection = connection;
             this.domainMap = domainMap;
         }
+
+        public IDbTypeConverter DbTypeConverter { get; private set; }
 
         public void Open()
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
@@ -15,10 +16,7 @@ namespace Catnap.Maps.Impl
 
         public object GetColumnValue(IEntity instance)
         {
-            var value = getter.Invoke(instance, null);
-            return propertyInfo.PropertyType.IsEnum
-                       ? (int) value
-                       : value;
+            return getter.Invoke(instance, null);
         }
     }
 }

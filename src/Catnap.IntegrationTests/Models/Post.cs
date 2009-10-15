@@ -1,3 +1,5 @@
+using System;
+
 namespace Catnap.IntegrationTests.Models
 {
     public class Post : Entity
@@ -5,5 +7,6 @@ namespace Catnap.IntegrationTests.Models
         public string Title { get; set; }
         public string Body { get; set; }
         public Person Poster { get; set; }
+        public DateTime? DatePosted { get; set; }
     }
 }

@@ -37,6 +37,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\IDbTypeConverter.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Database\DbCommandSpec.cs" />
     <Compile Include="Database\IDbCommand.cs" />
