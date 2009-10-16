@@ -18,6 +18,6 @@ namespace Catnap
         IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec);
         T ExecuteScalar<T>(DbCommandSpec commandSpec);
         void RollbackTransaction();
-        IDbTypeConverter DbTypeConverter { get; }
+        object ConvertFromDbType(object value, Type type);
     }
 }

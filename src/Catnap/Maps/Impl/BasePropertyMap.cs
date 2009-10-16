@@ -46,20 +46,14 @@ namespace Catnap.Maps.Impl
             {
                 value = null;
             }
-            else if (value != null &&
-                     propertyInfo.PropertyType.IsValueType &&
-                     value.GetType() != propertyInfo.PropertyType &&
-                     !(propertyInfo.PropertyType.IsEnum && value is int))
+            try
             {
-                try
-                {
-                    value = session.DbTypeConverter.ConvertFromDbType(value, propertyInfo.PropertyType);
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException(string.Format("Failed to assign value to property: {0}.  Error converting '{1}' from type {2} to {3}",
-                                                                      propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
-                }
+                value = session.ConvertFromDbType(value, propertyInfo.PropertyType);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(string.Format("Failed to assign value to property: {0}.  Error converting '{1}' from type {2} to {3}",
+                    propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
             }
             try
             {
@@ -68,7 +62,7 @@ namespace Catnap.Maps.Impl
             catch (Exception ex)
             {
                 throw new InvalidOperationException(string.Format("Failed to assign the value to property '{0}'. Value is of type {1}",
-                                                                  propertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
+                    propertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
             }
         }
 

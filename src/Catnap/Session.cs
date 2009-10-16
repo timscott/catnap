@@ -11,18 +11,17 @@ namespace Catnap
     {
         private IDbConnection connection;
         private readonly IDomainMap domainMap;
+        private IDbTypeConverter dbTypeConverter;
 
         public Session(IDbConnection connection, IDbTypeConverter dbTypeConverter) : 
             this(connection, Domain.Map, dbTypeConverter) { }
 
         public Session(IDbConnection connection, IDomainMap domainMap, IDbTypeConverter dbTypeConverter)
         {
-            DbTypeConverter = dbTypeConverter;
+            this.dbTypeConverter = dbTypeConverter;
             this.connection = connection;
             this.domainMap = domainMap;
         }
-
-        public IDbTypeConverter DbTypeConverter { get; private set; }
 
         public void Open()
         {
@@ -132,6 +131,11 @@ namespace Catnap
         public void RollbackTransaction()
         {
             connection.RollbackTransaction();
+        }
+
+        public object ConvertFromDbType(object value, Type type)
+        {
+            return dbTypeConverter.ConvertFromDbType(value, type);
         }
 
         public void Dispose()

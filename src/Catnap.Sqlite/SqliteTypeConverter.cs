@@ -43,9 +43,14 @@ namespace Catnap.Sqlite
         //NOTE: other conversions needed?
         public object ConvertFromDbType(object value, Type toType)
         {
-            if (value == null)
+            if (value == null || !toType.IsValueType)
             {
-                return null;
+                return value;
+            }
+            var fromType = value.GetType();
+            if (fromType == toType)
+            {
+                return value;
             }
             var underlyingType = GetUnderlyingGenericType(toType);
             if (underlyingType == typeof(bool))
@@ -62,7 +67,9 @@ namespace Catnap.Sqlite
             }
             if (underlyingType.IsEnum)
             {
-                return Enum.ToObject(underlyingType, value);
+                return fromType.IsEnum 
+                    ? value 
+                    : Enum.ToObject(underlyingType, value);
             }
             return Convert.ChangeType(value, underlyingType);
         }
