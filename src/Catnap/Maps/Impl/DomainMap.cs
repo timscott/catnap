@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Catnap.Maps.Impl
 {
-    internal class DomainMap : IDomainMap
+    public class DomainMap : IDomainMap
     {
         private IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
 

@@ -7,7 +7,7 @@ using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
-    internal class EntityMap<T> : IEntityMap<T>, IEntityMappable<T> where T : class, IEntity, new()
+    public class EntityMap<T> : IEntityMap<T>, IEntityMappable<T> where T : class, IEntity, new()
     {
         private IList<IPropertyMap<T>> propertyMaps = new List<IPropertyMap<T>>();
 

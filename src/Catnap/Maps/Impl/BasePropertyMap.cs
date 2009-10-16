@@ -1,12 +1,11 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Catnap.Common.Database;
 using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
-    internal abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
+    public abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
         where TEntity : class, IEntity, new()
     {
         protected IDomainMap domainMap;

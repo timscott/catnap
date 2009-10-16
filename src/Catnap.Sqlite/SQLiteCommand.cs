@@ -12,7 +12,7 @@ namespace Catnap.Sqlite
         private readonly DbCommandSpec commandSpec;
         private SqliteTypeConverter typeConverter = new SqliteTypeConverter();
 
-        internal SqliteCommand(IntPtr database, DbCommandSpec commandSpec)
+        public SqliteCommand(IntPtr database, DbCommandSpec commandSpec)
         {
             this.database = database;
             this.commandSpec = commandSpec;

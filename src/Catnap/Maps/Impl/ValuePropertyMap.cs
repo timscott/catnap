@@ -1,10 +1,9 @@
 using System;
 using System.Linq.Expressions;
-using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
-    internal class ValuePropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
+    public class ValuePropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
         where TEntity : class, IEntity, new()
     {
         public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)

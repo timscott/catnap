@@ -6,7 +6,7 @@ using Catnap.Find;
 
 namespace Catnap.Maps.Impl
 {
-    internal class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>>, IListPropertyMap<TEntity>
+    public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>>, IListPropertyMap<TEntity>
         where TEntity : class, IEntity, new()
         where TListMember : class, IEntity, new()
     {

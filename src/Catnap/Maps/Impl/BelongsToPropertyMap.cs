@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Catnap.Maps.Impl
 {
-    internal class BelongsToPropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
+    public class BelongsToPropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
         where TEntity : class, IEntity, new()
         where TProperty : class, IEntity, new()
     {
