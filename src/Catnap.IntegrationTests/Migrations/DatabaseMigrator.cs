@@ -1,7 +1,7 @@
 using Catnap.Migration;
 using Catnap.Sqlite;
 
-namespace Catnap.IntegrationTests.Models
+namespace Catnap.IntegrationTests.Migrations
 {
     public static class DatabaseMigrator
     {
@@ -11,9 +11,9 @@ namespace Catnap.IntegrationTests.Models
         public static void Execute()
         {
             migratorUtility.Migrate
-            (
+                (
                 new CreateSchema()
-            );
+                );
         }
     }
 }

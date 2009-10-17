@@ -74,12 +74,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicTests.cs" />
-    <Compile Include="Models\CreateSchema.cs" />
-    <Compile Include="Models\DatabaseMigrator.cs" />
+    <Compile Include="Migrations\CreateSchema.cs" />
+    <Compile Include="Migrations\DatabaseMigrator.cs" />
     <Compile Include="Models\Forum.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IForumRepository.cs" />
+    <Compile Include="Repositories\ForumRepository.cs" />
+    <Compile Include="Repositories\IPersonRepository.cs" />
+    <Compile Include="Repositories\PersonRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="sqlite3.dll">

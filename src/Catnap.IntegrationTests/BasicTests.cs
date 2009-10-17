@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Common.Logging;
+using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Models;
+using Catnap.IntegrationTests.Repositories;
 using Catnap.Maps;
 using Machine.Specifications;
 using ShouldIt.Clr.Fluent;
@@ -11,6 +13,9 @@ namespace Catnap.IntegrationTests
 {
     public abstract class behaves_like_integration_test
     {
+        protected static IForumRepository forumRepository;
+        protected static IPersonRepository personRepository;
+
         Establish context = () =>
         {
             Log.Level = LogLevel.Debug;
@@ -36,6 +41,8 @@ namespace Catnap.IntegrationTests
             );
             UnitOfWork.Start();
             DatabaseMigrator.Execute();
+            forumRepository = new ForumRepository();
+            personRepository = new PersonRepository();
         };
 
         Cleanup after_each = () => UnitOfWork.Current.Dispose();
@@ -49,12 +56,12 @@ namespace Catnap.IntegrationTests
         protected static void save_person()
         {
             person = new Person { FirstName = "Joe", LastName = "Smith" };
-            UnitOfWork.Current.Session.SaveOrUpdate(person);
+            personRepository.Save(person);
         }
 
         protected static void get_person()
         {
-            actualPerson = UnitOfWork.Current.Session.Get<Person>(person.Id);
+            actualPerson = personRepository.Get(person.Id);
         }
     }
 
@@ -64,6 +71,28 @@ namespace Catnap.IntegrationTests
         
         Because of = get_person;
         
+        It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
+
+    public class when_deleting_person : behaves_like_person_test
+    {
+        Establish context = save_person;
+
+        Because of = () => personRepository.Delete(person.Id);
+
+        It person_should_be_deleted = () =>
+        {
+            actualPerson = personRepository.Get(person.Id);
+            actualPerson.Should().Be.Null();
+        };
+    }
+
+    public class when_getting_person_by_first_name : behaves_like_person_test
+    {
+        Establish context = save_person;
+
+        Because of = () => actualPerson = personRepository.FindByFirstName(person.FirstName).FirstOrDefault();
+
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
 
@@ -90,12 +119,12 @@ namespace Catnap.IntegrationTests
                 TimeOfDayLastUpdated = new TimeSpan(10, 0, 0),
                 Posts = new List<Post> { post }
             };
-            UnitOfWork.Current.Session.SaveOrUpdate(forum);
+            forumRepository.Save(forum);
         }
 
         protected static void get_forum()
         {
-            actualForum = UnitOfWork.Current.Session.Get<Forum>(forum.Id);
+            actualForum = forumRepository.Get(forum.Id);
         }
     }
 
@@ -113,4 +142,36 @@ namespace Catnap.IntegrationTests
 
         It forum_last_updated_should_be_same = () => actualForum.TimeOfDayLastUpdated.Should().Equal(forum.TimeOfDayLastUpdated);
     }
+
+    public class when_getting_persons_who_have_posted : behaves_like_post_test
+    {
+        static IList<Person> personsWhoHavePosted;
+
+        Establish context = () =>
+        {
+            save_forum();
+            var notPosted = new Person { FirstName = "HasNot", LastName = "Posted" };
+            personRepository.Save(notPosted);
+        };
+
+        Because of = () => personsWhoHavePosted = personRepository.GetPesonsWhoHavePosted().ToList();
+
+        It should_return_only_person_who_have_posted = () =>
+        {
+            personsWhoHavePosted.Should().Count.Exactly(1);
+            personsWhoHavePosted.Should().Contain.One(x => x.Equals(person));
+        };
+    }
+
+    public class when_getting_post_count_for_a_person : behaves_like_post_test
+    {
+        static int postCount;
+
+        Establish context = save_forum;
+
+        Because of = () => postCount = personRepository.GetTotalPostCount(person.Id);
+
+        It should_return_post_count = () => postCount.Should().Equal(1);
+    }
+
 }

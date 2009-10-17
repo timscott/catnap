@@ -4,7 +4,7 @@ using System.Linq;
 using Catnap.Common.Database;
 using Catnap.Migration;
 
-namespace Catnap.IntegrationTests.Models
+namespace Catnap.IntegrationTests.Migrations
 {
     public class CreateSchema : IDatabaseMigration
     {
