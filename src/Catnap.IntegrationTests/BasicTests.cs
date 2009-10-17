@@ -13,11 +13,7 @@ namespace Catnap.IntegrationTests
 {
     public abstract class behaves_like_integration_test
     {
-        Establish context = () =>
-        {
-            initialize_app();
-            UnitOfWork.Start();
-        };
+        Establish context = initialize_app;
 
         static void initialize_app()
         {
@@ -42,10 +38,8 @@ namespace Catnap.IntegrationTests
                     .Property(x => x.DatePosted)
                     .BelongsTo(x => x.Poster, "PosterId")
             );
-            using (UnitOfWork.Start())
-            {
-                DatabaseMigrator.Execute();
-            }
+            UnitOfWork.Start();
+            DatabaseMigrator.Execute();
         }
 
         Cleanup after_each = () => UnitOfWork.Current.Dispose();
