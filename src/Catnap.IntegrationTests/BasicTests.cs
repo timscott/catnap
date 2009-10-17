@@ -13,10 +13,13 @@ namespace Catnap.IntegrationTests
 {
     public abstract class behaves_like_integration_test
     {
-        protected static IForumRepository forumRepository;
-        protected static IPersonRepository personRepository;
-
         Establish context = () =>
+        {
+            initialize_app();
+            UnitOfWork.Start();
+        };
+
+        static void initialize_app()
         {
             Log.Level = LogLevel.Debug;
             SessionFactory.Initialize(":memory:");
@@ -39,11 +42,11 @@ namespace Catnap.IntegrationTests
                     .Property(x => x.DatePosted)
                     .BelongsTo(x => x.Poster, "PosterId")
             );
-            UnitOfWork.Start();
-            DatabaseMigrator.Execute();
-            forumRepository = new ForumRepository();
-            personRepository = new PersonRepository();
-        };
+            using (UnitOfWork.Start())
+            {
+                DatabaseMigrator.Execute();
+            }
+        }
 
         Cleanup after_each = () => UnitOfWork.Current.Dispose();
     }
@@ -56,12 +59,12 @@ namespace Catnap.IntegrationTests
         protected static void save_person()
         {
             person = new Person { FirstName = "Joe", LastName = "Smith" };
-            personRepository.Save(person);
+            Container.PersonRepository.Save(person);
         }
 
         protected static void get_person()
         {
-            actualPerson = personRepository.Get(person.Id);
+            actualPerson = Container.PersonRepository.Get(person.Id);
         }
     }
 
@@ -78,11 +81,11 @@ namespace Catnap.IntegrationTests
     {
         Establish context = save_person;
 
-        Because of = () => personRepository.Delete(person.Id);
+        Because of = () => Container.PersonRepository.Delete(person.Id);
 
         It person_should_be_deleted = () =>
         {
-            actualPerson = personRepository.Get(person.Id);
+            actualPerson = Container.PersonRepository.Get(person.Id);
             actualPerson.Should().Be.Null();
         };
     }
@@ -91,7 +94,7 @@ namespace Catnap.IntegrationTests
     {
         Establish context = save_person;
 
-        Because of = () => actualPerson = personRepository.FindByFirstName(person.FirstName).FirstOrDefault();
+        Because of = () => actualPerson = Container.PersonRepository.FindByFirstName(person.FirstName).FirstOrDefault();
 
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
@@ -119,12 +122,12 @@ namespace Catnap.IntegrationTests
                 TimeOfDayLastUpdated = new TimeSpan(10, 0, 0),
                 Posts = new List<Post> { post }
             };
-            forumRepository.Save(forum);
+            Container.ForumRepository.Save(forum);
         }
 
         protected static void get_forum()
         {
-            actualForum = forumRepository.Get(forum.Id);
+            actualForum = Container.ForumRepository.Get(forum.Id);
         }
     }
 
@@ -151,10 +154,10 @@ namespace Catnap.IntegrationTests
         {
             save_forum();
             var notPosted = new Person { FirstName = "HasNot", LastName = "Posted" };
-            personRepository.Save(notPosted);
+            Container.PersonRepository.Save(notPosted);
         };
 
-        Because of = () => personsWhoHavePosted = personRepository.GetPesonsWhoHavePosted().ToList();
+        Because of = () => personsWhoHavePosted = Container.PersonRepository.GetPesonsWhoHavePosted().ToList();
 
         It should_return_only_person_who_have_posted = () =>
         {
@@ -169,7 +172,7 @@ namespace Catnap.IntegrationTests
 
         Establish context = save_forum;
 
-        Because of = () => postCount = personRepository.GetTotalPostCount(person.Id);
+        Because of = () => postCount = Container.PersonRepository.GetTotalPostCount(person.Id);
 
         It should_return_post_count = () => postCount.Should().Equal(1);
     }

@@ -80,6 +80,7 @@
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Container.cs" />
     <Compile Include="Repositories\IForumRepository.cs" />
     <Compile Include="Repositories\ForumRepository.cs" />
     <Compile Include="Repositories\IPersonRepository.cs" />
