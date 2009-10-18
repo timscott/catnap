@@ -9,7 +9,7 @@ namespace Catnap
 {
     public abstract class Repository<T> : IRepository<T> where T : class, IEntity, new() 
     {
-        private IEntityMap<T> entityMap;
+        protected IEntityMap<T> entityMap;
 
         protected Repository() : this(Domain.Map.GetMapFor<T>()) { }
 

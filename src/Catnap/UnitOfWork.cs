@@ -1,33 +1,36 @@
 using System;
+using System.Threading;
+using Catnap.Common.Logging;
 
 namespace Catnap
 {
     public class UnitOfWork : IDisposable
     {
-        private static UnitOfWork current;
-        private bool isStarted;
+        private Guid id;
 
         public ISession Session { get; private set; }
 
         public static UnitOfWork Start()
         {
-            if (current != null && current.isStarted)
+            if (current != null)
             {
-                throw new InvalidOperationException("Cannot start current unit of work because it is already started.");
+                throw new InvalidOperationException(string.Format("Cannot start current unit of work {0} because it is already started. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId));
             }
-            current = new UnitOfWork { Session = SessionFactory.New() };
+            current = new UnitOfWork { Session = SessionFactory.New(), id = Guid.NewGuid() };
+            Log.Debug("Starting unit of work {0}. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId);
             current.Session.Open();
-            current.isStarted = true;
             return current;
         }
 
+        private static UnitOfWork current;
+        
         public static UnitOfWork Current
         {
             get
             {
                 if (current == null)
                 {
-                    throw new Exception("Unit of work not started.  You must start the unit of work before using it.");
+                    throw new InvalidOperationException("Unit of work not started.  You must start the unit of work before using it.");
                 }
                 return current;
             }
@@ -35,9 +38,9 @@ namespace Catnap
 
         public void Dispose()
         {
+            Log.Debug("Disposing unit of work {0}. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId);
             Session.Dispose();
             current = null;
-            isStarted = false;
         }
     }
 }

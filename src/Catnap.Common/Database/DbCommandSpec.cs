@@ -7,9 +7,9 @@ namespace Catnap.Common.Database
         private string commandText;
         private List<Parameter> parameters = new List<Parameter>();
 
-        public DbCommandSpec SetCommandText(string value)
+        public DbCommandSpec SetCommandText(string value, params object[] args)
         {
-            commandText = value;
+            commandText = args == null ? value : string.Format(value, args);
             return this;
         }
 
@@ -26,6 +26,12 @@ namespace Catnap.Common.Database
         public DbCommandSpec AddParameter(string name, object value)
         {
             parameters.Add(new Parameter(name, value));
+            return this;
+        }
+
+        public DbCommandSpec AddParameters(params Parameter[] parms)
+        {
+            parameters.AddRange(parms);
             return this;
         }
 

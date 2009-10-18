@@ -38,7 +38,7 @@ namespace Catnap.IntegrationTests
                     .Property(x => x.DatePosted)
                     .BelongsTo(x => x.Poster, "PosterId")
             );
-            UnitOfWork.Start();
+            UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
             DatabaseMigrator.Execute();
         }
 
