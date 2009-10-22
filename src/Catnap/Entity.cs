@@ -4,8 +4,12 @@ namespace Catnap
     {
         private int? cachedHashCode;
         private EntityEqualityComaparer<IEntity> equalityComparer = new EntityEqualityComaparer<IEntity>();
+        private int id;
 
-        public virtual int Id { get; private set; }
+        public virtual int Id
+        {
+            get { return id; }
+        }
 
         public virtual bool IsTransient
         {
@@ -36,7 +40,7 @@ namespace Catnap
 
         public virtual void SetId(int id)
         {
-            Id = id;
+            this.id = id;
         }
     }
 }

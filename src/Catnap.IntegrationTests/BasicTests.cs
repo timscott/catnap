@@ -22,17 +22,14 @@ namespace Catnap.IntegrationTests
             Domain.Configure
             (
                 Map.Entity<Person>()
-                    .Property(x => x.Id)
                     .Property(x => x.FirstName)
                     .Property(x => x.LastName),
                 Map.Entity<Forum>()
-                    .Property(x => x.Id)
                     .List(x => x.Posts)
                     .Property(x => x.Name)
                     .Property(x => x.TimeOfDayLastUpdated),
                 Map.Entity<Post>()
                     .ParentColumn("ForumId")
-                    .Property(x => x.Id)
                     .Property(x => x.Title)
                     .Property(x => x.Body)
                     .Property(x => x.DatePosted)
