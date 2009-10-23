@@ -16,7 +16,7 @@ namespace Catnap.Maps.Impl
 
         protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property)
         {
-            Log.Debug("Getting member expression for property.");
+            Log.Debug("Getting member expression for property for '{0}' of type '{1}'", property.ToString(), GetType().Name);
             MemberExpression = property.GetMemberExpression();
 
             if (MemberExpression == null)
