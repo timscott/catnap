@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
 {
@@ -9,6 +10,7 @@ namespace Catnap.Maps.Impl
     {
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
         {
+            Log.Debug("Setting column name for BelongsTo property");
             ColumnName = columnName ?? MemberExpression.Member.Name;
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Catnap.Common.Logging;
 using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
@@ -15,6 +16,7 @@ namespace Catnap.Maps.Impl
 
         protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property)
         {
+            Log.Debug("Getting member expression for property.");
             MemberExpression = property.GetMemberExpression();
 
             if (MemberExpression == null)
@@ -26,11 +28,13 @@ namespace Catnap.Maps.Impl
             {
                 throw new Exception(string.Format("Cannot resolve PropertyInfo for property expression '{0}'.", property));
             }
+            Log.Debug("Getting set method property.");
             setter = propertyInfo.GetSetMethod(true);
             if (setter == null)
             {
                 throw new ArgumentException(string.Format("The property '{0}' is not writable.", propertyInfo.Name), "property");
             }
+            Log.Debug("Getting set method property.");
             getter = propertyInfo.GetGetMethod(true);
             if (getter == null)
             {
