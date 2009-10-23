@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Common.Database;
+using Catnap.Common.Logging;
 using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
@@ -99,6 +100,7 @@ namespace Catnap.Maps.Impl
 
         public void Done(IDomainMap domainMap)
         {
+            Log.Debug("Setting list maps for entity '{0}'", EntityType.Name);
             var listMaps = propertyMaps.Where(x => x is IListPropertyMap<T>);
             foreach (IListPropertyMap<T> map in listMaps)
             { 

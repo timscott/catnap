@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
 {
@@ -10,6 +11,7 @@ namespace Catnap.Maps.Impl
 
         public DomainMap(params IEntityMap[] entityMaps)
         {
+            Log.Debug("Mapping domain.");
             foreach (var map in entityMaps)
             {
                 this.entityMaps.Add(map.EntityType, map);
