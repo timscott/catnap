@@ -6,13 +6,13 @@ using It=Machine.Specifications.It;
 
 namespace Catnap.UnitTests
 {
-    public abstract class behaves_like_logger_test
+    public class behaves_like_logger_test
     {
-        protected static MockFactory mockFactory = new MockFactory(MockBehavior.Strict);
         protected static Mock<ILogger> logger;
 
         Establish context = () =>
         {
+            var mockFactory = new MockFactory(MockBehavior.Strict);
             logger = mockFactory.Create<ILogger>();
             Log.Level = LogLevel.Debug;
             Log.Logger = logger.Object;

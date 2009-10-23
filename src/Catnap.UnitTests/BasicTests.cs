@@ -1,5 +1,6 @@
 ﻿using System;
 using Catnap.Common.Database;
+using Catnap.Common.Logging;
 using Catnap.Find;
 using Catnap.Maps;
 using Catnap.UnitTests.Models;
@@ -10,22 +11,26 @@ namespace Catnap.UnitTests
 {
     public class behaves_like_unit_test_requiring_domain_context
     {
-        Establish context = () => Domain.Configure
-        (
-            Map.Entity<Person>()
-              .Property(x => x.FirstName)
-              .Property(x => x.LastName)
-              .Property(x => x.Active)
-              .Property(x => x.MemberSince),
-            Map.Entity<Forum>()
-              .List(x => x.Posts)
-              .Property(x => x.Name),
-            Map.Entity<Post>()
-              .ParentColumn("ForumId")
-              .Property(x => x.Title)
-              .Property(x => x.Body)
-              .BelongsTo(x => x.Poster, "PosterId")
-        );
+        private Establish context = () =>
+        {
+            Log.Level = LogLevel.Debug;
+            Domain.Configure
+            (
+                Map.Entity<Person>()
+                    .Property(x => x.FirstName)
+                    .Property(x => x.LastName)
+                    .Property(x => x.Active)
+                    .Property(x => x.MemberSince),
+                Map.Entity<Forum>()
+                    .List(x => x.Posts)
+                    .Property(x => x.Name),
+                Map.Entity<Post>()
+                    .ParentColumn("ForumId")
+                    .Property(x => x.Title)
+                    .Property(x => x.Body)
+                    .BelongsTo(x => x.Poster, "PosterId")
+            );
+        };
     }
 
     public class when_creating_sql_command_from_expression : behaves_like_unit_test_requiring_domain_context

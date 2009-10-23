@@ -5,6 +5,7 @@ using Catnap.Maps;
 using Catnap.UnitTests.Models;
 using Machine.Specifications;
 using ShouldIt.Clr.Fluent;
+using It=Machine.Specifications.It;
 
 namespace Catnap.UnitTests
 {
@@ -12,7 +13,9 @@ namespace Catnap.UnitTests
     {
         static ICriteria target;
 
-        private Because of = () =>
+        Establish context = () => { }; //to prevent picking up context from previou test run
+
+        Because of = () =>
         {
             Log.Level = LogLevel.Debug;
             Domain.Configure(Map.Entity<Person>().Property(x => x.FirstName));
