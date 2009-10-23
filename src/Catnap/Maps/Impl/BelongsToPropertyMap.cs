@@ -10,7 +10,7 @@ namespace Catnap.Maps.Impl
     {
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
         {
-            Log.Debug("Setting column name for BelongsTo property");
+            Log.Debug("Setting column name for BelongsTo property '{0}'", property);
             ColumnName = columnName ?? MemberExpression.Member.Name;
         }
 

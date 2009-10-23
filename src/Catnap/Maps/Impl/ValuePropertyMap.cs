@@ -9,7 +9,7 @@ namespace Catnap.Maps.Impl
     {
         public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
         {
-            Log.Debug("Setting column name for value property.");
+            Log.Debug("Setting column name for Value property '{0}'.", property);
             ColumnName = columnName ?? MemberExpression.Member.Name;
         }
 

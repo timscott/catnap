@@ -16,7 +16,7 @@ namespace Catnap.Maps.Impl
 
         protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property)
         {
-            Log.Debug("Getting member expression for property for '{0}' of type '{1}'", property.ToString(), GetType().Name);
+            Log.Debug("Getting member expression for property '{0}' of type '{1}'", property, GetType().Name);
             MemberExpression = property.GetMemberExpression();
 
             if (MemberExpression == null)
@@ -28,13 +28,13 @@ namespace Catnap.Maps.Impl
             {
                 throw new Exception(string.Format("Cannot resolve PropertyInfo for property expression '{0}'.", property));
             }
-            Log.Debug("Getting set method property.");
+            Log.Debug("Getting set method for property '{0}'.", propertyInfo.Name);
             setter = propertyInfo.GetSetMethod(true);
             if (setter == null)
             {
                 throw new ArgumentException(string.Format("The property '{0}' is not writable.", propertyInfo.Name), "property");
             }
-            Log.Debug("Getting set method property.");
+            Log.Debug("Getting set method for property '{0}'.", propertyInfo.Name);
             getter = propertyInfo.GetGetMethod(true);
             if (getter == null)
             {

@@ -1,3 +1,4 @@
+using Catnap.Common.Logging;
 using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.Maps;
@@ -13,6 +14,7 @@ namespace Catnap.UnitTests
 
         private Because of = () =>
         {
+            Log.Level = LogLevel.Debug;
             Domain.Configure(Map.Entity<Person>().Property(x => x.FirstName));
             target = new Criteria
             (
