@@ -1,8 +1,6 @@
 using System;
-using Catnap.Common.Database;
-using Catnap.Common.Logging;
 
-namespace Catnap.Sqlite
+namespace Catnap.Common.Database
 {
     public class SqliteTypeConverter : IDbTypeConverter
     {
@@ -44,7 +42,6 @@ namespace Catnap.Sqlite
         //NOTE: other conversions needed?
         public object ConvertFromDbType(object value, Type toType)
         {
-            Log.Debug("Converting '{0}' to type {1}", value, toType.FullName);
             if (value == null || !toType.IsValueType)
             {
                 return value;
@@ -61,19 +58,17 @@ namespace Catnap.Sqlite
             }
             if (underlyingType == typeof(DateTime))
             {
-                var longValue = (long) Convert.ChangeType(value, typeof (long));
-                return new DateTime(longValue);
+                return new DateTime((long)value);
             }
             if (underlyingType == typeof(TimeSpan))
             {
-                var longValue = (long)Convert.ChangeType(value, typeof(long));
-                return new TimeSpan(longValue);
+                return new TimeSpan((long)value);
             }
             if (underlyingType.IsEnum)
             {
                 return fromType.IsEnum 
-                    ? value 
-                    : Enum.ToObject(underlyingType, value);
+                           ? value 
+                           : Enum.ToObject(underlyingType, value);
             }
             return Convert.ChangeType(value, underlyingType);
         }

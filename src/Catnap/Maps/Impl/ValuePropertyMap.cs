@@ -7,6 +7,8 @@ namespace Catnap.Maps.Impl
     public class ValuePropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
         where TEntity : class, IEntity, new()
     {
+        public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
+
         public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
         {
             Log.Debug("Setting column name for Value property '{0}'.", property);

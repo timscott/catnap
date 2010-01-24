@@ -8,6 +8,8 @@ namespace Catnap.Maps.Impl
         where TEntity : class, IEntity, new()
         where TProperty : class, IEntity, new()
     {
+        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
+
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
         {
             Log.Debug("Setting column name for BelongsTo property '{0}'", property);

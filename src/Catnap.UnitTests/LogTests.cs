@@ -15,7 +15,7 @@ namespace Catnap.UnitTests
             var mockFactory = new MockFactory(MockBehavior.Strict);
             logger = mockFactory.Create<ILogger>();
             Log.Level = LogLevel.Debug;
-            Log.Logger = logger.Object;
+            Log.ConsoleLogger = logger.Object;
         };
     }
 

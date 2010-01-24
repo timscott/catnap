@@ -11,9 +11,9 @@ namespace Catnap.IntegrationTests.Migrations
         public static void Execute()
         {
             migratorUtility.Migrate
-                (
+            (
                 new CreateSchema()
-                );
+            );
         }
     }
 }

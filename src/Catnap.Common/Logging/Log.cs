@@ -4,8 +4,9 @@ namespace Catnap.Common.Logging
 {
     public static class Log
     {
-        public static ILogger Logger = new ConsoleLogger();
         public static LogLevel Level = LogLevel.Off;
+        public static ILogger ConsoleLogger = new ConsoleLogger();
+        public static ILogger FileLogger;
 
         public static void Debug(string message, params object[] args)
         {
@@ -44,7 +45,14 @@ namespace Catnap.Common.Logging
             {
                 message = string.Format(message, args);
             }
-            Logger.LogMessage(message);
+            if (ConsoleLogger != null)
+            {
+                ConsoleLogger.LogMessage(message);
+            }
+            if (FileLogger != null)
+            {
+                FileLogger.LogMessage(message);
+            }
         }
     }
 }

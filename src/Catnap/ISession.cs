@@ -17,7 +17,8 @@ namespace Catnap
         void ExecuteNonQuery(DbCommandSpec commandSpec);
         IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec);
         T ExecuteScalar<T>(DbCommandSpec commandSpec);
-        void RollbackTransaction();
-        object ConvertFromDbType(object value, Type type);
+    	object ExecuteScalar(DbCommandSpec commandSpec);
+    	void RollbackTransaction();
+    	object ConvertFromDbType(object value, Type type);
     }
 }

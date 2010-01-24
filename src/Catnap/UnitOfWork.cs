@@ -7,6 +7,7 @@ namespace Catnap
     public class UnitOfWork : IDisposable
     {
         private Guid id;
+        private static UnitOfWork current;
 
         public ISession Session { get; private set; }
 
@@ -22,8 +23,6 @@ namespace Catnap
             return current;
         }
 
-        private static UnitOfWork current;
-        
         public static UnitOfWork Current
         {
             get

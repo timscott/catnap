@@ -6,7 +6,9 @@ using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Models;
 using Catnap.IntegrationTests.Repositories;
 using Catnap.Maps;
+using Catnap.Sqlite;
 using Machine.Specifications;
+using NUnit.Framework;
 using ShouldIt.Clr.Fluent;
 
 namespace Catnap.IntegrationTests
@@ -80,6 +82,23 @@ namespace Catnap.IntegrationTests
             actualPerson.Should().Be.Null();
         };
     }
+
+	public class when_updating_a_person : behaves_like_person_test
+	{
+		private Establish context =()=>
+		{
+			save_person();
+		    person.FirstName = "NewFirstName";
+		};
+
+		Because of = () => Container.PersonRepository.Save(person);
+
+		It person_should_be_updated = () =>
+		{
+			actualPerson = Container.PersonRepository.Get(person.Id);
+		    actualPerson.FirstName.Should().Equal(person.FirstName);
+		};
+	}
 
     public class when_getting_person_by_first_name : behaves_like_person_test
     {

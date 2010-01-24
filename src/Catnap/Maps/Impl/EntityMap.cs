@@ -10,7 +10,7 @@ namespace Catnap.Maps.Impl
 {
     public class EntityMap<T> : IEntityMap<T>, IEntityMappable<T> where T : class, IEntity, new()
     {
-        private IList<IPropertyMap<T>> propertyMaps = new List<IPropertyMap<T>>();
+        private readonly IList<IPropertyMap<T>> propertyMaps = new List<IPropertyMap<T>>();
 
         public EntityMap()
         {
@@ -38,18 +38,22 @@ namespace Catnap.Maps.Impl
             return GetColumnNameForProperty(property.GetMemberExpression());
         }
 
+        public IEntityMappable<T> Map(IPropertyMap<T> propertyMap)
+        {
+            propertyMaps.Add(propertyMap);
+            return this;
+        }
+
         public IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property)
         {
             var map = new ValuePropertyMap<T, TProperty>(property, null);
-            propertyMaps.Add(map);
-            return this;
+            return Map(map);
         }
 
         public IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName)
         {
             var map = new ValuePropertyMap<T, TProperty>(property, columnName);
-            propertyMaps.Add(map);
-            return this;
+            return Map(map);
         }
 
         public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
@@ -74,16 +78,21 @@ namespace Catnap.Maps.Impl
             where TListMember : class, IEntity, new()
         {
             var map = new ListPropertyMap<T, TListMember>(property, isLazy, cascadeSaves, cascaseDeletes, filter);
-            propertyMaps.Add(map);
-            return this;
+            return Map(map);
         }
 
-        public IEntityMappable<T> BelongsTo<TPropertyType>(Expression<Func<T, TPropertyType>> property, string columnName) 
-            where TPropertyType : class, IEntity, new()
+        public IEntityMappable<T> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
+            where TProperty : class, IEntity, new()
         {
-            var map = new BelongsToPropertyMap<T, TPropertyType>(property, columnName);
-            propertyMaps.Add(map);
-            return this;
+            var map = new BelongsToPropertyMap<T, TProperty>(property);
+            return Map(map);
+        }
+
+        public IEntityMappable<T> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property, string columnName) 
+            where TProperty : class, IEntity, new()
+        {
+            var map = new BelongsToPropertyMap<T, TProperty>(property, columnName);
+            return Map(map);
         }
 
         public IEntityMappable<T> ParentColumn(string parentColumnName)
@@ -151,14 +160,14 @@ namespace Catnap.Maps.Impl
         {
             return new DbCommandSpec()
                 .SetCommandText(string.Format("{0} where Id = @Id", BaseSelectSql))
-                .AddParameter("@Id", id);
+                .AddParameter("Id", id);
         }
 
         public DbCommandSpec GetDeleteCommand(int id)
         {
             return new DbCommandSpec()
                 .SetCommandText(string.Format("delete from {0} where Id = @Id", TableName))
-                .AddParameter("@Id", id);
+                .AddParameter("Id", id);
         }
 
         public DbCommandSpec GetInsertCommand(IEntity entity)
@@ -179,7 +188,7 @@ namespace Catnap.Maps.Impl
             {
                 columnNames.Add(ParentColumnName);
                 paramterNames.Add("@" + ParentColumnName);
-                command.AddParameter("@" + ParentColumnName, parentId);
+                command.AddParameter(ParentColumnName, parentId);
             }
 
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
@@ -191,7 +200,7 @@ namespace Catnap.Maps.Impl
 
             foreach (var map in writableColumns)
             {
-                command.AddParameter("@" + map.ColumnName, map.GetColumnValue(entity));
+                command.AddParameter(map.ColumnName, map.GetColumnValue(entity));
             }
 
             return command;
@@ -207,23 +216,25 @@ namespace Catnap.Maps.Impl
             var command = new DbCommandSpec();
 
             var columnProperties = propertyMaps.Where(x => x is IPropertyMapWithColumn<T>).Cast<IPropertyMapWithColumn<T>>();
-            var setPairs = columnProperties.Where(x => x.ColumnName != "Id")
+            var setPairs = columnProperties
+                .Where(x => x.ColumnName != "Id")
                 .Select(x => string.Format("{0}=@{0}", x.ColumnName)).ToList();
             if (!string.IsNullOrEmpty(ParentColumnName))
             {
                 setPairs.Add(string.Format("{0}=@{0}", ParentColumnName));
-                command.AddParameter("@" + ParentColumnName, parentId);
+                command.AddParameter(ParentColumnName, parentId);
             }
 
             var sql = string.Format("update {0} set {1} where Id = @Id",
                                     TableName,
                                     string.Join(",", setPairs.ToArray()));
+            command.AddParameter("Id", entity.Id);
 
             command.SetCommandText(sql);
 
             foreach (var map in columnProperties)
             {
-                command.AddParameter("@" + map.ColumnName, map.GetColumnValue(entity));
+                command.AddParameter(map.ColumnName, map.GetColumnValue(entity));
             }
 
             return command;

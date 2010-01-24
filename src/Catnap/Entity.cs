@@ -3,7 +3,7 @@ namespace Catnap
     public class Entity : IEntity
     {
         private int? cachedHashCode;
-        private EntityEqualityComaparer<IEntity> equalityComparer = new EntityEqualityComaparer<IEntity>();
+        private readonly EntityEqualityComaparer<IEntity> equalityComparer = new EntityEqualityComaparer<IEntity>();
         private int id;
 
         public virtual int Id
@@ -23,9 +23,11 @@ namespace Catnap
 
         public override int GetHashCode()
         {
-            return cachedHashCode.HasValue 
-                       ? cachedHashCode.Value 
-                       : equalityComparer.GetHashCode(this);
+            if (!cachedHashCode.HasValue)
+            {
+				cachedHashCode = equalityComparer.GetHashCode(this);
+            }
+        	return cachedHashCode.Value;
         }
 
         public static bool operator ==(Entity x, Entity y)

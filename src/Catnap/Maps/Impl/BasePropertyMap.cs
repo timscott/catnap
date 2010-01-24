@@ -46,6 +46,7 @@ namespace Catnap.Maps.Impl
 
         public void SetValue(TEntity instance, object value, ISession session)
         {
+            Log.Debug("Setting value '{0}' to property {1}", value, propertyInfo.Name);
             if (value == DBNull.Value)
             {
                 value = null;
@@ -57,7 +58,7 @@ namespace Catnap.Maps.Impl
             catch (Exception ex)
             {
                 throw new InvalidOperationException(string.Format("Failed to assign value to property: {0}.  Error converting '{1}' from type {2} to {3}",
-                    propertyInfo.Name, value, value.GetType(), propertyInfo.PropertyType.Name), ex);
+                    propertyInfo.Name, value, value == null ? null : value.GetType(), propertyInfo.PropertyType.Name), ex);
             }
             try
             {
@@ -82,6 +83,7 @@ namespace Catnap.Maps.Impl
 
         protected virtual void InnerSetValue(TEntity instance, object value, ISession session)
         {
+            Log.Debug("Setting {0} to {1}", setter.Name, value);
             setter.Invoke(instance, new[] { value });
         }
     }

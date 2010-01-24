@@ -6,6 +6,7 @@ namespace Catnap.Maps
 {
     public interface IEntityMappable<T> : IEntityMap where T : class, IEntity, new()
     {
+        IEntityMappable<T> Map(IPropertyMap<T> propertyMap);
         IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property);
         IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName);
         IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property) where TListMember : class, IEntity, new();

@@ -9,9 +9,9 @@ namespace Catnap
 {
     public class Session : ISession
     {
-        private IDbConnection connection;
+        private readonly IDbConnection connection;
         private readonly IDomainMap domainMap;
-        private IDbTypeConverter dbTypeConverter;
+        private readonly IDbTypeConverter dbTypeConverter;
 
         public Session(IDbConnection connection, IDbTypeConverter dbTypeConverter) : 
             this(connection, Domain.Map, dbTypeConverter) { }
@@ -102,30 +102,21 @@ namespace Catnap
 
         public IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec)
         {
-            try
-            {
-                return CreateCommand(commandSpec).ExecuteQuery();
-            }
-            catch (Exception ex)
-            {
-                RollbackTransaction();
-                Log.Error(ex);
-                throw;
-            }
+            return Execute<IEnumerable<IDictionary<string, object>>>(
+                CreateCommand(commandSpec).ExecuteQuery);
         }
 
+        public object ExecuteScalar(DbCommandSpec commandSpec)
+        {
+            return Execute<object>(CreateCommand(commandSpec).ExecuteScalar<object>);
+        }
+
+        /// <summary>
+        /// NOTE: IPhone does not like this method.  Use the other overload.
+        /// </summary>
         public T ExecuteScalar<T>(DbCommandSpec commandSpec)
         {
-            try
-            {
-                return CreateCommand(commandSpec).ExecuteScalar<T>();
-            }
-            catch (Exception ex)
-            {
-                RollbackTransaction();
-                Log.Error(ex);
-                throw;
-            }
+            return Execute<T>(CreateCommand(commandSpec).ExecuteScalar<T>);
         }
 
         public void RollbackTransaction()
@@ -141,6 +132,20 @@ namespace Catnap
         public void Dispose()
         {
             connection.Dispose();
+        }
+
+        private T Execute<T>(Func<T> func)
+        {
+            try
+            {
+                return func();
+            }
+            catch (Exception ex)
+            {
+                RollbackTransaction();
+                Log.Error(ex);
+                throw;
+            }
         }
     }
 }

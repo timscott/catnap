@@ -8,9 +8,9 @@ namespace Catnap.Sqlite
 {
     public class SqliteCommand : IDbCommand
     {
-        private IntPtr database;
+        private readonly IntPtr database;
         private readonly DbCommandSpec commandSpec;
-        private SqliteTypeConverter typeConverter = new SqliteTypeConverter();
+        private readonly SqliteTypeConverter typeConverter = new SqliteTypeConverter();
 
         public SqliteCommand(IntPtr database, DbCommandSpec commandSpec)
         {
@@ -62,16 +62,27 @@ namespace Catnap.Sqlite
 
         public T ExecuteScalar<T>()
         {
+            Log.Debug("Executing Sqlite scalar.");
             var result = ExecuteQuery();
-            if (result.Count() > 1)
+            var rows = result.ToList();
+            if (rows.Count > 1)
             {
-                throw new SqliteException(string.Format("Expected one row. Got {0}.", result.Count()));
+                throw new SqliteException(string.Format("Expected one row. Got {0}.", rows.Count));
             }
-            if (result.Count() == 0)
+            if (rows.Count == 0)
             {
                 return default(T);
             }
-            var value = result.ToList()[0].ToList()[0].Value;
+            if (rows.Count > 1)
+            {
+                throw new SqliteException("Expected 1 row, got {0}", rows.Count);
+            }
+            var columns = rows[0];
+            if (columns.Count != 1)
+            {
+                throw new SqliteException("Expected 1 columns, got {0}", columns.Count);
+            }
+            var value = columns.First().Value;
             if (value == null)
             {
                 return default(T);

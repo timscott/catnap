@@ -1,6 +1,4 @@
-using Catnap.Common.Database;
-
-namespace Catnap.Sqlite
+namespace Catnap.Common.Database
 {
     public interface IMetadataCommandFactory
     {

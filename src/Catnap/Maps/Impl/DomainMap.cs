@@ -7,7 +7,7 @@ namespace Catnap.Maps.Impl
 {
     public class DomainMap : IDomainMap
     {
-        private IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
+        private readonly IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
 
         public DomainMap(params IEntityMap[] entityMaps)
         {

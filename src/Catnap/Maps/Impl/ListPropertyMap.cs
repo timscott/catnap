@@ -13,7 +13,13 @@ namespace Catnap.Maps.Impl
         private readonly Expression<Func<TListMember, bool>> filter;
         private IEntityMap listMap;
 
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter)
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes) 
+            : this(property, isLazy, cascadeSaves, cascadeDeletes, null) { }
+
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy)
+            : this(property, isLazy, true, true, null) { }
+
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter) 
             : base(property)
         {
             this.filter = filter;

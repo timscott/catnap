@@ -5,7 +5,7 @@ namespace Catnap.Common.Database
     public class DbCommandSpec
     {
         private string commandText;
-        private List<Parameter> parameters = new List<Parameter>();
+        private readonly List<Parameter> parameters = new List<Parameter>();
 
         public DbCommandSpec SetCommandText(string value, params object[] args)
         {
@@ -16,11 +16,6 @@ namespace Catnap.Common.Database
         public IEnumerable<Parameter> Parameters
         {
             get { return parameters; }
-        }
-
-        public DbCommandSpec AddParameter(object value)
-        {
-            return AddParameter(null, value);
         }
 
         public DbCommandSpec AddParameter(string name, object value)

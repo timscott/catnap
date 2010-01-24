@@ -51,7 +51,7 @@ namespace Catnap.Sqlite
         {
             var row = CreateCommand(new DbCommandSpec().SetCommandText("select last_insert_rowid()"))
                 .ExecuteQuery();
-            return (int)row.ToList()[0].ToList()[0].Value;
+            return (int)row.ToList()[0].First().Value;
         }
 
         public void Dispose()
