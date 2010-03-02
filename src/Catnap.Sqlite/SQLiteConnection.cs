@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Catnap.Common.Database;
 using Catnap.Common.Logging;
 
@@ -49,9 +48,7 @@ namespace Catnap.Sqlite
 
         public int GetLastInsertId()
         {
-            var row = CreateCommand(new DbCommandSpec().SetCommandText("select last_insert_rowid()"))
-                .ExecuteQuery();
-            return (int)row.ToList()[0].First().Value;
+            return (int)Sqlite3.LastInsertRowid(databasePointer);
         }
 
         public void Dispose()

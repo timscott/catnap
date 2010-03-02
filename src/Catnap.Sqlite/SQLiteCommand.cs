@@ -38,7 +38,7 @@ namespace Catnap.Sqlite
                     Log.Debug(string.Format("{0} rows affected", rowsAffected));
                     return rowsAffected;
                 default:
-                    throw new SqliteException(Sqlite3.Errmsg(database));
+                    throw new SqliteException(Sqlite3.GetErrmsg(database));
             }
         }
 
