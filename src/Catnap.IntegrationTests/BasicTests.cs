@@ -6,9 +6,7 @@ using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Models;
 using Catnap.IntegrationTests.Repositories;
 using Catnap.Maps;
-using Catnap.Sqlite;
 using Machine.Specifications;
-using NUnit.Framework;
 using ShouldIt.Clr.Fluent;
 
 namespace Catnap.IntegrationTests

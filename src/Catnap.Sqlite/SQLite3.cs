@@ -20,7 +20,7 @@ namespace Catnap.Sqlite
             var result = Prepare(db, query, query.Length, out stmt, IntPtr.Zero);
             if (result != SqliteResult.OK)
             {
-                throw new SqliteException(GetErrmsg(db));
+                throw new SqliteException(Errmsg(db));
             }
             return stmt;
         }
@@ -34,9 +34,9 @@ namespace Catnap.Sqlite
         [DllImport("sqlite3", EntryPoint = "sqlite3_finalize")]
         public static extern SqliteResult Finalize(IntPtr stmt);
 
-        public static string GetErrmsg(IntPtr db)
+        public static string Errmsg(IntPtr db)
         {
-            return Marshal.PtrToStringUni(Errmsg(db));
+            return Marshal.PtrToStringUni(getErrmsg(db));
         }
 
         [DllImport("sqlite3", EntryPoint = "sqlite3_bind_parameter_index")]
@@ -64,6 +64,11 @@ namespace Catnap.Sqlite
         {
             return Marshal.PtrToStringUni(ColumnName16(stmt, index));
         }
+
+        public static string ColumnText(IntPtr stmt, int index)
+        {
+            return Marshal.PtrToStringUni(ColumnText16(stmt, index));
+        }
         
         [DllImport("sqlite3", EntryPoint = "sqlite3_column_type")]
         public static extern SqliteColumnType ColumnType(IntPtr stmt, int index);
@@ -77,12 +82,6 @@ namespace Catnap.Sqlite
         [DllImport("sqlite3", EntryPoint = "sqlite3_column_double")]
         public static extern double ColumnDouble(IntPtr stmt, int index);
 
-        [DllImport("sqlite3", EntryPoint = "sqlite3_column_text16")]
-        public static extern IntPtr ColumnText16(IntPtr stmt, int index);
-
-        [DllImport("sqlite3", EntryPoint = "sqlite3_column_text")]
-        public static extern string ColumnText(IntPtr stmt, int index);
-
         [DllImport("sqlite3", EntryPoint = "sqlite3_column_blob")]
         public static extern int ColumnBlob(IntPtr stmt, int index);
 
@@ -90,9 +89,12 @@ namespace Catnap.Sqlite
         private static extern SqliteResult Prepare(IntPtr db, string sql, int numBytes, out IntPtr stmt, IntPtr pzTail);
 
         [DllImport("sqlite3", EntryPoint = "sqlite3_errmsg16")]
-        private static extern IntPtr Errmsg(IntPtr db);
+        private static extern IntPtr getErrmsg(IntPtr db);
 
         [DllImport("sqlite3", EntryPoint = "sqlite3_column_name16")]
         private static extern IntPtr ColumnName16(IntPtr stmt, int index);
+
+        [DllImport("sqlite3", EntryPoint = "sqlite3_column_text16")]
+        public static extern IntPtr ColumnText16(IntPtr stmt, int index);
     }
 }
