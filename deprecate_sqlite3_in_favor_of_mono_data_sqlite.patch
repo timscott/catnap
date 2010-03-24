@@ -1,0 +1,473 @@
+Index: src/Catnap.Common/Catnap.Common.csproj
+===================================================================
+--- src/Catnap.Common/Catnap.Common.csproj	(revision 68)
++++ src/Catnap.Common/Catnap.Common.csproj	(working copy)
+@@ -3,7 +3,7 @@
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+-    <ProductVersion>9.0.21022</ProductVersion>
++    <ProductVersion>9.0.30729</ProductVersion>
+     <SchemaVersion>2.0</SchemaVersion>
+     <ProjectGuid>{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}</ProjectGuid>
+     <OutputType>Library</OutputType>
+@@ -35,14 +35,18 @@
+     <Reference Include="System.Core">
+       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+     </Reference>
++    <Reference Include="System.Data" />
+   </ItemGroup>
+   <ItemGroup>
++    <Compile Include="Database\IConnectionFactory.cs" />
+     <Compile Include="Database\IDbTypeConverter.cs" />
+     <Compile Include="Database\IMetadataCommandFactory.cs" />
++    <Compile Include="Database\Sqlite\SqliteMetadataCommandFactory.cs" />
++    <Compile Include="Database\Sqlite\SqliteTypeConverter.cs" />
+     <Compile Include="Logging\ConsoleLogger.cs" />
+     <Compile Include="Database\DbCommandSpec.cs" />
+-    <Compile Include="Database\IDbCommand.cs" />
+-    <Compile Include="Database\IDbConnection.cs" />
++    <Compile Include="Database\Deprecated\ICatnapDbCommand.cs" />
++    <Compile Include="Database\Deprecated\ICatnapDbConnection.cs" />
+     <Compile Include="Logging\FileLogger.cs" />
+     <Compile Include="Logging\ILogger.cs" />
+     <Compile Include="Logging\Log.cs" />
+Index: src/Catnap.Common/Database/IDbCommand.cs
+===================================================================
+--- src/Catnap.Common/Database/IDbCommand.cs	(revision 68)
++++ src/Catnap.Common/Database/IDbCommand.cs	(working copy)
+@@ -1,11 +0,0 @@
+-using System.Collections.Generic;
+-
+-namespace Catnap.Common.Database
+-{
+-    public interface IDbCommand
+-    {
+-        int ExecuteNonQuery();
+-        IEnumerable<IDictionary<string, object>> ExecuteQuery();
+-        T ExecuteScalar<T>();
+-    }
+-}
+\ No newline at end of file
+Index: src/Catnap.Common/Database/IDbConnection.cs
+===================================================================
+--- src/Catnap.Common/Database/IDbConnection.cs	(revision 68)
++++ src/Catnap.Common/Database/IDbConnection.cs	(working copy)
+@@ -1,13 +0,0 @@
+-using System;
+-
+-namespace Catnap.Common.Database
+-{
+-    public interface IDbConnection : IDisposable
+-    {
+-        void Open();
+-        IDbCommand CreateCommand(DbCommandSpec commandSpec);
+-        void BeginTransaction();
+-        void RollbackTransaction();
+-        int GetLastInsertId();
+-    }
+-}
+\ No newline at end of file
+Index: src/Catnap.IntegrationTests/BasicTests.cs
+===================================================================
+--- src/Catnap.IntegrationTests/BasicTests.cs	(revision 70)
++++ src/Catnap.IntegrationTests/BasicTests.cs	(working copy)
+@@ -1,6 +1,8 @@
+ ﻿using System;
+ using System.Collections.Generic;
+ using System.Linq;
++using Catnap.Common.Database;
++using Catnap.Common.Database.Sqlite;
+ using Catnap.Common.Logging;
+ using Catnap.IntegrationTests.Migrations;
+ using Catnap.IntegrationTests.Models;
+@@ -18,7 +20,7 @@
+         static void initialize_app()
+         {
+             Log.Level = LogLevel.Debug;
+-            SessionFactory.Initialize(":memory:");
++            SessionFactory.Initialize(new MonoSqliteConnectionFactory(":memory:"), new SqliteTypeConverter());
+             Domain.Configure
+             (
+                 Map.Entity<Person>()
+@@ -184,5 +186,4 @@
+ 
+         It should_return_post_count = () => postCount.Should().Equal(1);
+     }
+-
+ }
+\ No newline at end of file
+Index: src/Catnap.IntegrationTests/Catnap.IntegrationTests.csproj
+===================================================================
+--- src/Catnap.IntegrationTests/Catnap.IntegrationTests.csproj	(revision 68)
++++ src/Catnap.IntegrationTests/Catnap.IntegrationTests.csproj	(working copy)
+@@ -3,7 +3,7 @@
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+-    <ProductVersion>9.0.21022</ProductVersion>
++    <ProductVersion>9.0.30729</ProductVersion>
+     <SchemaVersion>2.0</SchemaVersion>
+     <ProjectGuid>{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}</ProjectGuid>
+     <OutputType>Library</OutputType>
+@@ -39,6 +39,10 @@
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\lib\MSpec\Machine.Specifications.NUnit.dll</HintPath>
+     </Reference>
++    <Reference Include="Mono.Data.Sqlite, Version=2.0.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
++      <SpecificVersion>False</SpecificVersion>
++      <HintPath>..\..\lib\Mono.Data.Sqlite.dll</HintPath>
++    </Reference>
+     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\lib\MSpec\nunit.framework.dll</HintPath>
+@@ -79,6 +83,7 @@
+     <Compile Include="Models\Forum.cs" />
+     <Compile Include="Models\Person.cs" />
+     <Compile Include="Models\Post.cs" />
++    <Compile Include="MonoSqliteConnectionFactory.cs" />
+     <Compile Include="Properties\AssemblyInfo.cs" />
+     <Compile Include="Repositories\Container.cs" />
+     <Compile Include="Repositories\IForumRepository.cs" />
+@@ -87,24 +92,18 @@
+     <Compile Include="Repositories\PersonRepository.cs" />
+   </ItemGroup>
+   <ItemGroup>
+-    <Content Include="sqlite3.dll">
+-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+-    </Content>
+-  </ItemGroup>
+-  <ItemGroup>
+     <ProjectReference Include="..\Catnap.Common\Catnap.Common.csproj">
+       <Project>{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}</Project>
+       <Name>Catnap.Common</Name>
+     </ProjectReference>
+-    <ProjectReference Include="..\Catnap.Sqlite\Catnap.Sqlite.csproj">
+-      <Project>{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}</Project>
+-      <Name>Catnap.Sqlite</Name>
+-    </ProjectReference>
+     <ProjectReference Include="..\Catnap\Catnap.csproj">
+       <Project>{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}</Project>
+       <Name>Catnap</Name>
+     </ProjectReference>
+   </ItemGroup>
++  <ItemGroup>
++    <None Include="App.config" />
++  </ItemGroup>
+   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+        Other similar extension points exist, see Microsoft.Common.targets.
+Index: src/Catnap.IntegrationTests/Migrations/DatabaseMigrator.cs
+===================================================================
+--- src/Catnap.IntegrationTests/Migrations/DatabaseMigrator.cs	(revision 68)
++++ src/Catnap.IntegrationTests/Migrations/DatabaseMigrator.cs	(working copy)
+@@ -1,5 +1,5 @@
++using Catnap.Common.Database.Sqlite;
+ using Catnap.Migration;
+-using Catnap.Sqlite;
+ 
+ namespace Catnap.IntegrationTests.Migrations
+ {
+Index: src/Catnap.IntegrationTests/sqlite3.dll
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: src/Catnap.Sqlite/Catnap.Sqlite.csproj
+===================================================================
+--- src/Catnap.Sqlite/Catnap.Sqlite.csproj	(revision 68)
++++ src/Catnap.Sqlite/Catnap.Sqlite.csproj	(working copy)
+@@ -3,7 +3,7 @@
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+-    <ProductVersion>9.0.21022</ProductVersion>
++    <ProductVersion>9.0.30729</ProductVersion>
+     <SchemaVersion>2.0</SchemaVersion>
+     <ProjectGuid>{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}</ProjectGuid>
+     <OutputType>Library</OutputType>
+Index: src/Catnap.Sqlite/SQLiteCommand.cs
+===================================================================
+--- src/Catnap.Sqlite/SQLiteCommand.cs	(revision 70)
++++ src/Catnap.Sqlite/SQLiteCommand.cs	(working copy)
+@@ -2,11 +2,12 @@
+ using System.Collections.Generic;
+ using System.Linq;
+ using Catnap.Common.Database;
++using Catnap.Common.Database.Deprecated;
+ using Catnap.Common.Logging;
+ 
+ namespace Catnap.Sqlite
+ {
+-    public class SqliteCommand : IDbCommand
++    public class SqliteCommand : ICatnapDbCommand
+     {
+         private readonly IntPtr database;
+         private readonly DbCommandSpec commandSpec;
+Index: src/Catnap.Sqlite/SQLiteConnection.cs
+===================================================================
+--- src/Catnap.Sqlite/SQLiteConnection.cs	(revision 69)
++++ src/Catnap.Sqlite/SQLiteConnection.cs	(working copy)
+@@ -1,10 +1,11 @@
+ using System;
+ using Catnap.Common.Database;
++using Catnap.Common.Database.Deprecated;
+ using Catnap.Common.Logging;
+ 
+ namespace Catnap.Sqlite
+ {
+-    public class SqliteConnection : IDbConnection
++    public class SqliteConnection : ICatnapDbConnection
+     {
+         private IntPtr databasePointer;
+         private bool isOpen;
+@@ -27,7 +28,7 @@
+             Log.Debug("Connection opened");
+         }
+ 
+-        public IDbCommand CreateCommand(DbCommandSpec commandSpec)
++        public ICatnapDbCommand CreateCommand(DbCommandSpec commandSpec)
+         {
+             if (!isOpen)
+             {
+Index: src/Catnap.UnitTests/SqliteTypeConverterTests.cs
+===================================================================
+--- src/Catnap.UnitTests/SqliteTypeConverterTests.cs	(revision 69)
++++ src/Catnap.UnitTests/SqliteTypeConverterTests.cs	(working copy)
+@@ -3,6 +3,7 @@
+ using Machine.Specifications;
+ using ShouldIt.Clr.Fluent;
+ using It=Machine.Specifications.It;
++using SqliteTypeConverter = Catnap.Common.Database.Sqlite.SqliteTypeConverter;
+ 
+ namespace Catnap.UnitTests
+ {
+Index: src/Catnap/Catnap.csproj
+===================================================================
+--- src/Catnap/Catnap.csproj	(revision 68)
++++ src/Catnap/Catnap.csproj	(working copy)
+@@ -3,7 +3,7 @@
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+-    <ProductVersion>9.0.21022</ProductVersion>
++    <ProductVersion>9.0.30729</ProductVersion>
+     <SchemaVersion>2.0</SchemaVersion>
+     <ProjectGuid>{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}</ProjectGuid>
+     <OutputType>Library</OutputType>
+@@ -35,6 +35,8 @@
+     <Reference Include="System.Core">
+       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+     </Reference>
++    <Reference Include="System.Data" />
++    <Reference Include="System.Xml" />
+   </ItemGroup>
+   <ItemGroup>
+     <Compile Include="Find\Conditions\And.cs" />
+@@ -54,7 +56,6 @@
+     <Compile Include="Find\Conditions\Or.cs" />
+     <Compile Include="Maps\IEntityMappable.cs" />
+     <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
+-    <Compile Include="DbImplementationFactory.cs" />
+     <Compile Include="Maps\Domain.cs" />
+     <Compile Include="Entity.cs" />
+     <Compile Include="EntityEqualityComaparer.cs" />
+@@ -90,10 +91,6 @@
+       <Project>{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}</Project>
+       <Name>Catnap.Common</Name>
+     </ProjectReference>
+-    <ProjectReference Include="..\Catnap.Sqlite\Catnap.Sqlite.csproj">
+-      <Project>{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}</Project>
+-      <Name>Catnap.Sqlite</Name>
+-    </ProjectReference>
+   </ItemGroup>
+   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+Index: src/Catnap/ISession.cs
+===================================================================
+--- src/Catnap/ISession.cs	(revision 68)
++++ src/Catnap/ISession.cs	(working copy)
+@@ -1,5 +1,6 @@
+ using System;
+ using System.Collections.Generic;
++using System.Data;
+ using Catnap.Common.Database;
+ 
+ namespace Catnap
+@@ -14,7 +15,7 @@
+         void SaveOrUpdate<T>(T entity) where T : class, IEntity, new();
+         void SaveOrUpdate<T>(T entity, int? parentId) where T : class, IEntity, new();
+         void Delete<T>(int id) where T : class, IEntity, new();
+-        void ExecuteNonQuery(DbCommandSpec commandSpec);
++        int ExecuteNonQuery(DbCommandSpec commandSpec);
+         IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec);
+         T ExecuteScalar<T>(DbCommandSpec commandSpec);
+     	object ExecuteScalar(DbCommandSpec commandSpec);
+Index: src/Catnap/Session.cs
+===================================================================
+--- src/Catnap/Session.cs	(revision 68)
++++ src/Catnap/Session.cs	(working copy)
+@@ -1,5 +1,7 @@
+ using System;
+ using System.Collections.Generic;
++using System.Data;
++using System.Data.SqlClient;
+ using System.Linq;
+ using Catnap.Common.Database;
+ using Catnap.Common.Logging;
+@@ -12,8 +14,9 @@
+         private readonly IDbConnection connection;
+         private readonly IDomainMap domainMap;
+         private readonly IDbTypeConverter dbTypeConverter;
++    	private IDbTransaction currentTransaction;
+ 
+-        public Session(IDbConnection connection, IDbTypeConverter dbTypeConverter) : 
++    	public Session(IDbConnection connection, IDbTypeConverter dbTypeConverter) : 
+             this(connection, Domain.Map, dbTypeConverter) { }
+ 
+         public Session(IDbConnection connection, IDomainMap domainMap, IDbTypeConverter dbTypeConverter)
+@@ -25,13 +28,21 @@
+ 
+         public void Open()
+         {
++        	Log.Debug("Opening connection to database: {0}", connection.Database);
+             connection.Open();
+-            connection.BeginTransaction();
++			Log.Debug("Beginning transaction");
++            currentTransaction = connection.BeginTransaction();
+         }
+ 
+         public IDbCommand CreateCommand(DbCommandSpec commandSpec)
+         {
+-            return connection.CreateCommand(commandSpec);
++        	var command = connection.CreateCommand();
++        	command.CommandText = commandSpec.ToString();
++			foreach (var parameter in commandSpec.Parameters)
++			{
++				command.Parameters.Add(new SqlParameter(parameter.Name, parameter.Value));
++			}
++			return command;
+         }
+ 
+         public IList<IDictionary<string, object>> List(DbCommandSpec commandSpec)
+@@ -61,8 +72,8 @@
+             var entityMap = domainMap.GetMapFor<T>();
+             if (entity.IsTransient)
+             {
+-                ExecuteNonQuery(entityMap.GetInsertCommand(entity, parentId));
+-                entity.SetId(connection.GetLastInsertId());
++                var id = ExecuteNonQuery(entityMap.GetInsertCommand(entity, parentId));
++				entity.SetId(id);
+             }
+             else
+             {
+@@ -86,11 +97,11 @@
+             ExecuteNonQuery(map.GetDeleteCommand(id));
+         }
+ 
+-        public void ExecuteNonQuery(DbCommandSpec commandSpec)
++        public int ExecuteNonQuery(DbCommandSpec commandSpec)
+         {
+             try
+             {
+-                CreateCommand(commandSpec).ExecuteNonQuery();
++                return CreateCommand(commandSpec).ExecuteNonQuery();
+             }
+             catch (Exception ex)
+             {
+@@ -102,26 +113,35 @@
+ 
+         public IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec)
+         {
+-            return Execute<IEnumerable<IDictionary<string, object>>>(
+-                CreateCommand(commandSpec).ExecuteQuery);
++        	return Execute<IEnumerable<IDictionary<string, object>>>(c =>
++         	{
++				var list = new List<IDictionary<string, object>>();
++         		var reader = c.ExecuteReader();
++         		while (reader.Read())
++         		{
++         			var row = new Dictionary<string, object>();
++         			for (var i = 0; i < reader.FieldCount; i++)
++         			{
++						row.Add(reader.GetName(i), reader.GetValue(i));
++         			}
++         		}
++         		return list;
++         	}, commandSpec);
+         }
+ 
+         public object ExecuteScalar(DbCommandSpec commandSpec)
+         {
+-            return Execute<object>(CreateCommand(commandSpec).ExecuteScalar<object>);
++			return Execute(c => c.ExecuteScalar(), commandSpec);
+         }
+ 
+-        /// <summary>
+-        /// NOTE: IPhone does not like this method.  Use the other overload.
+-        /// </summary>
+         public T ExecuteScalar<T>(DbCommandSpec commandSpec)
+         {
+-            return Execute<T>(CreateCommand(commandSpec).ExecuteScalar<T>);
++            return Execute(c => (T)c.ExecuteScalar(), commandSpec);
+         }
+ 
+         public void RollbackTransaction()
+         {
+-            connection.RollbackTransaction();
++			currentTransaction.Rollback();
+         }
+ 
+         public object ConvertFromDbType(object value, Type type)
+@@ -131,14 +151,19 @@
+ 
+         public void Dispose()
+         {
++			currentTransaction.Commit();
++			connection.Close();
+             connection.Dispose();
+         }
+ 
+-        private T Execute<T>(Func<T> func)
++        private T Execute<T>(Func<IDbCommand, T> func, DbCommandSpec commandSpec)
+         {
+             try
+             {
+-                return func();
++				using (var command = CreateCommand(commandSpec))
++				{
++					return func(command);
++				}
+             }
+             catch (Exception ex)
+             {
+Index: src/Catnap/SessionFactory.cs
+===================================================================
+--- src/Catnap/SessionFactory.cs	(revision 68)
++++ src/Catnap/SessionFactory.cs	(working copy)
+@@ -1,3 +1,5 @@
++using Catnap.Common.Database;
++
+ namespace Catnap
+ {
+     public static class SessionFactory
+@@ -2,14 +4,14 @@
+     {
+-        private static string connString;
++    	private static IConnectionFactory connFactory;
++    	private static IDbTypeConverter typeConverter;
+ 
+-        public static void Initialize(string connectionString)
++    	public static void Initialize(IConnectionFactory connectionFactory, IDbTypeConverter dbTypeConverter)
+         {
+-            connString = connectionString;
++        	connFactory = connectionFactory;
++        	typeConverter = dbTypeConverter;
+         }
+ 
+         public static Session New()
+         {
+-            return new Session(
+-                DbImplementationFactory.NewConnection(connString), 
+-                DbImplementationFactory.NewTypeConverter());
++            return new Session(connFactory.NewConnection(), typeConverter);
+         }
