@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C0093C27-BCC8-4D0F-B882-C9E8F1286375}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.Sqlite", "Catnap.Sqlite\Catnap.Sqlite.csproj", "{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.IntegrationTests", "Catnap.IntegrationTests\Catnap.IntegrationTests.csproj", "{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED}"
@@ -8,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap", "Catnap\Catnap.csproj", "{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.UnitTests", "Catnap.UnitTests\Catnap.UnitTests.csproj", "{FCF48990-7CA3-41FB-B016-62931FEECFAF}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C0093C27-BCC8-4D0F-B882-C9E8F1286375}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.Common", "Catnap.Common\Catnap.Common.csproj", "{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}"
 EndProject
@@ -44,8 +44,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{FCF48990-7CA3-41FB-B016-62931FEECFAF} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
 		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
+		{FCF48990-7CA3-41FB-B016-62931FEECFAF} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = ..
