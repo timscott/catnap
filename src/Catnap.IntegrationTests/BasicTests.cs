@@ -7,7 +7,7 @@ using Catnap.IntegrationTests.Models;
 using Catnap.IntegrationTests.Repositories;
 using Catnap.Maps;
 using Machine.Specifications;
-using ShouldIt.Clr.Fluent;
+using Should.Fluent;
 
 namespace Catnap.IntegrationTests
 {
@@ -18,7 +18,7 @@ namespace Catnap.IntegrationTests
         static void initialize_app()
         {
             Log.Level = LogLevel.Debug;
-            SessionFactory.Initialize(":memory:");
+            SessionFactory.Initialize("Data source=:memory:");
             Domain.Configure
             (
                 Map.Entity<Person>()
@@ -127,7 +127,7 @@ namespace Catnap.IntegrationTests
             forum = new Forum
             {
                 Name = "Annoying Complaints",
-                TimeOfDayLastUpdated = new TimeSpan(10, 0, 0),
+                TimeOfDayLastUpdated = new TimeSpan(10, 9, 8, 7, 6),
                 Posts = new List<Post> { post }
             };
             Container.ForumRepository.Save(forum);

@@ -120,7 +120,7 @@ namespace Catnap.Maps.Impl
         public T BuildFrom(IDictionary<string, object> record, ISession session)
         {
             var instance = Activator.CreateInstance<T>();
-            instance.SetId((int)record["Id"]);
+            instance.SetId(Convert.ToInt32(record["Id"]));
             foreach (var map in propertyMaps)
             {
                 if (map is IPropertyMapWithColumn<T>)

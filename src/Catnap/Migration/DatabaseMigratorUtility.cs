@@ -41,7 +41,7 @@ namespace Catnap.Migration
             var command = new DbCommandSpec()
                 .SetCommandText(string.Format(@"select count(*) from {0} where Name = @name", MIGRATIONS_TABLE_NAME))
                 .AddParameter("name", migration.Name);
-            var result = (int)UnitOfWork.Current.Session.ExecuteScalar(command);
+            var result = (long)UnitOfWork.Current.Session.ExecuteScalar(command);
             return result > 0;
         }
 

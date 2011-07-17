@@ -7,26 +7,12 @@ namespace Catnap.IntegrationTests.Repositories
 
         public static IForumRepository ForumRepository
         {
-            get
-            {
-                if (forumRepository == null)
-                {
-                    forumRepository = new ForumRepository();
-                }
-                return forumRepository;
-            }
+            get { return forumRepository ?? (forumRepository = new ForumRepository()); }
         }
 
         public static IPersonRepository PersonRepository
         {
-            get
-            {
-                if (personRepository == null)
-                {
-                    personRepository = new PersonRepository();
-                }
-                return personRepository;
-            }
+            get { return personRepository ?? (personRepository = new PersonRepository()); }
         }
     }
 }

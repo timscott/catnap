@@ -6,8 +6,22 @@ namespace Catnap
 {
     public class UnitOfWork : IDisposable
     {
-        private Guid id;
+        [ThreadStatic]
         private static UnitOfWork current;
+        
+        public static UnitOfWork Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    throw new InvalidOperationException("Unit of work not started.  You must start the unit of work before using it.");
+                }
+                return current;
+            }
+        }
+
+        private Guid id;
 
         public ISession Session { get; private set; }
 
@@ -21,18 +35,6 @@ namespace Catnap
             Log.Debug("Starting unit of work {0}. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId);
             current.Session.Open();
             return current;
-        }
-
-        public static UnitOfWork Current
-        {
-            get
-            {
-                if (current == null)
-                {
-                    throw new InvalidOperationException("Unit of work not started.  You must start the unit of work before using it.");
-                }
-                return current;
-            }
         }
 
         public void Dispose()

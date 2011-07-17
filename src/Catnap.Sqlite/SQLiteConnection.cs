@@ -1,64 +1,73 @@
 using System;
+using System.Data;
+using System.Data.SQLite;
 using Catnap.Common.Database;
 using Catnap.Common.Logging;
+using AdoSqliteConnection=System.Data.SQLite.SQLiteConnection;
+using AdoSqliteCommand = System.Data.SQLite.SQLiteCommand;
+using IDbCommand = Catnap.Common.Database.IDbCommand;
+using IDbConnection = Catnap.Common.Database.IDbConnection;
 
 namespace Catnap.Sqlite
 {
     public class SqliteConnection : IDbConnection
     {
-        private IntPtr databasePointer;
-        private bool isOpen;
+        private readonly AdoSqliteConnection adoConnection;
+        private IDbTransaction transaction;
 
-        public SqliteConnection(string databaseName)
+        public SqliteConnection(string connectionString)
         {
-            DatabaseName = databaseName;
+            ConnectionString = connectionString;
+            adoConnection = new SQLiteConnection(connectionString);
         }
 
-        public string DatabaseName { get; private set; }
+        public string ConnectionString { get; private set; }
 
         public void Open()
         {
-            var result = Sqlite3.Open(DatabaseName, out databasePointer);
-            if (result != SqliteResult.OK)
-            {
-                throw new SqliteException(string.Format("Could not open database file: {0}({1})", DatabaseName, result));
-            }
-            isOpen = true;
+            adoConnection.Open();
             Log.Debug("Connection opened");
         }
 
         public IDbCommand CreateCommand(DbCommandSpec commandSpec)
         {
-            if (!isOpen)
+            if (adoConnection.State == ConnectionState.Closed)
             {
-                throw new SqliteException("Cannot create commands from unopened database");
+                throw new SqliteException("Cannot create commands from a closed connection");
             }
-            return new SqliteCommand(databasePointer, commandSpec);
+            return new SqliteCommand(adoConnection, commandSpec);
         }
 
         public void BeginTransaction()
         {
-            CreateCommand(new DbCommandSpec().SetCommandText("begin")).ExecuteNonQuery();
+            transaction = adoConnection.BeginTransaction();
         }
 
         public void RollbackTransaction()
         {
-            CreateCommand(new DbCommandSpec().SetCommandText("rollback")).ExecuteNonQuery();
+            if (transaction != null)
+            {
+                transaction.Rollback();
+            }
         }
 
         public int GetLastInsertId()
         {
-            return (int)Sqlite3.LastInsertRowid(databasePointer);
+            using (var command = new AdoSqliteCommand("SELECT last_insert_rowid()", adoConnection))
+            {
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
         }
 
         public void Dispose()
         {
-            if (isOpen)
+            if (adoConnection.State == ConnectionState.Open)
             {
-                CreateCommand(new DbCommandSpec().SetCommandText("end")).ExecuteNonQuery();
-                Sqlite3.Close(databasePointer);
-                databasePointer = IntPtr.Zero;
-                isOpen = false;
+                if (transaction != null)
+                {
+                    transaction.Commit();
+                }
+                adoConnection.Close();
                 Log.Debug("Connection closed");
             }
         }

@@ -1,7 +1,7 @@
 using System;
 using Catnap.Sqlite;
 using Machine.Specifications;
-using ShouldIt.Clr.Fluent;
+using Should.Fluent;
 using It=Machine.Specifications.It;
 
 namespace Catnap.UnitTests

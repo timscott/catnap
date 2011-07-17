@@ -4,7 +4,7 @@ using Catnap.Find.Conditions;
 using Catnap.Maps;
 using Catnap.UnitTests.Models;
 using Machine.Specifications;
-using ShouldIt.Clr.Fluent;
+using Should.Fluent;
 using It=Machine.Specifications.It;
 
 namespace Catnap.UnitTests

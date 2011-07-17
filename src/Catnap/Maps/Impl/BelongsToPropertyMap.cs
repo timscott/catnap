@@ -29,8 +29,8 @@ namespace Catnap.Maps.Impl
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
             value = value == null
-                        ? default(TProperty)
-                        : GetEntity(session, (int)value);
+                ? default(TProperty)
+                : GetEntity(session, Convert.ToInt32(value));
             setter.Invoke(instance, new [] { value });
         }
 

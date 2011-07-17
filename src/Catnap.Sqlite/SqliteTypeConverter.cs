@@ -13,27 +13,19 @@ namespace Catnap.Sqlite
             {
                 return null;
             }
+            var underlyingType = GetUnderlyingGenericType(value.GetType());
             if (value is bool?)
             {
                 return ((bool?)value).Value ? 1 : 0;
             }
-            if (value is DateTime)
+            if (underlyingType == typeof(DateTime))
             {
                 return ((DateTime)value).Ticks;
             }
-            if (value is DateTime?)
-            {
-                return ((DateTime?)value).Value.Ticks;
-            }
-            if (value is TimeSpan)
+            if (underlyingType == typeof(TimeSpan))
             {
                 return ((TimeSpan)value).Ticks;
             }
-            if (value is TimeSpan?)
-            {
-                return ((TimeSpan?)value).Value.Ticks;
-            }
-            var underlyingType = GetUnderlyingGenericType(value.GetType());
             if (underlyingType.IsEnum)
             {
                 return (int)value;
@@ -86,8 +78,8 @@ namespace Catnap.Sqlite
             }
             var genericType = type.GetGenericTypeDefinition();
             return genericType.Equals(typeof(Nullable<>)) 
-                       ? type.GetGenericArguments()[0] 
-                       : type;
+                ? type.GetGenericArguments()[0] 
+                : type;
         }
     }
 }

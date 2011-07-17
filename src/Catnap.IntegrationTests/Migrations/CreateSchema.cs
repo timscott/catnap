@@ -8,7 +8,7 @@ namespace Catnap.IntegrationTests.Migrations
 {
     public class CreateSchema : IDatabaseMigration
     {
-        private List<string> sqls = new List<string>
+        private readonly List<string> sqls = new List<string>
         {
             @"CREATE TABLE Forum (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name VARCHAR, TimeOfDayLastUpdated NUMERIC)",
             @"CREATE TABLE Post (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Title VARCHAR, Body VARCHAR, DatePosted INTEGER, PosterId INTEGER, ForumId INTEGER NOT NULL)",

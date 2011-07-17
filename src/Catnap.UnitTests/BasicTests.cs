@@ -5,7 +5,7 @@ using Catnap.Find;
 using Catnap.Maps;
 using Catnap.UnitTests.Models;
 using Machine.Specifications;
-using ShouldIt.Clr.Fluent;
+using Should.Fluent;
 
 namespace Catnap.UnitTests
 {
@@ -13,7 +13,7 @@ namespace Catnap.UnitTests
     {
         private Establish context = () =>
         {
-            Log.Level = LogLevel.Debug;
+            Log.Level = LogLevel.Off;
             Domain.Configure
             (
                 Map.Entity<Person>()
@@ -44,19 +44,12 @@ namespace Catnap.UnitTests
             var isActiveLocalScope = isActive;
             var joinedByLocalScope = joinedBy;
             var memberBeforeLocalScope = DateTime.Today.AddDays(-10);
-            command =
-                //new PersonFindSpec()
-                //    .Active(isActive.Value)
-                //    .MemberSince(joinedBy, DateTime.Today)
-                //    .FirstName("Tim")
-                //    .LastName("Scott")
-                //    .ToCommand();
-                new FindCommandBuilder<Person>()
-                    .AddCondition(x => x.Active == isActiveLocalScope.Value)
-                    .AddCondition(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
-                    .AddCondition(x => x.FirstName == "Tim")
-                    .AddCondition(x => x.LastName == "Scott")
-                    .Build();
+            command = new FindCommandBuilder<Person>()
+                .AddCondition(x => x.Active == isActiveLocalScope.Value)
+                .AddCondition(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
+                .AddCondition(x => x.FirstName == "Tim")
+                .AddCondition(x => x.LastName == "Scott")
+                .Build();
         };
 
         It should_have_correct_command_text = () => command.ToString().Should()
