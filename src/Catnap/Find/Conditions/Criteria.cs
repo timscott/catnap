@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Catnap.Common.Database;
+using Catnap.Database;
 
 namespace Catnap.Find.Conditions
 {
@@ -56,7 +56,7 @@ namespace Catnap.Find.Conditions
 
         private string Visit(ColumnCondition condition)
         {
-            var parameterName = "@" + parameterCount;
+            var parameterName = SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX + parameterCount;
             parameterCount++;
             parameters.Add(new Parameter(parameterName, condition.Value));
             return condition.ToString(parameterName);

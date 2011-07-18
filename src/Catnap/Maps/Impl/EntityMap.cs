@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Catnap.Common.Database;
+using Catnap.Adapters;
 using Catnap.Common.Logging;
+using Catnap.Database;
 using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
@@ -120,7 +121,8 @@ namespace Catnap.Maps.Impl
         public T BuildFrom(IDictionary<string, object> record, ISession session)
         {
             var instance = Activator.CreateInstance<T>();
-            instance.SetId(Convert.ToInt32(record["Id"]));
+            var id = Convert.ToInt32(record["Id"]);
+            instance.SetId(id);
             foreach (var map in propertyMaps)
             {
                 if (map is IPropertyMapWithColumn<T>)
@@ -145,7 +147,7 @@ namespace Catnap.Maps.Impl
             var command = new DbCommandSpec();
             foreach (var parameter in parameters)
             {
-                command.AddParameter(parameter.Name, parameter.Value);
+                command.AddParameters(parameter);
             }
             var sql = BaseSelectSql;
             if (condtions.Count > 0)
@@ -159,14 +161,16 @@ namespace Catnap.Maps.Impl
         public DbCommandSpec GetGetCommand(int id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("{0} where Id = @Id", BaseSelectSql))
+                .SetCommandText(string.Format("{0} where Id = {1}Id", BaseSelectSql,
+                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
                 .AddParameter("Id", id);
         }
 
         public DbCommandSpec GetDeleteCommand(int id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("delete from {0} where Id = @Id", TableName))
+                .SetCommandText(string.Format("delete from {0} where Id = {1}Id", TableName,
+                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
                 .AddParameter("Id", id);
         }
 
@@ -180,21 +184,21 @@ namespace Catnap.Maps.Impl
             var command = new DbCommandSpec();
 
             var columnProperties = propertyMaps.Where(x => x is IPropertyMapWithColumn<T>).Cast<IPropertyMapWithColumn<T>>();
-            var writableColumns = columnProperties.Where(x => !x.SetterIsPrivate);
+            var writableColumns = columnProperties.Where(x => !x.SetterIsPrivate).ToList();
             var columnNames = writableColumns.Select(x => x.ColumnName).ToList();
-            var paramterNames = writableColumns.Select(x => "@" + x.ColumnName).ToList();
+            var paramterNames = writableColumns.Select(x => x.ColumnName).ToList();
 
             if (!string.IsNullOrEmpty(ParentColumnName))
             {
                 columnNames.Add(ParentColumnName);
-                paramterNames.Add("@" + ParentColumnName);
+                paramterNames.Add(ParentColumnName);
                 command.AddParameter(ParentColumnName, parentId);
             }
 
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
                 TableName,
                 string.Join(",", columnNames.ToArray()),
-                string.Join(",", paramterNames.ToArray()));
+                string.Join(",", paramterNames.Select(x => SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX + x).ToArray()));
 
             command.SetCommandText(sql);
 
@@ -215,19 +219,24 @@ namespace Catnap.Maps.Impl
         {
             var command = new DbCommandSpec();
 
-            var columnProperties = propertyMaps.Where(x => x is IPropertyMapWithColumn<T>).Cast<IPropertyMapWithColumn<T>>();
+            var columnProperties = propertyMaps
+                .Where(x => x is IPropertyMapWithColumn<T>)
+                .Cast<IPropertyMapWithColumn<T>>()
+                .ToList();
             var setPairs = columnProperties
                 .Where(x => x.ColumnName != "Id")
-                .Select(x => string.Format("{0}=@{0}", x.ColumnName)).ToList();
+                .Select(x => string.Format("{0}={1}{0}", x.ColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .ToList();
             if (!string.IsNullOrEmpty(ParentColumnName))
             {
-                setPairs.Add(string.Format("{0}=@{0}", ParentColumnName));
+                setPairs.Add(string.Format("{0}={1}{0}", ParentColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX));
                 command.AddParameter(ParentColumnName, parentId);
             }
 
-            var sql = string.Format("update {0} set {1} where Id = @Id",
-                                    TableName,
-                                    string.Join(",", setPairs.ToArray()));
+            var sql = string.Format("update {0} set {1} where Id = {2}Id",
+                TableName,
+                string.Join(",", setPairs.ToArray()),
+                SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX);
             command.AddParameter("Id", entity.Id);
 
             command.SetCommandText(sql);

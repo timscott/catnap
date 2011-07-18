@@ -93,12 +93,14 @@ namespace Catnap
 
         public IEnumerable<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity, new()
         {
-            return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().AddCondition(predicate).Build());
+            var commandSpec = new FindCommandBuilder<T>().AddCondition(predicate).Build();
+            return UnitOfWork.Current.Session.List<T>(commandSpec);
         }
 
         public IEnumerable<T> Find<T>(ICriteria criteria) where T : class, IEntity, new()
         {
-            return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().AddCriteria(criteria).Build());
+            var commandSpec = new FindCommandBuilder<T>().AddCriteria(criteria).Build();
+            return UnitOfWork.Current.Session.List<T>(commandSpec);
         }
     }
 }

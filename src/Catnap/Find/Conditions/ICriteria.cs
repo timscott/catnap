@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Catnap.Common.Database;
+using Catnap.Database;
 
 namespace Catnap.Find.Conditions
 {

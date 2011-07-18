@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Catnap.Common.Database;
+using Catnap.Database;
 
 namespace Catnap
 {
     public interface ISession : IDisposable
     {
         void Open();
-        IDbCommand CreateCommand(DbCommandSpec commandSpec);
         IList<IDictionary<string, object>> List(DbCommandSpec commandSpec);
         IList<T> List<T>(DbCommandSpec commandSpec) where T : class, IEntity, new();
         T Get<T>(int id) where T : class, IEntity, new();

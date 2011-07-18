@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Common.Database;
+using Catnap.Database;
 using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.IntegrationTests.Models;
@@ -23,12 +23,12 @@ namespace Catnap.IntegrationTests.Repositories
             return UnitOfWork.Current.Session.List<Person>(command);
         }
 
-        public int GetTotalPostCount(int personId)
+        public long GetTotalPostCount(int personId)
         {
             var command = new DbCommandSpec()
                 .SetCommandText("select count(*) from Post p where p.PosterId = @personId")
                 .AddParameter("@personId", personId);
-            return UnitOfWork.Current.Session.ExecuteScalar<int>(command);
+            return UnitOfWork.Current.Session.ExecuteScalar<long>(command);
         }
     }
 }

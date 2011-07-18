@@ -1,17 +1,21 @@
 using System.Collections.Generic;
+using System.Data;
 
-namespace Catnap.Common.Database
+namespace Catnap.Database
 {
     public class DbCommandSpec
     {
-        private string commandText;
         private readonly List<Parameter> parameters = new List<Parameter>();
 
         public DbCommandSpec SetCommandText(string value, params object[] args)
         {
-            commandText = args == null ? value : string.Format(value, args);
+            CommandText = args == null 
+                ? value 
+                : string.Format(value, args);
             return this;
         }
+
+        public string CommandText { get; private set; }
 
         public IEnumerable<Parameter> Parameters
         {
@@ -30,9 +34,16 @@ namespace Catnap.Common.Database
             return this;
         }
 
-        public override string ToString()
+        public IDbCommand CreateCommand(IDbAdapter dbAdapter, IDbConnection connection)
         {
-            return commandText;
+            var command = connection.CreateCommand();
+            command.CommandText = dbAdapter.FormatCommandText(CommandText);
+            foreach (var parameter in Parameters)
+            {
+                var p = parameter.CreateDbParameter(command, dbAdapter);
+                command.Parameters.Add(p);
+            }
+            return command;
         }
     }
 }

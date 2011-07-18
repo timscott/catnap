@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Catnap.Adapters;
+using Catnap.Adapters.Sqlite;
 using Catnap.Common.Logging;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Models;
@@ -18,7 +20,7 @@ namespace Catnap.IntegrationTests
         static void initialize_app()
         {
             Log.Level = LogLevel.Debug;
-            SessionFactory.Initialize("Data source=:memory:");
+            SessionFactory.Initialize("Data source=:memory:", new SqliteAdapter());
             Domain.Configure
             (
                 Map.Entity<Person>()
@@ -52,20 +54,30 @@ namespace Catnap.IntegrationTests
             person = new Person { FirstName = "Joe", LastName = "Smith" };
             Container.PersonRepository.Save(person);
         }
-
-        protected static void get_person()
-        {
-            actualPerson = Container.PersonRepository.Get(person.Id);
-        }
     }
 
     public class when_getting_person : behaves_like_person_test
     {
         Establish context = save_person;
-        
-        Because of = get_person;
+
+        Because of = () => actualPerson = Container.PersonRepository.Get(person.Id);
         
         It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
+
+    public class when_updating_person : behaves_like_person_test
+    {
+        Establish context = save_person;
+
+        Because of = () => 
+        {
+            actualPerson = Container.PersonRepository.Get(person.Id);
+            actualPerson.LastName = "Newlastname";
+            Container.PersonRepository.Save(actualPerson);
+            actualPerson = Container.PersonRepository.Get(person.Id);
+        };
+
+        It should_have_updates = () => actualPerson.LastName.Should().Equal("Newlastname");
     }
 
     public class when_deleting_person : behaves_like_person_test
@@ -176,13 +188,14 @@ namespace Catnap.IntegrationTests
 
     public class when_getting_post_count_for_a_person : behaves_like_post_test
     {
-        static int postCount;
+        static long postCount;
+        private const long expected = 1;
 
         Establish context = save_forum;
 
         Because of = () => postCount = Container.PersonRepository.GetTotalPostCount(person.Id);
 
-        It should_return_post_count = () => postCount.Should().Equal(1);
+        It should_return_post_count = () => postCount.Should().Equal(expected);
     }
 
 }

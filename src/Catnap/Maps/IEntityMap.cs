@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Catnap.Common.Database;
+using Catnap.Database;
 
 namespace Catnap.Maps
 {

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using Catnap.Common.Database;
 using Catnap.Common.Logging;
+using Catnap.Database;
 using Catnap.Maps;
 
 namespace Catnap
@@ -11,27 +12,23 @@ namespace Catnap
     {
         private readonly IDbConnection connection;
         private readonly IDomainMap domainMap;
-        private readonly IDbTypeConverter dbTypeConverter;
+        private readonly IDbAdapter dbAdapter;
+        private IDbTransaction transaction;
 
-        public Session(IDbConnection connection, IDbTypeConverter dbTypeConverter) : 
-            this(connection, Domain.Map, dbTypeConverter) { }
+        public Session(string connectionString, IDbAdapter dbAdapter) :
+            this(Domain.Map, connectionString, dbAdapter) { }
 
-        public Session(IDbConnection connection, IDomainMap domainMap, IDbTypeConverter dbTypeConverter)
+        public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter)
         {
-            this.dbTypeConverter = dbTypeConverter;
-            this.connection = connection;
             this.domainMap = domainMap;
+            this.dbAdapter = dbAdapter;
+            connection = dbAdapter.CreateConnection(connectionString);
         }
 
         public void Open()
         {
             connection.Open();
-            connection.BeginTransaction();
-        }
-
-        public IDbCommand CreateCommand(DbCommandSpec commandSpec)
-        {
-            return connection.CreateCommand(commandSpec);
+            transaction = connection.BeginTransaction();
         }
 
         public IList<IDictionary<string, object>> List(DbCommandSpec commandSpec)
@@ -61,8 +58,13 @@ namespace Catnap
             var entityMap = domainMap.GetMapFor<T>();
             if (entity.IsTransient)
             {
-                ExecuteNonQuery(entityMap.GetInsertCommand(entity, parentId));
-                entity.SetId(connection.GetLastInsertId());
+                var commandSpec = entityMap.GetInsertCommand(entity, parentId);
+                ExecuteNonQuery(commandSpec);
+                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
+                var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
+                var result = getIdCommand.ExecuteScalar();
+                var id = Convert.ToInt32(result);
+                entity.SetId(id);
             }
             else
             {
@@ -83,58 +85,73 @@ namespace Catnap
         public void Delete<T>(int id) where T : class, IEntity, new()
         {
             var map = domainMap.GetMapFor<T>();
-            ExecuteNonQuery(map.GetDeleteCommand(id));
+            var deleteCommand = map.GetDeleteCommand(id);
+            ExecuteNonQuery(deleteCommand);
         }
 
         public void ExecuteNonQuery(DbCommandSpec commandSpec)
         {
-            try
-            {
-                CreateCommand(commandSpec).ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                RollbackTransaction();
-                Log.Error(ex);
-                throw;
-            }
+            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            Try(command.ExecuteNonQuery);
         }
 
         public IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec)
         {
-            return Execute<IEnumerable<IDictionary<string, object>>>(
-                CreateCommand(commandSpec).ExecuteQuery);
+            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            return Try(() => ExecuteQuery(command));
+        }
+
+        public IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
+        {
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var row = new Dictionary<string, object>();
+                for (var i = 0; i < reader.FieldCount; i++)
+                {
+                    row.Add(reader.GetName(i), reader[i]);
+                }
+                yield return row;
+            }
         }
 
         public object ExecuteScalar(DbCommandSpec commandSpec)
         {
-            return Execute<object>(CreateCommand(commandSpec).ExecuteScalar<object>);
+            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            return Try(command.ExecuteScalar);
         }
 
-        /// <summary>
-        /// NOTE: IPhone does not like this method.  Use the other overload.
-        /// </summary>
         public T ExecuteScalar<T>(DbCommandSpec commandSpec)
         {
-            return Execute<T>(CreateCommand(commandSpec).ExecuteScalar<T>);
+            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            var result = Try(command.ExecuteScalar);
+            return (T)result;
         }
 
         public void RollbackTransaction()
         {
-            connection.RollbackTransaction();
+            transaction.Rollback();
         }
 
         public object ConvertFromDbType(object value, Type type)
         {
-            return dbTypeConverter.ConvertFromDbType(value, type);
+            return dbAdapter.ConvertFromDbType(value, type);
         }
 
         public void Dispose()
         {
-            connection.Dispose();
+            if (transaction != null)
+            {
+                transaction.Commit();
+            }
+            if (connection != null)
+            {
+                connection.Close();
+                connection.Dispose();
+            }
         }
 
-        private T Execute<T>(Func<T> func)
+        private T Try<T>(Func<T> func)
         {
             try
             {

@@ -10,13 +10,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Catnap</RootNamespace>
     <AssemblyName>Catnap</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,8 +41,14 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\BaseSqliteAdapter.cs" />
+    <Compile Include="Database\DbCommandSpec.cs" />
+    <Compile Include="Database\IDbAdapter.cs" />
+    <Compile Include="Database\IDbTypeConverter.cs" />
+    <Compile Include="Database\Parameter.cs" />
     <Compile Include="Find\Conditions\And.cs" />
     <Compile Include="Find\Conditions\ColumnCondition.cs" />
     <Compile Include="Find\Condition.cs" />
@@ -57,9 +64,13 @@
     <Compile Include="Find\Conditions\LessThanOrEqual.cs" />
     <Compile Include="Find\Conditions\NotEqual.cs" />
     <Compile Include="Find\Conditions\Or.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
+    <Compile Include="Logging\FileLogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
     <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
-    <Compile Include="DbImplementationFactory.cs" />
     <Compile Include="Maps\Domain.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
@@ -83,22 +94,14 @@
     <Compile Include="Find\PredicateBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Maps\Impl\BasePropertyMap.cs" />
+    <Compile Include="Adapters\SqliteAdapter.cs" />
+    <Compile Include="Adapters\SqliteTypeConverter.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="Find\DbCommandPredicate.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Maps\Impl\ValuePropertyMap.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Catnap.Common\Catnap.Common.csproj">
-      <Project>{2EF0A1C2-A48D-4878-A3DA-09128FA8231C}</Project>
-      <Name>Catnap.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Catnap.Sqlite\Catnap.Sqlite.csproj">
-      <Project>{0E46E88D-0FD2-459C-851F-5C31FA7E8CAB}</Project>
-      <Name>Catnap.Sqlite</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,8 +1,8 @@
 using System;
-using Catnap.Common.Database;
 using Catnap.Common.Logging;
+using Catnap.Database;
 
-namespace Catnap.Sqlite
+namespace Catnap.Adapters.Sqlite
 {
     public class SqliteTypeConverter : IDbTypeConverter
     {

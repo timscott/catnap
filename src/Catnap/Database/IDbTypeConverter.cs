@@ -1,9 +1,10 @@
 using System;
 
-namespace Catnap.Common.Database
+namespace Catnap.Database
 {
     public interface IDbTypeConverter
     {
         object ConvertFromDbType(object value, Type toType);
+        object ConvertToDbType(object value);
     }
 }
