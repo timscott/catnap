@@ -7,7 +7,7 @@ using Catnap.Maps;
 
 namespace Catnap
 {
-    public abstract class Repository<T> : IRepository<T> where T : class, IEntity, new() 
+    public abstract class Repository<T> : IRepository<T> where T : class, new() 
     {
         protected readonly IRepository innerRepository;
         protected readonly IEntityMap<T> entityMap;
@@ -40,27 +40,27 @@ namespace Catnap
             innerRepository.Save(entity);
         }
 
-        public virtual T Get(int id)
+        public virtual T Get(object id)
         {
             return innerRepository.Get<T>(id);
         }
 
-        public virtual void Delete(int id)
+        public virtual void Delete(object id)
         {
             innerRepository.Delete<T>(id);
         }
 
         protected void DeleteCollection<TList>(IEnumerable<TList> collection, IEntityMap map)
-            where TList : class, IEntity, new()
+            where TList : class, new()
         {
             foreach (var entity in collection)
             {
-                innerRepository.Delete<T>(entity.Id);
+                innerRepository.Delete<T>(map.GetId(entity));
             }
         }
 
-        protected void SaveCollection<TList>(int parentId, IEnumerable<TList> collection, IEntityMap map)
-            where TList : class, IEntity, new()
+        protected void SaveCollection<TList>(object parentId, IEnumerable<TList> collection, IEntityMap map)
+            where TList : class, new()
         {
             foreach (var entity in collection)
             {
@@ -71,33 +71,33 @@ namespace Catnap
 
     public class Repository : IRepository
     {
-        public T Get<T>(int id) where T : class, IEntity, new()
+        public T Get<T>(object id) where T : class, new()
         {
             return UnitOfWork.Current.Session.Get<T>(id);
         }
 
-        public void Save<T>(T entity) where T : class, IEntity, new()
+        public void Save<T>(T entity) where T : class, new()
         {
             UnitOfWork.Current.Session.SaveOrUpdate(entity);
         }
 
-        public void Delete<T>(int id) where T : class, IEntity, new()
+        public void Delete<T>(object id) where T : class, new()
         {
             UnitOfWork.Current.Session.Delete<T>(id);
         }
 
-        public IEnumerable<T> Find<T>() where T : class, IEntity, new()
+        public IEnumerable<T> Find<T>() where T : class, new()
         {
             return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().Build());
         }
 
-        public IEnumerable<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity, new()
+        public IEnumerable<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, new()
         {
             var commandSpec = new FindCommandBuilder<T>().AddCondition(predicate).Build();
             return UnitOfWork.Current.Session.List<T>(commandSpec);
         }
 
-        public IEnumerable<T> Find<T>(ICriteria criteria) where T : class, IEntity, new()
+        public IEnumerable<T> Find<T>(ICriteria criteria) where T : class, new()
         {
             var commandSpec = new FindCommandBuilder<T>().AddCriteria(criteria).Build();
             return UnitOfWork.Current.Session.List<T>(commandSpec);

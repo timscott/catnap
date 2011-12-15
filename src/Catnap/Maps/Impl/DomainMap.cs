@@ -22,7 +22,7 @@ namespace Catnap.Maps.Impl
             }
         }
 
-        public IEntityMap<T> GetMapFor<T>() where T : class, IEntity, new()
+        public IEntityMap<T> GetMapFor<T>() where T : class, new()
         {
             return (IEntityMap<T>)entityMaps.Where(x => x.Key == typeof(T)).First().Value;
         }

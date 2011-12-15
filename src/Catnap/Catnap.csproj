@@ -69,6 +69,7 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Maps\IBelongsToPropertyMap.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
     <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
     <Compile Include="Maps\Domain.cs" />

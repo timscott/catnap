@@ -7,8 +7,8 @@ using Catnap.Find;
 namespace Catnap.Maps.Impl
 {
     public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>>, IListPropertyMap<TEntity>
-        where TEntity : class, IEntity, new()
-        where TListMember : class, IEntity, new()
+        where TEntity : class, new()
+        where TListMember : class, new()
     {
         private readonly Expression<Func<TListMember, bool>> filter;
         private IEntityMap listMap;
@@ -36,12 +36,12 @@ namespace Catnap.Maps.Impl
         {
             var existingList = Load(session, parent);
             var list = (IEnumerable<TListMember>)getter.Invoke(parent, null);
-            var itemsToDelete = existingList.Except(list, new EntityEqualityComaparer<TListMember>());
+            var itemsToDelete = existingList.Except(list, new EntityEqualityComaparer<TListMember>(listMap));
             CascadeDeletes(session, itemsToDelete);
             CascadeSaves(session, parent, list);
         }
 
-        public Type ItemTpye
+        public Type ItemType
         {
             get { return typeof(TListMember); }
         }
@@ -59,7 +59,7 @@ namespace Catnap.Maps.Impl
             }
             foreach (var item in list)
             {
-                session.SaveOrUpdate(item, parent.Id);
+                session.SaveOrUpdate(item, listMap.GetId(parent));
             }
         }
 
@@ -71,14 +71,14 @@ namespace Catnap.Maps.Impl
             }
             foreach (var item in itemsToDelete)
             {
-                session.Delete<TListMember>(item.Id);
+                session.Delete<TListMember>(listMap.GetId(item));
             }
         }
 
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
             var builder = new FindCommandBuilder<TListMember>()
-                .AddCondition(listMap.ParentColumnName, "=", parent.Id);
+                .AddCondition(listMap.ParentColumnName, "=", listMap.GetId(parent));
             if (filter != null)
             {
                 builder.AddCondition(filter);

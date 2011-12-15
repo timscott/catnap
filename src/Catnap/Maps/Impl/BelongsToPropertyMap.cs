@@ -4,10 +4,12 @@ using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
 {
-    public class BelongsToPropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
-        where TEntity : class, IEntity, new()
-        where TProperty : class, IEntity, new()
+    public class BelongsToPropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>, IBelongsToPropertyMap
+        where TEntity : class, new()
+        where TProperty : class, new()
     {
+        private IEntityMap entityMap;
+
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
 
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
@@ -18,25 +20,35 @@ namespace Catnap.Maps.Impl
 
         public string ColumnName { get; private set; }
 
-        public object GetColumnValue(IEntity instance)
+        public object GetColumnValue(object instance)
         {
             var parent = getter.Invoke(instance, null);
             return parent == null
-                       ? null
-                       : (int?)((IEntity)(parent)).Id;
+                ? null
+                : entityMap.GetId(parent);
         }
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
             value = value == null
                 ? default(TProperty)
-                : GetEntity(session, Convert.ToInt32(value));
+                : GetEntity(session, value);
             setter.Invoke(instance, new [] { value });
         }
 
-        public TProperty GetEntity(ISession session, int id)
+        public TProperty GetEntity(ISession session, object id)
         {
             return session.Get<TProperty>(id);
+        }
+
+        public void SetPropertyMap(IEntityMap map)
+        {
+            entityMap = map;
+        }
+
+        public Type PropertyType
+        {
+            get { return typeof(TProperty); }
         }
     }
 }

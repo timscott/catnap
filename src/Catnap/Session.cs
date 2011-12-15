@@ -36,35 +36,34 @@ namespace Catnap
             return ExecuteQuery(commandSpec).ToList();
         }
 
-        public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, IEntity, new()
+        public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
             return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
-        public T Get<T>(int id) where T : class, IEntity, new()
+        public T Get<T>(object id) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
             return List(entityMap.GetGetCommand(id)).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
         }
 
-        public void SaveOrUpdate<T>(T entity) where T : class, IEntity, new()
+        public void SaveOrUpdate<T>(T entity) where T : class, new()
         {
             SaveOrUpdate(entity, null);
         }
 
-        public void SaveOrUpdate<T>(T entity, int? parentId) where T : class, IEntity, new()
+        public void SaveOrUpdate<T>(T entity, object parentId) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            if (entity.IsTransient)
+            if (entityMap.IsTransient(entity))
             {
                 var commandSpec = entityMap.GetInsertCommand(entity, parentId);
                 ExecuteNonQuery(commandSpec);
                 var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
                 var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
                 var result = getIdCommand.ExecuteScalar();
-                var id = Convert.ToInt32(result);
-                entity.SetId(id);
+                entityMap.SetId(entity, result);
             }
             else
             {
@@ -73,7 +72,7 @@ namespace Catnap
             Cascade(entityMap, entity);
         }
 
-        private void Cascade<T>(IEntityMap<T> entityMap, T entity) where T : class, IEntity, new()
+        private void Cascade<T>(IEntityMap<T> entityMap, T entity) where T : class, new()
         {
             var listMaps = entityMap.PropertyMaps.Where(x => x is IListPropertyMap<T>).Cast<IListPropertyMap<T>>();
             foreach (var map in listMaps)
@@ -82,7 +81,7 @@ namespace Catnap
             }
         }
 
-        public void Delete<T>(int id) where T : class, IEntity, new()
+        public void Delete<T>(object id) where T : class, new()
         {
             var map = domainMap.GetMapFor<T>();
             var deleteCommand = map.GetDeleteCommand(id);

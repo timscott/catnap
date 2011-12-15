@@ -7,9 +7,8 @@ using Catnap.Extensions;
 namespace Catnap.Maps.Impl
 {
     public abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
-        where TEntity : class, IEntity, new()
+        where TEntity : class, new()
     {
-        protected IDomainMap domainMap;
         protected PropertyInfo propertyInfo;
         protected MethodInfo setter;
         protected MethodInfo getter;
@@ -74,11 +73,6 @@ namespace Catnap.Maps.Impl
         public bool SetterIsPrivate
         {
             get { return setter.IsPrivate; }
-        }
-
-        public void SetDomainMap(IDomainMap value)
-        {
-            domainMap = value;
         }
 
         protected virtual void InnerSetValue(TEntity instance, object value, ISession session)

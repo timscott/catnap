@@ -8,16 +8,16 @@ namespace Catnap
     {
         void Open();
         IList<IDictionary<string, object>> List(DbCommandSpec commandSpec);
-        IList<T> List<T>(DbCommandSpec commandSpec) where T : class, IEntity, new();
-        T Get<T>(int id) where T : class, IEntity, new();
-        void SaveOrUpdate<T>(T entity) where T : class, IEntity, new();
-        void SaveOrUpdate<T>(T entity, int? parentId) where T : class, IEntity, new();
-        void Delete<T>(int id) where T : class, IEntity, new();
+        IList<T> List<T>(DbCommandSpec commandSpec) where T : class, new();
+        T Get<T>(object id) where T : class, new();
+        void SaveOrUpdate<T>(T entity) where T : class, new();
+        void SaveOrUpdate<T>(T entity, object parentId) where T : class, new();
+        void Delete<T>(object id) where T : class, new();
         void ExecuteNonQuery(DbCommandSpec commandSpec);
         IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec);
         T ExecuteScalar<T>(DbCommandSpec commandSpec);
-    	object ExecuteScalar(DbCommandSpec commandSpec);
-    	void RollbackTransaction();
-    	object ConvertFromDbType(object value, Type type);
+        object ExecuteScalar(DbCommandSpec commandSpec);
+        void RollbackTransaction();
+        object ConvertFromDbType(object value, Type type);
     }
 }

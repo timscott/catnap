@@ -2,7 +2,7 @@
 
 namespace Catnap.UnitTests.Models
 {
-    public class Forum : Entity
+	public class Forum : Entity
     {
         private IEnumerable<Post> posts = new List<Post>();
 

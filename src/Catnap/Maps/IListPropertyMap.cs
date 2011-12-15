@@ -2,14 +2,18 @@ using System;
 
 namespace Catnap.Maps
 {
-    public interface IListPropertyMap<TEntity> : IPropertyMap<TEntity> 
-        where TEntity : class, IEntity, new()
+    public interface IListPropertyMap
     {
         bool IsLazy { get; }
         bool WillCascadeSaves { get; }
         bool WillCascadeDeletes { get; }
-        void Cascade(ISession session, TEntity parent);
-        Type ItemTpye { get; }
+        Type ItemType { get; }
         void SetListMap(IEntityMap map);
+    }
+
+    public interface IListPropertyMap<in TEntity> : IListPropertyMap, IPropertyMap<TEntity> 
+        where TEntity : class, new()
+    {
+        void Cascade(ISession session, TEntity parent);
     }
 }

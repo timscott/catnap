@@ -5,7 +5,7 @@ using Catnap.Common.Logging;
 namespace Catnap.Maps.Impl
 {
     public class ValuePropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
-        where TEntity : class, IEntity, new()
+        where TEntity : class, new()
     {
         public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
 
@@ -17,7 +17,7 @@ namespace Catnap.Maps.Impl
 
         public string ColumnName { get; private set; }
 
-        public object GetColumnValue(IEntity instance)
+        public object GetColumnValue(object instance)
         {
             return getter.Invoke(instance, null);
         }

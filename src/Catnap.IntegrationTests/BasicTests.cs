@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Adapters;
-using Catnap.Adapters.Sqlite;
 using Catnap.Common.Logging;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Models;
@@ -93,22 +92,22 @@ namespace Catnap.IntegrationTests
         };
     }
 
-	public class when_updating_a_person : behaves_like_person_test
-	{
-		private Establish context =()=>
-		{
-			save_person();
-		    person.FirstName = "NewFirstName";
-		};
+    public class when_updating_a_person : behaves_like_person_test
+    {
+        private Establish context =()=>
+        {
+            save_person();
+            person.FirstName = "NewFirstName";
+        };
 
-		Because of = () => Container.PersonRepository.Save(person);
+        Because of = () => Container.PersonRepository.Save(person);
 
-		It person_should_be_updated = () =>
-		{
-			actualPerson = Container.PersonRepository.Get(person.Id);
-		    actualPerson.FirstName.Should().Equal(person.FirstName);
-		};
-	}
+        It person_should_be_updated = () =>
+        {
+            actualPerson = Container.PersonRepository.Get(person.Id);
+            actualPerson.FirstName.Should().Equal(person.FirstName);
+        };
+    }
 
     public class when_getting_person_by_first_name : behaves_like_person_test
     {

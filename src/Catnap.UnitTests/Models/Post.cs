@@ -1,6 +1,6 @@
 namespace Catnap.UnitTests.Models
 {
-    public class Post : Entity
+	public class Post : Entity
     {
         public string Title { get; set; }
         public string Body { get; set; }

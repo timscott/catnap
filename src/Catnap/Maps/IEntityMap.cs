@@ -11,18 +11,21 @@ namespace Catnap.Maps
         string TableName { get; }
         string ParentColumnName { get; }
         Type EntityType { get; }
+        object GetId(object entity);
+        void SetId(object entity, object id);
+        bool IsTransient(object entity);
         DbCommandSpec GetFindCommand(IList<Parameter> parameters, IList<string> condtions);
-        DbCommandSpec GetGetCommand(int id);
-        DbCommandSpec GetDeleteCommand(int id);
-        DbCommandSpec GetInsertCommand(IEntity entity);
-        DbCommandSpec GetInsertCommand(IEntity entity, int? parentId);
-        DbCommandSpec GetUpdateCommand(IEntity entity);
-        DbCommandSpec GetUpdateCommand(IEntity entity, int? parentId);
+        DbCommandSpec GetGetCommand(object id);
+        DbCommandSpec GetDeleteCommand(object id);
+        DbCommandSpec GetInsertCommand(object entity);
+        DbCommandSpec GetInsertCommand(object entity, object parentId);
+        DbCommandSpec GetUpdateCommand(object entity);
+        DbCommandSpec GetUpdateCommand(object entity, object parentId);
         string GetColumnNameForProperty(MemberExpression memberExpression);
         void Done(IDomainMap map);
     }
 
-    public interface IEntityMap<T> : IEntityMap where T : class, IEntity, new()
+    public interface IEntityMap<T> : IEntityMap where T : class, new()
     {
         IList<IPropertyMap<T>> PropertyMaps { get; }
         T BuildFrom(IDictionary<string, object> record, ISession session);

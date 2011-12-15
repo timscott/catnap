@@ -4,7 +4,7 @@ namespace Catnap.Maps
 {
     public static class Map
     {
-        public static IEntityMappable<T> Entity<T>() where T : class, IEntity, new()
+        public static IEntityMappable<T> Entity<T>() where T : class, new()
         {
             return new EntityMap<T>();
         }

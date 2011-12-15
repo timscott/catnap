@@ -1,9 +1,17 @@
 using System.Collections.Generic;
+using Catnap.Maps;
 
 namespace Catnap
 {
-    public class EntityEqualityComaparer<T> : IEqualityComparer<T> where T : class, IEntity
+    public class EntityEqualityComaparer<T> : IEqualityComparer<T> where T : class
     {
+        private readonly IEntityMap entityMap;
+
+        public EntityEqualityComaparer(IEntityMap entityMap)
+        {
+            this.entityMap = entityMap;
+        }
+
         public bool Equals(T x, T y)
         {
             if (x == null && y == null)
@@ -14,20 +22,18 @@ namespace Catnap
             {
                 return true;
             }
-            if (x.IsTransient && y.IsTransient)
+            if (entityMap.IsTransient(x) && entityMap.IsTransient(y))
             {
                 return ReferenceEquals(x, y);
             }
-            return x.Id.Equals(y.Id);
+            return entityMap.GetId(x).Equals(entityMap.GetId(y));
         }
 
         public int GetHashCode(T obj)
         {
-            if (obj.IsTransient)
-            {
-                return base.GetHashCode();
-            }
-            return obj.Id.GetHashCode();
+            return entityMap.IsTransient(obj) 
+                ? base.GetHashCode() 
+                : entityMap.GetId(obj).GetHashCode();
         }
     }
 }

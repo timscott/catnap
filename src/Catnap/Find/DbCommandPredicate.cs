@@ -9,7 +9,7 @@ using Catnap.Maps;
 
 namespace Catnap.Find
 {
-    public class DbCommandPredicate<T> where T : class, IEntity, new()
+    public class DbCommandPredicate<T> where T : class, new()
     {
         private readonly IDomainMap domainMap;
         private readonly List<string> conditions = new List<string>();
