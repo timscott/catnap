@@ -12,17 +12,22 @@ namespace Catnap.Maps.Impl
 
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
 
-        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
+        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property, Access.Property)
         {
-            Log.Debug("Setting column name for BelongsTo property '{0}'", property);
-            ColumnName = columnName ?? MemberExpression.Member.Name;
+            Log.Debug("Setting column name for property '{0}'", property);
+            ColumnName = columnName ?? accessStrategy.PropertyInfo.Name;
         }
 
         public string ColumnName { get; private set; }
 
-        public object GetColumnValue(object instance)
+        public bool Insert
         {
-            var parent = getter.Invoke(instance, null);
+            get { return true; }
+        }
+
+        public object GetValue(TEntity instance)
+        {
+            var parent = accessStrategy.Getter(instance);
             return parent == null
                 ? null
                 : entityMap.GetId(parent);
@@ -30,10 +35,10 @@ namespace Catnap.Maps.Impl
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
-            value = value == null
+            var entity = value == null
                 ? default(TProperty)
                 : GetEntity(session, value);
-            setter.Invoke(instance, new [] { value });
+            accessStrategy.Setter(instance, entity);
         }
 
         public TProperty GetEntity(ISession session, object id)

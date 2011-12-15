@@ -8,7 +8,7 @@ namespace Catnap.Maps
         bool WillCascadeSaves { get; }
         bool WillCascadeDeletes { get; }
         Type ItemType { get; }
-        void SetListMap(IEntityMap map);
+        void SetMaps(IEntityMap parentMap, IEntityMap listItemMap);
     }
 
     public interface IListPropertyMap<in TEntity> : IListPropertyMap, IPropertyMap<TEntity> 

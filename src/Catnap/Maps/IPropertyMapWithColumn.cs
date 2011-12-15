@@ -4,6 +4,7 @@ namespace Catnap.Maps
         where TEntity : class, new()
     {
         string ColumnName { get; }
-        object GetColumnValue(object instance);
+        bool Insert { get; }
+        object GetValue(TEntity instance);
     }
 }

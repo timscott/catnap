@@ -9,17 +9,22 @@ namespace Catnap.Maps.Impl
     {
         public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
 
-        public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
+        public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property, Access.Property)
         {
             Log.Debug("Setting column name for Value property '{0}'.", property);
-            ColumnName = columnName ?? MemberExpression.Member.Name;
+            ColumnName = columnName ?? accessStrategy.PropertyInfo.Name;
         }
 
         public string ColumnName { get; private set; }
 
-        public object GetColumnValue(object instance)
+        public bool Insert
         {
-            return getter.Invoke(instance, null);
+            get { return true; }
+        }
+
+        public object GetValue(TEntity instance)
+        {
+            return accessStrategy.Getter(instance);
         }
     }
 }

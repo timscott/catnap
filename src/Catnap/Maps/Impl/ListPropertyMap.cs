@@ -11,7 +11,8 @@ namespace Catnap.Maps.Impl
         where TListMember : class, new()
     {
         private readonly Expression<Func<TListMember, bool>> filter;
-        private IEntityMap listMap;
+        private IEntityMap listItemMap;
+        private IEntityMap parentMap;
 
         public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes) 
             : this(property, isLazy, cascadeSaves, cascadeDeletes, null) { }
@@ -20,7 +21,7 @@ namespace Catnap.Maps.Impl
             : this(property, isLazy, true, true, null) { }
 
         public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter) 
-            : base(property)
+            : base(property, Access.Property)
         {
             this.filter = filter;
             IsLazy = isLazy;
@@ -35,8 +36,8 @@ namespace Catnap.Maps.Impl
         public void Cascade(ISession session, TEntity parent)
         {
             var existingList = Load(session, parent);
-            var list = (IEnumerable<TListMember>)getter.Invoke(parent, null);
-            var itemsToDelete = existingList.Except(list, new EntityEqualityComaparer<TListMember>(listMap));
+            var list = accessStrategy.Getter(parent).ToList();
+            var itemsToDelete = existingList.Except(list, new EntityEqualityComaparer<TListMember>(listItemMap));
             CascadeDeletes(session, itemsToDelete);
             CascadeSaves(session, parent, list);
         }
@@ -46,9 +47,10 @@ namespace Catnap.Maps.Impl
             get { return typeof(TListMember); }
         }
 
-        public void SetListMap(IEntityMap map)
+        public void SetMaps(IEntityMap parentMap, IEntityMap listItemMap)
         {
-            listMap = map;
+            this.listItemMap = listItemMap;
+            this.parentMap = parentMap;
         }
 
         private void CascadeSaves(ISession session, TEntity parent, IEnumerable<TListMember> list)
@@ -59,7 +61,7 @@ namespace Catnap.Maps.Impl
             }
             foreach (var item in list)
             {
-                session.SaveOrUpdate(item, listMap.GetId(parent));
+                session.SaveOrUpdate(item, parentMap.GetId(parent));
             }
         }
 
@@ -71,14 +73,14 @@ namespace Catnap.Maps.Impl
             }
             foreach (var item in itemsToDelete)
             {
-                session.Delete<TListMember>(listMap.GetId(item));
+                session.Delete<TListMember>(parentMap.GetId(item));
             }
         }
 
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
             var builder = new FindCommandBuilder<TListMember>()
-                .AddCondition(listMap.ParentColumnName, "=", listMap.GetId(parent));
+                .AddCondition(listItemMap.ParentColumnName, "=", parentMap.GetId(parent));
             if (filter != null)
             {
                 builder.AddCondition(filter);
@@ -91,7 +93,7 @@ namespace Catnap.Maps.Impl
             if (IsLazy)
             {
                 var proxy = new LazyList<TListMember>(() => Load(session, instance));
-                setter.Invoke(instance, new[] { proxy });
+                accessStrategy.Setter(instance, proxy);
             }
             else
             {

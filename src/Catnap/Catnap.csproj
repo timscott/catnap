@@ -71,6 +71,9 @@
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Maps\IBelongsToPropertyMap.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
+    <Compile Include="Maps\IIdPropertyMap.cs" />
+    <Compile Include="Maps\Impl\Access.cs" />
+    <Compile Include="Maps\Impl\AccessStrategy.cs" />
     <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
     <Compile Include="Maps\Domain.cs" />
     <Compile Include="Entity.cs" />
@@ -78,6 +81,9 @@
     <Compile Include="Find\FindCommandBuilder.cs" />
     <Compile Include="Maps\Impl\DomainMap.cs" />
     <Compile Include="Maps\IDomainMap.cs" />
+    <Compile Include="Maps\Impl\FieldAccessStrategy.cs" />
+    <Compile Include="Maps\Impl\IdPropertyMap.cs" />
+    <Compile Include="Maps\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
