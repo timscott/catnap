@@ -52,10 +52,6 @@ namespace Catnap.Adapters
                 return value;
             }
             var underlyingType = GetUnderlyingGenericType(toType);
-            if (underlyingType == typeof(bool))
-            {
-                return ((int)value == 1);
-            }
             if (underlyingType == typeof(Guid))
             {
                  return new GuidConverter().ConvertFrom(value);
@@ -76,7 +72,7 @@ namespace Catnap.Adapters
                     ? value 
                     : Enum.ToObject(underlyingType, value);
             }
-            return Convert.ChangeType(value, underlyingType);
+            return Convert.ChangeType(value, toType);
         }
 
         private static Type GetUnderlyingGenericType(Type type)

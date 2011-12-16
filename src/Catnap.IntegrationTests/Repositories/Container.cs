@@ -1,6 +1,6 @@
 namespace Catnap.IntegrationTests.Repositories
 {
-    public class Container
+    public class ContainerGuid
     {
         private static IForumRepository forumRepository;
         private static IPersonRepository personRepository;
@@ -16,7 +16,7 @@ namespace Catnap.IntegrationTests.Repositories
         }
     }
 
-    public class ContainerInt
+    public class Container
     {
         private static IForumIntRepository forumRepository;
         private static IPersonIntRepository personRepository;

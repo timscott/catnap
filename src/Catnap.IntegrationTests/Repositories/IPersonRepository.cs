@@ -4,17 +4,17 @@ using Catnap.Tests.Core.Models;
 
 namespace Catnap.IntegrationTests.Repositories
 {
-    public interface IPersonRepository : IRepository<Person>
+    public interface IPersonRepository : IRepository<PersonGuid>
     {
-        IEnumerable<Person> FindByFirstName(string firstName);
-        IEnumerable<Person> GetPesonsWhoHavePosted();
+        IEnumerable<PersonGuid> FindByFirstName(string firstName);
+        IEnumerable<PersonGuid> GetPesonsWhoHavePosted();
         long GetTotalPostCount(Guid personId);
     }
 
-    public interface IPersonIntRepository : IRepository<PersonInt>
+    public interface IPersonIntRepository : IRepository<Person>
     {
-        IEnumerable<PersonInt> FindByFirstName(string firstName);
-        IEnumerable<PersonInt> GetPesonsWhoHavePosted();
+        IEnumerable<Person> FindByFirstName(string firstName);
+        IEnumerable<Person> GetPesonsWhoHavePosted();
         long GetTotalPostCount(int personId);
     }
 }

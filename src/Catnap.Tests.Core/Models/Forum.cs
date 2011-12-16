@@ -3,26 +3,26 @@ using System.Collections.Generic;
 
 namespace Catnap.Tests.Core.Models
 {
-    public class Forum : EntityGuid
+    public class ForumGuid : EntityGuid
     {
-        private IEnumerable<Post> posts = new List<Post>();
+        private IEnumerable<PostGuid> posts = new List<PostGuid>();
 
         public string Name { get; set; }
         public TimeSpan? TimeOfDayLastUpdated { get; set; }
-        public IEnumerable<Post> Posts
+        public IEnumerable<PostGuid> Posts
         {
             get { return posts;  }
             set { posts = value;  }
         }
     }
 
-    public class ForumInt : Entity
+    public class Forum : Entity
     {
-        private IEnumerable<PostInt> posts = new List<PostInt>();
+        private IEnumerable<Post> posts = new List<Post>();
 
         public string Name { get; set; }
         public TimeSpan? TimeOfDayLastUpdated { get; set; }
-        public IEnumerable<PostInt> Posts
+        public IEnumerable<Post> Posts
         {
             get { return posts; }
             set { posts = value; }

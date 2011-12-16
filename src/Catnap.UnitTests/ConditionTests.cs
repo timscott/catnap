@@ -18,14 +18,14 @@ namespace Catnap.UnitTests
         Because of = () =>
         {
             Log.Level = LogLevel.Off;
-            Domain.Configure(Map.Entity<PersonInt>().Property(x => x.FirstName));
+            Domain.Configure(Map.Entity<Person>().Property(x => x.FirstName));
             target = new Criteria
             (
                 Condition.Less("Bar", 1000),
                 Condition.GreaterOrEqual("Bar", 300),
                 Condition.Or
                 (
-                    Condition.NotEqual<PersonInt>(x => x.FirstName, "Tim"),
+                    Condition.NotEqual<Person>(x => x.FirstName, "Tim"),
                     Condition.And
                     (
                         Condition.Equal("Foo", 25),

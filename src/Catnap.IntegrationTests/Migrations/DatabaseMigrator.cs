@@ -7,11 +7,11 @@ namespace Catnap.IntegrationTests.Migrations
     {
         private static readonly DatabaseMigratorUtility migratorUtility = new DatabaseMigratorUtility(new SqliteAdapter());
 
-        public static void Execute(IDatabaseMigration createSchemaMigration)
+        public static void Execute()
         {
             migratorUtility.Migrate
             (
-                createSchemaMigration
+                new CreateSchema()
             );
         }
     }
