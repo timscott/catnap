@@ -56,14 +56,18 @@ namespace Catnap
         public void SaveOrUpdate<T>(T entity, object parentId) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
+            var idMap = entityMap.PropertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
             if (entityMap.IsTransient(entity))
             {
                 var commandSpec = entityMap.GetInsertCommand(entity, parentId);
                 ExecuteNonQuery(commandSpec);
-                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
-                var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
-                var result = getIdCommand.ExecuteScalar();
-                entityMap.SetId(entity, result);
+                if (idMap.Insert == false)
+                {
+                    var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
+                    var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
+                    var result = getIdCommand.ExecuteScalar();
+                    entityMap.SetId(entity, result, this);
+                }
             }
             else
             {

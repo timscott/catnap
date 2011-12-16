@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Catnap.Database;
+using Catnap.Maps.Impl;
 
 namespace Catnap.Maps
 {
@@ -12,7 +13,7 @@ namespace Catnap.Maps
         string ParentColumnName { get; }
         Type EntityType { get; }
         object GetId(object entity);
-        void SetId(object entity, object id);
+        void SetId(object entity, object id, ISession session);
         bool IsTransient(object entity);
         DbCommandSpec GetFindCommand(IList<Parameter> parameters, IList<string> condtions);
         DbCommandSpec GetGetCommand(object id);

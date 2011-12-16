@@ -6,13 +6,13 @@ using Catnap.Migration;
 
 namespace Catnap.IntegrationTests.Migrations
 {
-    public class CreateSchema : IDatabaseMigration
+    public class CreateSchemaTextIds : IDatabaseMigration
     {
         private readonly List<string> sqls = new List<string>
         {
-            @"CREATE TABLE ForumInt (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name VARCHAR, TimeOfDayLastUpdated NUMERIC)",
-            @"CREATE TABLE PostInt (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Title VARCHAR, Body VARCHAR, DatePosted INTEGER, PosterId INTEGER, ForumId INTEGER NOT NULL)",
-            @"CREATE TABLE PersonInt (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FirstName VARCHAR, LastName VARCHAR)",
+            @"CREATE TABLE Forum (Id TEXT PRIMARY KEY NOT NULL, Name VARCHAR, TimeOfDayLastUpdated NUMERIC)",
+            @"CREATE TABLE Post (Id TEXT PRIMARY KEY NOT NULL, Title VARCHAR, Body VARCHAR, DatePosted INTEGER, PosterId TEXT, ForumId TEXT NOT NULL)",
+            @"CREATE TABLE Person (Id TEXT PRIMARY KEY NOT NULL, FirstName VARCHAR, LastName VARCHAR)",
         };
 
         public string Name

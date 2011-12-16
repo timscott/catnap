@@ -1,8 +1,9 @@
 using System;
+using System.ComponentModel;
 using Catnap.Common.Logging;
 using Catnap.Database;
 
-namespace Catnap.Adapters.Sqlite
+namespace Catnap.Adapters
 {
     public class SqliteTypeConverter : IDbTypeConverter
     {
@@ -17,6 +18,10 @@ namespace Catnap.Adapters.Sqlite
             if (value is bool?)
             {
                 return ((bool?)value).Value ? 1 : 0;
+            }
+            if (underlyingType == typeof(Guid))
+            {
+                return value.ToString();
             }
             if (underlyingType == typeof(DateTime))
             {
@@ -50,6 +55,10 @@ namespace Catnap.Adapters.Sqlite
             if (underlyingType == typeof(bool))
             {
                 return ((int)value == 1);
+            }
+            if (underlyingType == typeof(Guid))
+            {
+                 return new GuidConverter().ConvertFrom(value);
             }
             if (underlyingType == typeof(DateTime))
             {

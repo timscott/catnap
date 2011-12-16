@@ -15,4 +15,20 @@ namespace Catnap.IntegrationTests.Repositories
             get { return personRepository ?? (personRepository = new PersonRepository()); }
         }
     }
+
+    public class ContainerInt
+    {
+        private static IForumIntRepository forumRepository;
+        private static IPersonIntRepository personRepository;
+
+        public static IForumIntRepository ForumRepository
+        {
+            get { return forumRepository ?? (forumRepository = new ForumIntRepository()); }
+        }
+
+        public static IPersonIntRepository PersonRepository
+        {
+            get { return personRepository ?? (personRepository = new PersonIntRepository()); }
+        }
+    }
 }

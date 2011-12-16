@@ -1,5 +1,4 @@
 using System;
-using Catnap.Adapters.Sqlite;
 using Catnap.Database;
 
 namespace Catnap.Adapters

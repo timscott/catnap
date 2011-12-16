@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Adapters;
-using Catnap.Common.Logging;
-using Catnap.IntegrationTests.Migrations;
-using Catnap.IntegrationTests.Models;
 using Catnap.IntegrationTests.Repositories;
-using Catnap.Maps;
+using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
 
@@ -14,36 +10,30 @@ namespace Catnap.IntegrationTests
 {
     public abstract class behaves_like_integration_test
     {
-        Establish context = initialize_app;
-
-        static void initialize_app()
-        {
-            Log.Level = LogLevel.Debug;
-            SessionFactory.Initialize("Data source=:memory:", new SqliteAdapter());
-            Domain.Configure
-            (
-                Map.Entity<Person>()
-                    .Property(x => x.FirstName)
-                    .Property(x => x.LastName),
-                Map.Entity<Forum>()
-                    .List(x => x.Posts)
-                    .Property(x => x.Name)
-                    .Property(x => x.TimeOfDayLastUpdated),
-                Map.Entity<Post>()
-                    .ParentColumn("ForumId")
-                    .Property(x => x.Title)
-                    .Property(x => x.Body)
-                    .Property(x => x.DatePosted)
-                    .BelongsTo(x => x.Poster, "PosterId")
-            );
-            UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
-            DatabaseMigrator.Execute();
-        }
+        protected static Initializer initializer = new Initializer();
 
         Cleanup after_each = () => UnitOfWork.Current.Dispose();
     }
 
-    public abstract class behaves_like_person_test : behaves_like_integration_test
+    public abstract class behaves_like_person_test_ints : behaves_like_integration_test
+    {
+        protected static PersonInt person;
+        protected static PersonInt actualPerson;
+
+        protected static void save_person()
+        {
+            person = new PersonInt { FirstName = "Joe", LastName = "Smith" };
+            ContainerInt.PersonRepository.Save(person);
+        }
+
+        Establish context = () =>
+        {
+            initializer.InitializeDefault();
+            save_person();
+        };
+    }
+
+    public abstract class behaves_like_person_test_guids : behaves_like_integration_test
     {
         protected static Person person;
         protected static Person actualPerson;
@@ -53,21 +43,40 @@ namespace Catnap.IntegrationTests
             person = new Person { FirstName = "Joe", LastName = "Smith" };
             Container.PersonRepository.Save(person);
         }
+
+        Establish context = () =>
+        {
+            initializer.InitializeWithGuidIds();
+            save_person();
+        };
     }
 
-    public class when_getting_person : behaves_like_person_test
+    public class when_getting_person_ints : behaves_like_person_test_ints
     {
-        Establish context = save_person;
-
-        Because of = () => actualPerson = Container.PersonRepository.Get(person.Id);
-        
+        Because of = () => actualPerson = ContainerInt.PersonRepository.Get(person.Id);
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
 
-    public class when_updating_person : behaves_like_person_test
+    public class when_getting_person_guids : behaves_like_person_test_guids
     {
-        Establish context = save_person;
+        Because of = () => actualPerson = Container.PersonRepository.Get(person.Id);
+        It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
 
+    public class when_updating_person_ints : behaves_like_person_test_ints
+    {
+        Because of = () =>
+        {
+            actualPerson = ContainerInt.PersonRepository.Get(person.Id);
+            actualPerson.LastName = "Newlastname";
+            ContainerInt.PersonRepository.Save(actualPerson);
+            actualPerson = ContainerInt.PersonRepository.Get(person.Id);
+        };
+        It should_have_updates = () => actualPerson.LastName.Should().Equal("Newlastname");
+    }
+
+    public class when_updating_person_guids : behaves_like_person_test_guids
+    {
         Because of = () => 
         {
             actualPerson = Container.PersonRepository.Get(person.Id);
@@ -75,16 +84,22 @@ namespace Catnap.IntegrationTests
             Container.PersonRepository.Save(actualPerson);
             actualPerson = Container.PersonRepository.Get(person.Id);
         };
-
         It should_have_updates = () => actualPerson.LastName.Should().Equal("Newlastname");
     }
 
-    public class when_deleting_person : behaves_like_person_test
+    public class when_deleting_person_ints: behaves_like_person_test_ints
     {
-        Establish context = save_person;
+        Because of = () => ContainerInt.PersonRepository.Delete(person.Id);
+        It person_should_be_deleted = () =>
+        {
+            actualPerson = ContainerInt.PersonRepository.Get(person.Id);
+            actualPerson.Should().Be.Null();
+        };
+    }
 
+    public class when_deleting_person_guids : behaves_like_person_test_guids
+    {
         Because of = () => Container.PersonRepository.Delete(person.Id);
-
         It person_should_be_deleted = () =>
         {
             actualPerson = Container.PersonRepository.Get(person.Id);
@@ -92,16 +107,21 @@ namespace Catnap.IntegrationTests
         };
     }
 
-    public class when_updating_a_person : behaves_like_person_test
+    public class when_updating_a_person_ints : behaves_like_person_test_ints
     {
-        private Establish context =()=>
+        Establish context =()=> person.FirstName = "NewFirstName";
+        Because of = () => ContainerInt.PersonRepository.Save(person);
+        It person_should_be_updated = () =>
         {
-            save_person();
-            person.FirstName = "NewFirstName";
+            actualPerson = ContainerInt.PersonRepository.Get(person.Id);
+            actualPerson.FirstName.Should().Equal(person.FirstName);
         };
+    }
 
+    public class when_updating_a_person_guid_ids : behaves_like_person_test_guids
+    {
+        Establish context = () => person.FirstName = "NewFirstName";
         Because of = () => Container.PersonRepository.Save(person);
-
         It person_should_be_updated = () =>
         {
             actualPerson = Container.PersonRepository.Get(person.Id);
@@ -109,23 +129,58 @@ namespace Catnap.IntegrationTests
         };
     }
 
-    public class when_getting_person_by_first_name : behaves_like_person_test
+    public class when_getting_person_by_first_name_ints : behaves_like_person_test_ints
     {
-        Establish context = save_person;
-
-        Because of = () => actualPerson = Container.PersonRepository.FindByFirstName(person.FirstName).FirstOrDefault();
-
+        Because of = () => actualPerson = ContainerInt.PersonRepository.FindByFirstName(person.FirstName).FirstOrDefault();
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
 
-    public abstract class behaves_like_post_test : behaves_like_person_test
+    public class when_getting_person_by_first_name_guids : behaves_like_person_test_guids
+    {
+        Because of = () => actualPerson = Container.PersonRepository.FindByFirstName(person.FirstName).FirstOrDefault();
+        It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
+
+    public abstract class behaves_like_post_test_ints : behaves_like_person_test_ints
+    {
+        protected static ForumInt forum;
+        protected static PostInt post;
+        protected static PostInt actualPost;
+        protected static ForumInt actualForum;
+
+        Establish context = () =>
+        {
+            save_person();
+            post = new PostInt
+            {
+                Title = "It Doesn't Work",
+                Body = "Someone help, it doesnt work",
+                Poster = person,
+                DatePosted = new DateTime(2000, 1, 1)
+            };
+            forum = new ForumInt
+            {
+                Name = "Annoying Complaints",
+                TimeOfDayLastUpdated = new TimeSpan(10, 9, 8, 7, 6),
+                Posts = new List<PostInt> {post}
+            };
+            ContainerInt.ForumRepository.Save(forum);
+        };
+
+        protected static void get_forum()
+        {
+            actualForum = ContainerInt.ForumRepository.Get(forum.Id);
+        }
+    }
+
+    public abstract class behaves_like_post_test_guids : behaves_like_person_test_guids
     {
         protected static Forum forum;
         protected static Post post;
         protected static Post actualPost;
         protected static Forum actualForum;
 
-        protected static void save_forum()
+        private Establish context = () =>
         {
             save_person();
             post = new Post
@@ -139,10 +194,10 @@ namespace Catnap.IntegrationTests
             {
                 Name = "Annoying Complaints",
                 TimeOfDayLastUpdated = new TimeSpan(10, 9, 8, 7, 6),
-                Posts = new List<Post> { post }
+                Posts = new List<Post> {post}
             };
             Container.ForumRepository.Save(forum);
-        }
+        };
 
         protected static void get_forum()
         {
@@ -150,34 +205,34 @@ namespace Catnap.IntegrationTests
         }
     }
 
-    public class when_getting_forum : behaves_like_post_test
+    public class when_getting_forum_ints : behaves_like_post_test_ints
     {
-        Establish context = save_forum;
-       
         Because of = get_forum;
-        
         It should_be_the_forum = () => actualForum.Should().Equal(forum);
-        
-        It forum_should_contain_the_post = () => actualForum.Posts.ToList()[0].Should().Equal(post);
-        
-        It poster_should_be_the_person = () => actualForum.Posts.ToList()[0].Poster.Should().Equal(person);
-
+        It forum_should_contain_the_post = () => actualForum.Posts.First().Should().Equal(post);
+        It poster_should_be_the_person = () => actualForum.Posts.First().Poster.Should().Equal(person);
         It forum_last_updated_should_be_same = () => actualForum.TimeOfDayLastUpdated.Should().Equal(forum.TimeOfDayLastUpdated);
     }
 
-    public class when_getting_persons_who_have_posted : behaves_like_post_test
+    public class when_getting_forum_guids : behaves_like_post_test_guids
     {
-        static IList<Person> personsWhoHavePosted;
+        Because of = get_forum;
+        It should_be_the_forum = () => actualForum.Should().Equal(forum);
+        It forum_should_contain_the_post = () => actualForum.Posts.First().Should().Equal(post);
+        It poster_should_be_the_person = () => actualForum.Posts.First().Poster.Should().Equal(person);
+        It forum_last_updated_should_be_same = () => actualForum.TimeOfDayLastUpdated.Should().Equal(forum.TimeOfDayLastUpdated);
+    }
+
+    public class when_getting_persons_who_have_posted_ints : behaves_like_post_test_ints
+    {
+        static IList<PersonInt> personsWhoHavePosted;
 
         Establish context = () =>
         {
-            save_forum();
-            var notPosted = new Person { FirstName = "HasNot", LastName = "Posted" };
-            Container.PersonRepository.Save(notPosted);
+            var notPosted = new PersonInt { FirstName = "HasNot", LastName = "Posted" };
+            ContainerInt.PersonRepository.Save(notPosted);
         };
-
-        Because of = () => personsWhoHavePosted = Container.PersonRepository.GetPesonsWhoHavePosted().ToList();
-
+        Because of = () => personsWhoHavePosted = ContainerInt.PersonRepository.GetPesonsWhoHavePosted().ToList();
         It should_return_only_person_who_have_posted = () =>
         {
             personsWhoHavePosted.Should().Count.Exactly(1);
@@ -185,16 +240,38 @@ namespace Catnap.IntegrationTests
         };
     }
 
-    public class when_getting_post_count_for_a_person : behaves_like_post_test
+    public class when_getting_persons_who_have_posted_guid_ids : behaves_like_post_test_guids
+    {
+        static IList<Person> personsWhoHavePosted;
+
+        Establish context = () =>
+        {
+            var notPosted = new Person { FirstName = "HasNot", LastName = "Posted" };
+            Container.PersonRepository.Save(notPosted);
+        };
+        Because of = () => personsWhoHavePosted = Container.PersonRepository.GetPesonsWhoHavePosted().ToList();
+        It should_return_only_person_who_have_posted = () =>
+        {
+            personsWhoHavePosted.Should().Count.Exactly(1);
+            personsWhoHavePosted.Should().Contain.One(x => x.Equals(person));
+        };
+    }
+
+    public class when_getting_post_count_for_a_person_ints : behaves_like_post_test_ints
     {
         static long postCount;
         private const long expected = 1;
 
-        Establish context = save_forum;
-
-        Because of = () => postCount = Container.PersonRepository.GetTotalPostCount(person.Id);
-
+        Because of = () => postCount = ContainerInt.PersonRepository.GetTotalPostCount(person.Id);
         It should_return_post_count = () => postCount.Should().Equal(expected);
     }
 
+    public class when_getting_post_count_for_a_person_guids : behaves_like_post_test_guids
+    {
+        static long postCount;
+        private const long expected = 1;
+
+        Because of = () => postCount = Container.PersonRepository.GetTotalPostCount(person.Id);
+        It should_return_post_count = () => postCount.Should().Equal(expected);
+    }
 }

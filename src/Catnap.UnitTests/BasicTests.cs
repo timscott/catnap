@@ -3,7 +3,7 @@ using Catnap.Common.Logging;
 using Catnap.Database;
 using Catnap.Find;
 using Catnap.Maps;
-using Catnap.UnitTests.Models;
+using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
 
@@ -16,15 +16,15 @@ namespace Catnap.UnitTests
             Log.Level = LogLevel.Off;
             Domain.Configure
             (
-                Map.Entity<Person>()
+                Map.Entity<PersonInt>()
                     .Property(x => x.FirstName)
                     .Property(x => x.LastName)
                     .Property(x => x.Active)
                     .Property(x => x.MemberSince),
-                Map.Entity<Forum>()
+                Map.Entity<ForumInt>()
                     .List(x => x.Posts)
                     .Property(x => x.Name),
-                Map.Entity<Post>()
+                Map.Entity<PostInt>()
                     .ParentColumn("ForumId")
                     .Property(x => x.Title)
                     .Property(x => x.Body)
@@ -44,7 +44,7 @@ namespace Catnap.UnitTests
             var isActiveLocalScope = isActive;
             var joinedByLocalScope = joinedBy;
             var memberBeforeLocalScope = DateTime.Today.AddDays(-10);
-            commandSpec = new FindCommandBuilder<Person>()
+            commandSpec = new FindCommandBuilder<PersonInt>()
                 .AddCondition(x => x.Active == isActiveLocalScope.Value)
                 .AddCondition(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
                 .AddCondition(x => x.FirstName == "Tim")
@@ -53,7 +53,7 @@ namespace Catnap.UnitTests
         };
 
         It should_have_correct_command_text = () => commandSpec.CommandText.Should()
-            .Equal("select * from Person where (Active = @0) and ((MemberSince >= @1) and (MemberSince <= @2)) and (FirstName = @3) and (LastName = @4)");
+            .Equal("select * from PersonInt where (Active = @0) and ((MemberSince >= @1) and (MemberSince <= @2)) and (FirstName = @3) and (LastName = @4)");
 
         It should_have_correct_parameters = () =>
         {

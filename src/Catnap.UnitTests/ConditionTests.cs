@@ -2,7 +2,7 @@ using Catnap.Common.Logging;
 using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.Maps;
-using Catnap.UnitTests.Models;
+using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
 using It=Machine.Specifications.It;
@@ -18,14 +18,14 @@ namespace Catnap.UnitTests
         Because of = () =>
         {
             Log.Level = LogLevel.Off;
-            Domain.Configure(Map.Entity<Person>().Property(x => x.FirstName));
+            Domain.Configure(Map.Entity<PersonInt>().Property(x => x.FirstName));
             target = new Criteria
             (
                 Condition.Less("Bar", 1000),
                 Condition.GreaterOrEqual("Bar", 300),
                 Condition.Or
                 (
-                    Condition.NotEqual<Person>(x => x.FirstName, "Tim"),
+                    Condition.NotEqual<PersonInt>(x => x.FirstName, "Tim"),
                     Condition.And
                     (
                         Condition.Equal("Foo", 25),

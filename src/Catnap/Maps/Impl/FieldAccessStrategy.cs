@@ -29,7 +29,7 @@ namespace Catnap.Maps.Impl
             }
             if (fieldInfo == null)
             {
-                throw new Exception(string.Format("Failed to map property '{0}'. Expected field '{1}' was not found."));
+                throw new Exception(string.Format("Failed to map property '{0}'. Expected field '{1}' was not found.", PropertyInfo.Name, fieldName));
             }
             Getter = entity => (TProperty)fieldInfo.GetValue(entity);
             Setter = (entity, value) => fieldInfo.SetValue(entity, value);
