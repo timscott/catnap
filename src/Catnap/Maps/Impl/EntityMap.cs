@@ -115,8 +115,8 @@ namespace Catnap.Maps.Impl
             var idProperties = propertyMaps.Where(x => x is IIdPropertyMap<T>).ToList();
             if (idProperties.Any() == false)
             {
-                var map = new IdPropertyMap<T, object>("Id").ColumnName("Id").Access(Access.CamelCaseField);
-                Map(map);
+                var idMap = domainMap.IdMappingConvention.GetMap<T>();
+                Map(idMap);
             } 
             else if (idProperties.Count() > 1)
             {

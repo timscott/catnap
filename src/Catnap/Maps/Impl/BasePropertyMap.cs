@@ -15,17 +15,15 @@ namespace Catnap.Maps.Impl
         private Access access;
         protected AccessStrategy<TEntity, TProperty> accessStrategy;
 
-        protected BasePropertyMap(string propertyName, Access access)
+        protected BasePropertyMap(string propertyName)
         {
             this.propertyName = propertyName;
-            this.access = access;
         }
 
-        protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property, Access access)
+        protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property)
         {
             this.property = property;
             propertyName = property.GetMemberExpression().Member.Name;
-            this.access = access;
         }
 
         public TConcrete Access(Access value)
@@ -69,9 +67,15 @@ namespace Catnap.Maps.Impl
 
         public virtual void Done()
         {
+            access = access ?? DefaultAccess;
             accessStrategy = property == null
                 ? access.GetAccessStrategyFor<TEntity, TProperty>(propertyName)
                 : access.GetAccessStrategyFor(property);
+        }
+
+        protected virtual Access DefaultAccess
+        {
+            get { return Impl.Access.Property;  }
         }
 
         protected virtual void InnerSetValue(TEntity instance, object value, ISession session)

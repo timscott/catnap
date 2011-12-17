@@ -1,7 +1,6 @@
 using System;
 using System.Linq.Expressions;
 using Catnap.Common.Logging;
-using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
@@ -11,9 +10,9 @@ namespace Catnap.Maps.Impl
     {
         private string columnName;
 
-        protected PropertyWithColumnMap(string propertyName, Access access) : base(propertyName, access) { }
+        protected PropertyWithColumnMap(string propertyName) : base(propertyName) { }
 
-        protected PropertyWithColumnMap(Expression<Func<TEntity, TProperty>> property, Access access) : base(property, access) { }
+        protected PropertyWithColumnMap(Expression<Func<TEntity, TProperty>> property) : base(property) { }
 
         public virtual object GetValue(TEntity instance)
         {

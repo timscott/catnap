@@ -6,6 +6,6 @@ namespace Catnap.Maps.Impl
     public class ValuePropertyMap<TEntity, TProperty> : PropertyWithColumnMap<TEntity, TProperty, ValuePropertyMap<TEntity, TProperty>>
         where TEntity : class, new()
     {
-        public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property) : base(property, Impl.Access.Property) { }
+        public ValuePropertyMap(Expression<Func<TEntity, TProperty>> property) : base(property) { }
     }
 }

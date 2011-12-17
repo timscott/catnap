@@ -70,6 +70,8 @@
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Maps\IBelongsToPropertyMap.cs" />
+    <Compile Include="Maps\IdMappingConvention.cs" />
+    <Compile Include="Maps\IDomainMappable.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
     <Compile Include="Maps\IIdPropertyMap.cs" />
     <Compile Include="Maps\IIdValueGenerator.cs" />

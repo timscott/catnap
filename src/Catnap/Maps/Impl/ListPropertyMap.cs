@@ -17,7 +17,7 @@ namespace Catnap.Maps.Impl
         private bool willCascadeSaves;
         private bool willCascadeDeletes;
 
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property) : base(property, Impl.Access.Property)
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property) : base(property)
         {
             Lazy(true);
             CascadeSaves(true);

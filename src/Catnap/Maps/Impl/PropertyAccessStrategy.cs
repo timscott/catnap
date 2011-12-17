@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
@@ -19,7 +20,7 @@ namespace Catnap.Maps.Impl
         private void Init()
         {
             Log.Debug("Getting getter for property '{0}'.", PropertyInfo.Name);
-            var getMethod = PropertyInfo.GetGetMethod(true);
+            var getMethod = GetAccessor(x => x.GetGetMethod(true));
             if (getMethod == null)
             {
                 throw new ArgumentException(string.Format("The property '{0}' is not readable.", PropertyInfo.Name), "property");
@@ -27,12 +28,27 @@ namespace Catnap.Maps.Impl
             Getter = entity => (TProperty)getMethod.Invoke(entity, null);
 
             Log.Debug("Getting setter for property '{0}'.", PropertyInfo.Name);
-            var setMethod = PropertyInfo.GetSetMethod(true);
+            var setMethod = GetAccessor(x => x.GetSetMethod(true));
             if (setMethod == null)
             {
                 throw new ArgumentException(string.Format("The property '{0}' is not writable.", PropertyInfo.Name), "property");
             }
             Setter = (entity, value) => setMethod.Invoke(entity, new object[] {value});
+        }
+
+        private MethodInfo GetAccessor(Func<PropertyInfo, MethodInfo> func)
+        {
+            var propertyInfo = PropertyInfo;
+            MethodInfo result = null;
+            while (propertyInfo != null && result == null)
+            {
+                result = func(propertyInfo);
+                if (result == null)
+                {
+                    propertyInfo = PropertyInfo.DeclaringType.GetProperty(PropertyInfo.Name);
+                }
+            }
+            return result;
         }
     }
 }

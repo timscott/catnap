@@ -10,6 +10,8 @@ namespace Catnap.Tests.Core
         {
             Domain.Configure
             (
+                new IdMappingConvention().Access(Access.Property),
+
                 d => d.Entity<PersonGuid>(
                     e => e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb),
                     e => e.Property(x => x.FirstName),

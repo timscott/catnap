@@ -9,9 +9,10 @@ namespace Catnap.Maps.Impl
     {
         private readonly IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
 
-        public DomainMap(params Func<IDomainMappable, IEntityMap>[] entityMaps)
+        public DomainMap(IdMappingConvention idMappingConvention, params Func<IDomainMappable, IEntityMap>[] entityMaps)
         {
             Log.Debug("Mapping domain.");
+            IdMappingConvention = idMappingConvention ?? new IdMappingConvention();
             var maps = entityMaps.ToArray().Select(func => func(this)).ToArray();
             foreach (var map in maps)
             {
@@ -22,6 +23,8 @@ namespace Catnap.Maps.Impl
                 map.Done(this);
             }
         }
+
+        public IdMappingConvention IdMappingConvention { get; private set; }
 
         public IEntityMap<T> GetMapFor<T>() where T : class, new()
         {
@@ -37,10 +40,5 @@ namespace Catnap.Maps.Impl
         {
             return new EntityMap<T>(propertyMaps);
         }
-    }
-
-    public interface IDomainMappable
-    {
-        IEntityMappable<T> Entity<T>(params Func<IEntityMappable<T>, IPropertyMap<T>>[] propertyMaps) where T : class, new();
     }
 }

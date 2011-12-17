@@ -9,7 +9,7 @@ namespace Catnap.Maps.Impl
     {
         private IEntityMap entityMap;
 
-        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property) : base(property, Impl.Access.Property) { }
+        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property) : base(property) { }
 
         public override object GetValue(TEntity instance)
         {

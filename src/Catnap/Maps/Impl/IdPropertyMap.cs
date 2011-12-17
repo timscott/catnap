@@ -8,9 +8,9 @@ namespace Catnap.Maps.Impl
     {
         private IIdValueGenerator generator;
 
-        public IdPropertyMap(string propertyName) : base(propertyName, Impl.Access.CamelCaseField) { }
+        public IdPropertyMap(string propertyName) : base(propertyName) { }
 
-        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property) : base(property, Impl.Access.CamelCaseField) { }
+        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property) : base(property) { }
 
         public IdPropertyMap<TEntity, TProperty> Generator(IIdValueGenerator value)
         {
@@ -28,6 +28,11 @@ namespace Catnap.Maps.Impl
             var id = generator.Generate();
             accessStrategy.Setter(entity, (TProperty)id);
             return id;
+        }
+
+        protected override Access DefaultAccess
+        {
+            get { return Impl.Access.CamelCaseField; }
         }
     }
 }
