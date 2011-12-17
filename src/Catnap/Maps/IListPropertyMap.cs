@@ -4,9 +4,9 @@ namespace Catnap.Maps
 {
     public interface IListPropertyMap
     {
-        bool IsLazy { get; }
-        bool WillCascadeSaves { get; }
-        bool WillCascadeDeletes { get; }
+        bool GetIsLazy();
+        bool GetWillCascadeSaves();
+        bool GetWillCascadeDeletes();
         Type ItemType { get; }
         void SetMaps(IEntityMap parentMap, IEntityMap listItemMap);
     }

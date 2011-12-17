@@ -15,10 +15,11 @@ namespace Catnap.Maps.Impl
         private IIdPropertyMap<T> idProperty;
         private string idColumnName;
 
-        public EntityMap()
+        public EntityMap(params Func<IEntityMappable<T>, IPropertyMap<T>>[] propertyMaps)
         {
             EntityType = typeof(T);
             TableName = typeof (T).Name;
+            this.propertyMaps = propertyMaps.Select(x => x(this)).ToList();
         }
 
         public string TableName { get; private set; }
@@ -50,7 +51,7 @@ namespace Catnap.Maps.Impl
         {
             var map = propertyMaps.Where(x => x is IPropertyMapWithColumn<T> &&  x.PropertyInfo == memberExpression.Member)
                 .Cast<IPropertyMapWithColumn<T>>().FirstOrDefault();
-            return map.ColumnName;
+            return map.GetColumnName();
         }
 
         public string GetColumnNameForProperty(Expression<Func<T, object>> property)
@@ -64,79 +65,26 @@ namespace Catnap.Maps.Impl
             return this;
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property)
+        public IdPropertyMap<T, TProperty> Id<TProperty>(Expression<Func<T, TProperty>> property)
         {
-            var map = new IdPropertyMap<T, TProperty>(property);
-            return Map(map);
+            return new IdPropertyMap<T, TProperty>(property);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access)
+        public ValuePropertyMap<T, TProperty> Property<TProperty>(Expression<Func<T, TProperty>> property)
         {
-            var map = new IdPropertyMap<T, TProperty>(property, access);
-            return Map(map);
+            return new ValuePropertyMap<T, TProperty>(property);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, IIdValueGenerator generator)
-        {
-            var map = new IdPropertyMap<T, TProperty>(property, access, generator);
-            return Map(map);
-        }
-
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, IIdValueGenerator generator)
-        {
-            var map = new IdPropertyMap<T, TProperty>(property, columnName, access, generator);
-            return Map(map);
-        }
-
-        public IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property)
-        {
-            var map = new ValuePropertyMap<T, TProperty>(property, null);
-            return Map(map);
-        }
-
-        public IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName)
-        {
-            var map = new ValuePropertyMap<T, TProperty>(property, columnName);
-            return Map(map);
-        }
-
-        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
+        public ListPropertyMap<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
             where TListMember : class, new()
         {
-            return List(property, true);
+            return new ListPropertyMap<T, TListMember>(property);
         }
 
-        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy)
-            where TListMember : class, new()
-        {
-            return List(property, isLazy, true, true);
-        }
-
-        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes)
-            where TListMember : class, new()
-        {
-            return List(property, isLazy, cascadeSaves, cascaseDeletes, null);
-        }
-
-        public IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes, Expression<Func<TListMember, bool>> filter)
-            where TListMember : class, new()
-        {
-            var map = new ListPropertyMap<T, TListMember>(property, isLazy, cascadeSaves, cascaseDeletes, filter);
-            return Map(map);
-        }
-
-        public IEntityMappable<T> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
+        public BelongsToPropertyMap<T, TProperty> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
             where TProperty : class, new()
         {
-            var map = new BelongsToPropertyMap<T, TProperty>(property);
-            return Map(map);
-        }
-
-        public IEntityMappable<T> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property, string columnName) 
-            where TProperty : class, new()
-        {
-            var map = new BelongsToPropertyMap<T, TProperty>(property, columnName);
-            return Map(map);
+            return new BelongsToPropertyMap<T, TProperty>(property);
         }
 
         public IEntityMappable<T> ParentColumn(string parentColumnName)
@@ -162,20 +110,24 @@ namespace Catnap.Maps.Impl
             var belongsToMaps = propertyMaps.Where(x => x is IBelongsToPropertyMap);
             foreach (IBelongsToPropertyMap map in belongsToMaps)
             {
-                map.SetPropertyMap(domainMap.GetMapFor(map.PropertyType));
+                map.SetEntityMap(domainMap.GetMapFor(map.PropertyType));
             }
             var idProperties = propertyMaps.Where(x => x is IIdPropertyMap<T>).ToList();
             if (idProperties.Any() == false)
             {
-                var map = new IdPropertyMap<T, object>("Id", "Id", Access.CamelCaseField);
+                var map = new IdPropertyMap<T, object>("Id").ColumnName("Id").Access(Access.CamelCaseField);
                 Map(map);
             } 
             else if (idProperties.Count() > 1)
             {
-                throw new Exception(string.Format("Id property was mapped more {0} times for {1} entity. It is not valid to map more than one property as the Id.", idProperties.Count(), typeof(T).Name));
+                throw new Exception(string.Format("Id property was mapped {0} times for {1} entity. It is not valid to map more than one property as the Id.", idProperties.Count(), typeof(T).Name));
+            }
+            foreach (var map in propertyMaps)
+            {
+                map.Done();
             }
             idProperty = propertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
-            idColumnName = idProperty.ColumnName;
+            idColumnName = idProperty.GetColumnName();
             transientIdValue = Activator.CreateInstance(idProperty.PropertyInfo.PropertyType);
         }
 
@@ -188,7 +140,7 @@ namespace Catnap.Maps.Impl
             {
                 if (map is IPropertyMapWithColumn<T>)
                 {
-                    map.SetValue(instance, record[((IPropertyMapWithColumn<T>)map).ColumnName], session);
+                    map.SetValue(instance, record[((IPropertyMapWithColumn<T>)map).GetColumnName()], session);
                 }
                 else if (map is IListPropertyMap<T>)
                 {
@@ -246,8 +198,8 @@ namespace Catnap.Maps.Impl
 
             var columnProperties = propertyMaps.Where(x => x is IPropertyMapWithColumn<T>).Cast<IPropertyMapWithColumn<T>>();
             var writableColumns = columnProperties.Where(x => x.Insert).ToList();
-            var columnNames = writableColumns.Select(x => x.ColumnName).ToList();
-            var paramterNames = writableColumns.Select(x => x.ColumnName).ToList();
+            var columnNames = writableColumns.Select(x => x.GetColumnName()).ToList();
+            var paramterNames = writableColumns.Select(x => x.GetColumnName()).ToList();
 
             if (!string.IsNullOrEmpty(ParentColumnName))
             {
@@ -271,7 +223,7 @@ namespace Catnap.Maps.Impl
                 {
                     value = idMap.Generate((T)entity);
                 }
-                command.AddParameter(map.ColumnName, value);
+                command.AddParameter(map.GetColumnName(), value);
             }
 
             return command;
@@ -291,8 +243,8 @@ namespace Catnap.Maps.Impl
                 .Cast<IPropertyMapWithColumn<T>>()
                 .ToList();
             var setPairs = columnProperties
-                .Where(x => x.ColumnName != "Id")
-                .Select(x => string.Format("{0}={1}{0}", x.ColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .Where(x => x.GetColumnName() != "Id")
+                .Select(x => string.Format("{0}={1}{0}", x.GetColumnName(), SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
                 .ToList();
             if (!string.IsNullOrEmpty(ParentColumnName))
             {
@@ -310,7 +262,7 @@ namespace Catnap.Maps.Impl
 
             foreach (var map in columnProperties)
             {
-                command.AddParameter(map.ColumnName, map.GetValue((T)entity));
+                command.AddParameter(map.GetColumnName(), map.GetValue((T)entity));
             }
 
             return command;

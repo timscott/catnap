@@ -8,17 +8,10 @@ namespace Catnap.Maps
     public interface IEntityMappable<T> : IEntityMap where T : class, new()
     {
         IEntityMappable<T> Map(IPropertyMap<T> propertyMap);
-        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property);
-        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access);
-        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, IIdValueGenerator generator);
-        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, IIdValueGenerator generator);
-        IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property);
-        IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName);
-        IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property) where TListMember : class, new();
-        IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy) where TListMember : class, new();
-        IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes) where TListMember : class, new();
-        IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascaseDeletes, Expression<Func<TListMember, bool>> filter) where TListMember : class, new();
-        IEntityMappable<T> BelongsTo<TPropertyType>(Expression<Func<T, TPropertyType>> property, string columnName) where TPropertyType : class, new();
+        IdPropertyMap<T, TProperty> Id<TProperty>(Expression<Func<T, TProperty>> property);
+        ValuePropertyMap<T, TProperty> Property<TProperty>(Expression<Func<T, TProperty>> property);
+        ListPropertyMap<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property) where TListMember : class, new();
+        BelongsToPropertyMap<T, TProperty> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property) where TProperty : class, new();
         IEntityMappable<T> ParentColumn(string parentColumnName);
         IEntityMappable<T> Table(string tableName);
     }

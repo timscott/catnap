@@ -10,40 +10,40 @@ namespace Catnap.Tests.Core
         {
             Domain.Configure
             (
-                Map.Entity<PersonGuid>()
-                    .Id(x => x.Id, Access.Property, Generator.GuidComb)
-                    .Property(x => x.FirstName)
-                    .Property(x => x.LastName)
-                    .Property(x => x.Active)
-                    .Property(x => x.MemberSince),
-                Map.Entity<ForumGuid>()
-                    .Id(x => x.Id, Access.Property, Generator.GuidComb)
-                    .List(x => x.Posts)
-                    .Property(x => x.Name)
-                    .Property(x => x.TimeOfDayLastUpdated),
-                Map.Entity<PostGuid>()
-                    .Id(x => x.Id, Access.Property, Generator.GuidComb)
-                    .ParentColumn("ForumId")
-                    .Property(x => x.Title)
-                    .Property(x => x.Body)
-                    .Property(x => x.DatePosted)
-                    .BelongsTo(x => x.Poster, "PosterId"),
+                d => d.Entity<PersonGuid>(
+                    e => e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb),
+                    e => e.Property(x => x.FirstName),
+                    e => e.Property(x => x.LastName),
+                    e => e.Property(x => x.Active),
+                    e => e.Property(x => x.MemberSince)),
+                d => d.Entity<ForumGuid>(
+                    e => e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb),
+                    e => e.List(x => x.Posts),
+                    e => e.Property(x => x.Name),
+                    e => e.Property(x => x.TimeOfDayLastUpdated)),
+                d => d.Entity<PostGuid>(
+                    e => e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb),
+                    e => e.Property(x => x.Title),
+                    e => e.Property(x => x.Body),
+                    e => e.Property(x => x.DatePosted),
+                    e => e.BelongsTo(x => x.Poster).ColumnName("PosterId"))
+                    .ParentColumn("ForumId"),
 
-                Map.Entity<Person>()
-                    .Property(x => x.FirstName)
-                    .Property(x => x.LastName)
-                    .Property(x => x.Active)
-                    .Property(x => x.MemberSince),
-                Map.Entity<Forum>()
-                    .List(x => x.Posts)
-                    .Property(x => x.Name)
-                    .Property(x => x.TimeOfDayLastUpdated),
-                Map.Entity<Post>()
+                d => d.Entity<Person>(
+                    e => e.Property(x => x.FirstName),
+                    e => e.Property(x => x.LastName),
+                    e => e.Property(x => x.Active),
+                    e => e.Property(x => x.MemberSince)),
+                d => d.Entity<Forum>(
+                    e => e.List(x => x.Posts),
+                    e => e.Property(x => x.Name),
+                    e => e.Property(x => x.TimeOfDayLastUpdated)),
+                d => d.Entity<Post>(
+                    e => e.Property(x => x.Title),
+                    e => e.Property(x => x.Body),
+                    e => e.Property(x => x.DatePosted),
+                    e => e.BelongsTo(x => x.Poster).ColumnName("PosterId"))
                     .ParentColumn("ForumId")
-                    .Property(x => x.Title)
-                    .Property(x => x.Body)
-                    .Property(x => x.DatePosted)
-                    .BelongsTo(x => x.Poster, "PosterId")
             );
         }
     }

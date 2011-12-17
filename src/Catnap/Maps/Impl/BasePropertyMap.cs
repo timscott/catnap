@@ -2,22 +2,36 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using Catnap.Common.Logging;
+using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
-    public abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
+    public abstract class BasePropertyMap<TEntity, TProperty, TConcrete> : IPropertyMap<TEntity> 
         where TEntity : class, new()
+        where TConcrete : BasePropertyMap<TEntity, TProperty, TConcrete>
     {
-        protected readonly AccessStrategy<TEntity, TProperty> accessStrategy;
+        protected readonly string propertyName;
+        protected readonly Expression<Func<TEntity, TProperty>> property;
+        private Access access;
+        protected AccessStrategy<TEntity, TProperty> accessStrategy;
 
         protected BasePropertyMap(string propertyName, Access access)
         {
-            accessStrategy = access.GetAccessStrategyFor<TEntity, TProperty>(propertyName);
+            this.propertyName = propertyName;
+            this.access = access;
         }
 
         protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property, Access access)
         {
-            accessStrategy = access.GetAccessStrategyFor(property);
+            this.property = property;
+            propertyName = property.GetMemberExpression().Member.Name;
+            this.access = access;
+        }
+
+        public TConcrete Access(Access value)
+        {
+            access = value;
+            return (TConcrete)this;
         }
 
         public void SetValue(TEntity instance, object value, ISession session)
@@ -51,6 +65,13 @@ namespace Catnap.Maps.Impl
         public PropertyInfo PropertyInfo
         {
             get { return accessStrategy.PropertyInfo; }
+        }
+
+        public virtual void Done()
+        {
+            accessStrategy = property == null
+                ? access.GetAccessStrategyFor<TEntity, TProperty>(propertyName)
+                : access.GetAccessStrategyFor(property);
         }
 
         protected virtual void InnerSetValue(TEntity instance, object value, ISession session)

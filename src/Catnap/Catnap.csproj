@@ -86,7 +86,7 @@
     <Compile Include="Maps\Impl\Generator.cs" />
     <Compile Include="Maps\Impl\IdPropertyMap.cs" />
     <Compile Include="Maps\Impl\PropertyAccessStrategy.cs" />
-    <Compile Include="Maps\Map.cs" />
+    <Compile Include="Maps\Impl\PropertyWithColumnMap.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />

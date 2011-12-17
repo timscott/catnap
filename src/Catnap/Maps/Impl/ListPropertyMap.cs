@@ -6,32 +6,62 @@ using Catnap.Find;
 
 namespace Catnap.Maps.Impl
 {
-    public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>>, IListPropertyMap<TEntity>
+    public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>, ListPropertyMap<TEntity, TListMember>>, IListPropertyMap<TEntity>
         where TEntity : class, new()
         where TListMember : class, new()
     {
-        private readonly Expression<Func<TListMember, bool>> filter;
+        private Expression<Func<TListMember, bool>> filter;
         private IEntityMap listItemMap;
         private IEntityMap parentMap;
+        private bool isLazy;
+        private bool willCascadeSaves;
+        private bool willCascadeDeletes;
 
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes) 
-            : this(property, isLazy, cascadeSaves, cascadeDeletes, null) { }
-
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy)
-            : this(property, isLazy, true, true, null) { }
-
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property, bool isLazy, bool cascadeSaves, bool cascadeDeletes, Expression<Func<TListMember, bool>> filter) 
-            : base(property, Access.Property)
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property) : base(property, Impl.Access.Property)
         {
-            this.filter = filter;
-            IsLazy = isLazy;
-            WillCascadeSaves = cascadeSaves;
-            WillCascadeDeletes = cascadeDeletes;
+            Lazy(true);
+            CascadeSaves(true);
+            CascadeDeletes(true);
         }
 
-        public bool IsLazy { get; private set; }
-        public bool WillCascadeSaves { get; private set; }
-        public bool WillCascadeDeletes { get; private set; }
+        public ListPropertyMap<TEntity, TListMember> Lazy(bool value)
+        {
+            isLazy = value;
+            return this;
+        }
+
+        public ListPropertyMap<TEntity, TListMember> CascadeSaves(bool value)
+        {
+            willCascadeSaves = value;
+            return this;
+        }
+
+        public ListPropertyMap<TEntity, TListMember> CascadeDeletes(bool value)
+        {
+            willCascadeDeletes = value;
+            return this;
+        }
+
+        public ListPropertyMap<TEntity, TListMember> Filter(Expression<Func<TListMember, bool>> value)
+        {
+            filter = value;
+            return this;
+        }
+
+        public bool GetIsLazy()
+        {
+            return isLazy;
+        }
+
+        public bool GetWillCascadeSaves()
+        {
+            return willCascadeSaves;
+        }
+
+        public bool GetWillCascadeDeletes()
+        {
+            return willCascadeDeletes;
+        }
 
         public void Cascade(ISession session, TEntity parent)
         {
@@ -55,7 +85,7 @@ namespace Catnap.Maps.Impl
 
         private void CascadeSaves(ISession session, TEntity parent, IEnumerable<TListMember> list)
         {
-            if (!WillCascadeSaves)
+            if (!GetWillCascadeSaves())
             {
                 return;
             }
@@ -67,7 +97,7 @@ namespace Catnap.Maps.Impl
 
         private void CascadeDeletes(ISession session, IEnumerable<TListMember> itemsToDelete)
         {
-            if (!WillCascadeDeletes)
+            if (!GetWillCascadeDeletes())
             {
                 return;
             }
@@ -90,7 +120,7 @@ namespace Catnap.Maps.Impl
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
-            if (IsLazy)
+            if (GetIsLazy())
             {
                 var proxy = new LazyList<TListMember>(() => Load(session, instance));
                 accessStrategy.Setter(instance, proxy);

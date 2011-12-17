@@ -18,7 +18,7 @@ namespace Catnap.UnitTests
         Because of = () =>
         {
             Log.Level = LogLevel.Off;
-            Domain.Configure(Map.Entity<Person>().Property(x => x.FirstName));
+            Domain.Configure(d => d.Entity<Person>(e => e.Property(x => x.FirstName)));
             target = new Criteria
             (
                 Condition.Less("Bar", 1000),
