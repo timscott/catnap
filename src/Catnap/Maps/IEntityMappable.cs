@@ -10,8 +10,8 @@ namespace Catnap.Maps
         IEntityMappable<T> Map(IPropertyMap<T> propertyMap);
         IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property);
         IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access);
-        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, Generator generator);
-        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, Generator generator);
+        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, IIdValueGenerator generator);
+        IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, IIdValueGenerator generator);
         IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property);
         IEntityMappable<T> Property<TProperty>(Expression<Func<T, TProperty>> property, string columnName);
         IEntityMappable<T> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property) where TListMember : class, new();

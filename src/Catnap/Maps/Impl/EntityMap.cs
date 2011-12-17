@@ -76,13 +76,13 @@ namespace Catnap.Maps.Impl
             return Map(map);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, Generator generator)
+        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, IIdValueGenerator generator)
         {
             var map = new IdPropertyMap<T, TProperty>(property, access, generator);
             return Map(map);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, Generator generator)
+        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, IIdValueGenerator generator)
         {
             var map = new IdPropertyMap<T, TProperty>(property, columnName, access, generator);
             return Map(map);

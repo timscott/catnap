@@ -72,6 +72,7 @@
     <Compile Include="Maps\IBelongsToPropertyMap.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
     <Compile Include="Maps\IIdPropertyMap.cs" />
+    <Compile Include="Maps\IIdValueGenerator.cs" />
     <Compile Include="Maps\Impl\Access.cs" />
     <Compile Include="Maps\Impl\AccessStrategy.cs" />
     <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Maps\Impl\DomainMap.cs" />
     <Compile Include="Maps\IDomainMap.cs" />
     <Compile Include="Maps\Impl\FieldAccessStrategy.cs" />
+    <Compile Include="Maps\Impl\Generator.cs" />
     <Compile Include="Maps\Impl\IdPropertyMap.cs" />
     <Compile Include="Maps\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Maps\Map.cs" />
