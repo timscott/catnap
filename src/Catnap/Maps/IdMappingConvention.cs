@@ -4,7 +4,7 @@ namespace Catnap.Maps
 {
     public class IdMappingConvention
     {
-        private Access access;
+        private IAccessStrategyFactory access;
         private string columnName;
         public readonly string propertyName;
 
@@ -21,7 +21,7 @@ namespace Catnap.Maps
             return this;
         }
 
-        public IdMappingConvention Access(Access access)
+        public IdMappingConvention Access(IAccessStrategyFactory access)
         {
             this.access = access;
             return this;

@@ -30,7 +30,7 @@ namespace Catnap.Maps.Impl
             return id;
         }
 
-        protected override Access DefaultAccess
+        protected override IAccessStrategyFactory DefaultAccess
         {
             get { return Impl.Access.CamelCaseField; }
         }

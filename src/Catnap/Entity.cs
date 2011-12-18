@@ -1,5 +1,8 @@
+using System;
+
 namespace Catnap
 {
+    [Obsolete]
     public class Entity
     {
         private int? cachedHashCode;

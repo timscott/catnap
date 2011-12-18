@@ -33,7 +33,7 @@ namespace Catnap.Maps.Impl
             {
                 throw new ArgumentException(string.Format("The property '{0}' is not writable.", PropertyInfo.Name), "property");
             }
-            Setter = (entity, value) => setMethod.Invoke(entity, new object[] {value});
+            Setter = (entity, value) => setMethod.Invoke(entity, new object[] { value });
         }
 
         private MethodInfo GetAccessor(Func<PropertyInfo, MethodInfo> func)

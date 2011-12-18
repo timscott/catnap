@@ -6,7 +6,7 @@ using Catnap.Extensions;
 
 namespace Catnap.Maps.Impl
 {
-    public abstract class AccessStrategy<TEntity, TProperty> where TEntity : class, new()
+    public abstract class AccessStrategy<TEntity, TProperty> : IAccessStrategy<TEntity, TProperty> where TEntity : class, new()
     {
         protected AccessStrategy(string propertyName)
         {

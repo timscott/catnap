@@ -10,10 +10,10 @@ namespace Catnap.Maps.Impl
         where TEntity : class, new()
         where TConcrete : BasePropertyMap<TEntity, TProperty, TConcrete>
     {
-        protected readonly string propertyName;
         protected readonly Expression<Func<TEntity, TProperty>> property;
-        private Access access;
-        protected AccessStrategy<TEntity, TProperty> accessStrategy;
+        protected readonly string propertyName;
+        protected IAccessStrategy<TEntity, TProperty> accessStrategy;
+        private IAccessStrategyFactory access;
 
         protected BasePropertyMap(string propertyName)
         {
@@ -26,7 +26,7 @@ namespace Catnap.Maps.Impl
             propertyName = property.GetMemberExpression().Member.Name;
         }
 
-        public TConcrete Access(Access value)
+        public TConcrete Access(IAccessStrategyFactory value)
         {
             access = value;
             return (TConcrete)this;
@@ -73,7 +73,7 @@ namespace Catnap.Maps.Impl
                 : access.GetAccessStrategyFor(property);
         }
 
-        protected virtual Access DefaultAccess
+        protected virtual IAccessStrategyFactory DefaultAccess
         {
             get { return Impl.Access.Property;  }
         }
