@@ -3,52 +3,52 @@ using System.Linq.Expressions;
 
 namespace Catnap.Maps.Impl
 {
-    public abstract class Access
+    public static class Access
     {
-        public static Access Property = new PropertyAccess();
-        public static Access CamelCaseField = new CamelCaseFieldAccess();
-        public static Access CamelCaseUnderscoreField = new CamelCaseUnderscoreFieldAccess();
+        public static IAccessStrategyFactory Property = new PropertyAccess();
+        public static IAccessStrategyFactory CamelCaseField = new CamelCaseFieldAccess();
+        public static IAccessStrategyFactory CamelCaseUnderscoreField = new CamelCaseUnderscoreFieldAccess();
 
-        public abstract AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
-            where TEntity : class, new();
-
-        public abstract AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
-            where TEntity : class, new();
-
-        public class PropertyAccess : Access
+        public class PropertyAccess : IAccessStrategyFactory
         {
-            public override AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+                where TEntity : class, new()
             {
                 return new PropertyAccessStrategy<TEntity, TProperty>(property);
             }
 
-            public override AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+                where TEntity : class, new()
             {
                 return new PropertyAccessStrategy<TEntity, TProperty>(propertyName);
             }
         }
 
-        public class CamelCaseFieldAccess : Access
+        public class CamelCaseFieldAccess : IAccessStrategyFactory
         {
-            public override AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+                where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(property);
             }
 
-            public override AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+                where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(propertyName);
             }
         }
 
-        public class CamelCaseUnderscoreFieldAccess : Access
+        public class CamelCaseUnderscoreFieldAccess : IAccessStrategyFactory
         {
-            public override AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+                where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(property);
             }
 
-            public override AccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+                where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(propertyName);
             }

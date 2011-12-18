@@ -1,15 +1,13 @@
+using System;
+
 namespace Catnap
 {
+    [Obsolete]
     public class Entity
     {
         private int? cachedHashCode;
 
-        private int id;
-
-        public virtual int Id
-        {
-            get { return id; }
-        }
+        public virtual int Id { get; private set; }
 
         public bool IsTransient
         {
@@ -66,7 +64,7 @@ namespace Catnap
 
         public void SetId(int id)
         {
-            this.id = id;
+            Id = id;
         }
     }
 }

@@ -10,21 +10,22 @@ namespace Catnap.Maps.Impl
     {
         private readonly IIdValueGenerator generator;
 
-        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, Access.CamelCaseField) { }
+        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, Access.Property) { }
 
-        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, Access access) : this(property, null, access) { }
+        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, IAccessStrategyFactory access) : this(property, null, access) { }
 
-        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, Access access, IIdValueGenerator generator) : this(property, null, access, generator) { }
+        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, IAccessStrategyFactory access, IIdValueGenerator generator) : this(property, null, access, generator) { }
 
-        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName, Access access) : this(property, columnName, access, null) { }
+        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName, IAccessStrategyFactory access) : this(property, columnName, access, null) { }
 
-        public IdPropertyMap(string propertyName, string columnName, Access access) : base(propertyName, access)
+        public IdPropertyMap(string propertyName, string columnName, IAccessStrategyFactory access)
+            : base(propertyName, access)
         {
             Log.Debug("Setting column name for Value property '{0}'.", propertyName);
             ColumnName = columnName ?? accessStrategy.PropertyInfo.Name;
         }
 
-        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName, Access access, IIdValueGenerator generator)
+        public IdPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName, IAccessStrategyFactory access, IIdValueGenerator generator)
             : base(property, access)
         {
             Log.Debug("Setting column name for Value property '{0}'.", property.GetMemberExpression().Member.Name);

@@ -70,19 +70,19 @@ namespace Catnap.Maps.Impl
             return Map(map);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access)
+        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, IAccessStrategyFactory access)
         {
             var map = new IdPropertyMap<T, TProperty>(property, access);
             return Map(map);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, Access access, IIdValueGenerator generator)
+        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, IAccessStrategyFactory access, IIdValueGenerator generator)
         {
             var map = new IdPropertyMap<T, TProperty>(property, access, generator);
             return Map(map);
         }
 
-        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, Access access, IIdValueGenerator generator)
+        public IEntityMappable<T> Id<TProperty>(Expression<Func<T, TProperty>> property, string columnName, IAccessStrategyFactory access, IIdValueGenerator generator)
         {
             var map = new IdPropertyMap<T, TProperty>(property, columnName, access, generator);
             return Map(map);
@@ -167,7 +167,7 @@ namespace Catnap.Maps.Impl
             var idProperties = propertyMaps.Where(x => x is IIdPropertyMap<T>).ToList();
             if (idProperties.Any() == false)
             {
-                var map = new IdPropertyMap<T, object>("Id", "Id", Access.CamelCaseField);
+                var map = new IdPropertyMap<T, object>("Id", "Id", Access.Property);
                 Map(map);
             } 
             else if (idProperties.Count() > 1)

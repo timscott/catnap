@@ -8,14 +8,14 @@ namespace Catnap.Maps.Impl
     public abstract class BasePropertyMap<TEntity, TProperty> : IPropertyMap<TEntity> 
         where TEntity : class, new()
     {
-        protected readonly AccessStrategy<TEntity, TProperty> accessStrategy;
+        protected readonly IAccessStrategy<TEntity, TProperty> accessStrategy;
 
-        protected BasePropertyMap(string propertyName, Access access)
+        protected BasePropertyMap(string propertyName, IAccessStrategyFactory access)
         {
             accessStrategy = access.GetAccessStrategyFor<TEntity, TProperty>(propertyName);
         }
 
-        protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property, Access access)
+        protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property, IAccessStrategyFactory access)
         {
             accessStrategy = access.GetAccessStrategyFor(property);
         }
