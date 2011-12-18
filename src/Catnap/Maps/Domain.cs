@@ -5,16 +5,13 @@ namespace Catnap.Maps
 {
     public static class Domain
     {
-        public static IDomainMap Map { get; private set; }
+        public static DomainMap Map { get; private set; }
 
-        public static void Configure(IdMappingConvention idMappingConvention, params Func<IDomainMappable, IEntityMap>[] entityMaps)
+        public static void Configure(Action<IDomainMappable> config)
         {
-            Map = new DomainMap(idMappingConvention, entityMaps);
-        }
-
-        public static void Configure(params Func<IDomainMappable, IEntityMap>[] entityMaps)
-        {
-            Map = new DomainMap(null, entityMaps);
+            Map = new DomainMap();
+            config(Map);
+            Map.Done();
         }
     }
 }

@@ -15,11 +15,11 @@ namespace Catnap.Maps.Impl
         private IIdPropertyMap<T> idProperty;
         private string idColumnName;
 
-        public EntityMap(params Func<IEntityMappable<T>, IPropertyMap<T>>[] propertyMaps)
+        public EntityMap(Action<IEntityMappable<T>> propertyMappings)
         {
             EntityType = typeof(T);
             TableName = typeof (T).Name;
-            this.propertyMaps = propertyMaps.Select(x => x(this)).ToList();
+            propertyMappings(this);
         }
 
         public string TableName { get; private set; }
@@ -67,24 +67,32 @@ namespace Catnap.Maps.Impl
 
         public IdPropertyMap<T, TProperty> Id<TProperty>(Expression<Func<T, TProperty>> property)
         {
-            return new IdPropertyMap<T, TProperty>(property);
+            var map = new IdPropertyMap<T, TProperty>(property);
+            propertyMaps.Add(map);
+            return map;
         }
 
         public ValuePropertyMap<T, TProperty> Property<TProperty>(Expression<Func<T, TProperty>> property)
         {
-            return new ValuePropertyMap<T, TProperty>(property);
+            var map = new ValuePropertyMap<T, TProperty>(property);
+            propertyMaps.Add(map);
+            return map;
         }
 
         public ListPropertyMap<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
             where TListMember : class, new()
         {
-            return new ListPropertyMap<T, TListMember>(property);
+            var map = new ListPropertyMap<T, TListMember>(property);
+            propertyMaps.Add(map);
+            return map;
         }
 
         public BelongsToPropertyMap<T, TProperty> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
             where TProperty : class, new()
         {
-            return new BelongsToPropertyMap<T, TProperty>(property);
+            var map = new BelongsToPropertyMap<T, TProperty>(property);
+            propertyMaps.Add(map);
+            return map;
         }
 
         public IEntityMappable<T> ParentColumn(string parentColumnName)

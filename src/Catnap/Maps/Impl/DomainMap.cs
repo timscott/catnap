@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
 {
@@ -9,22 +8,24 @@ namespace Catnap.Maps.Impl
     {
         private readonly IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
 
-        public DomainMap(IdMappingConvention idMappingConvention, params Func<IDomainMappable, IEntityMap>[] entityMaps)
+        public IdMappingConvention IdMappingConvention { get; private set; }
+
+        public IEntityMappable<T> Entity<T>(Action<IEntityMappable<T>> propertyMappings) where T : class, new()
         {
-            Log.Debug("Mapping domain.");
-            IdMappingConvention = idMappingConvention ?? new IdMappingConvention();
-            var maps = entityMaps.ToArray().Select(func => func(this)).ToArray();
-            foreach (var map in maps)
+            if (entityMaps.ContainsKey(typeof(T)))
             {
-                this.entityMaps.Add(map.EntityType, map);
+                throw new ApplicationException(string.Format("Cannot map type '{0}' because it is already mapped.", typeof(T)));
             }
-            foreach (var map in maps)
-            {
-                map.Done(this);
-            }
+            var map = new EntityMap<T>(propertyMappings);
+            entityMaps.Add(typeof(T), map);
+            return map;
         }
 
-        public IdMappingConvention IdMappingConvention { get; private set; }
+        public IDomainMappable IdConvention(IdMappingConvention convention)
+        {
+            IdMappingConvention = convention;
+            return this;
+        }
 
         public IEntityMap<T> GetMapFor<T>() where T : class, new()
         {
@@ -35,10 +36,17 @@ namespace Catnap.Maps.Impl
         {
             return entityMaps.Where(x => x.Key == type).First().Value; 
         }
-        
-        public IEntityMappable<T> Entity<T>(params Func<IEntityMappable<T>, IPropertyMap<T>>[] propertyMaps) where T : class, new()
+
+        public void Done()
         {
-            return new EntityMap<T>(propertyMaps);
+            if (IdMappingConvention ==  null)
+            {
+                IdMappingConvention = new IdMappingConvention();
+            }
+            foreach (var map in entityMaps.Values)
+            {
+                map.Done(this);
+            }
         }
     }
 }
