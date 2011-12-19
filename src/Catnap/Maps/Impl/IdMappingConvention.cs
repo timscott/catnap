@@ -1,8 +1,6 @@
-using Catnap.Maps.Impl;
-
-namespace Catnap.Maps
+namespace Catnap.Maps.Impl
 {
-    public class IdMappingConvention
+    public class IdMappingConvention : IIdMappingConventionMappable
     {
         private IAccessStrategyFactory access;
         private string columnName;
@@ -15,13 +13,13 @@ namespace Catnap.Maps
             this.propertyName = propertyName;
         }
 
-        public IdMappingConvention Column(string name)
+        public IIdMappingConventionMappable Column(string name)
         {
             columnName = name;
             return this;
         }
 
-        public IdMappingConvention Access(IAccessStrategyFactory access)
+        public IIdMappingConventionMappable Access(IAccessStrategyFactory access)
         {
             this.access = access;
             return this;

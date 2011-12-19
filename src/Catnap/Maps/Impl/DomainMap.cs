@@ -9,6 +9,7 @@ namespace Catnap.Maps.Impl
         private readonly IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
 
         public IdMappingConvention IdMappingConvention { get; private set; }
+        public BelongsToColumnNameConvention BelongsToColumnNameMappingConvention { get; private set; }
 
         public IEntityMappable<T> Entity<T>(Action<IEntityMappable<T>> propertyMappings) where T : class, new()
         {
@@ -21,10 +22,22 @@ namespace Catnap.Maps.Impl
             return map;
         }
 
-        public IDomainMappable IdConvention(IdMappingConvention convention)
+        public IIdMappingConventionMappable IdConvention()
         {
-            IdMappingConvention = convention;
-            return this;
+            IdMappingConvention = new IdMappingConvention();
+            return IdMappingConvention;
+        }
+
+        public IIdMappingConventionMappable IdConvention(string propertyName)
+        {
+            IdMappingConvention = new IdMappingConvention(propertyName);
+            return IdMappingConvention;
+        }
+
+        public IBelongsToColumnNameConventionMappable BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention)
+        {
+            BelongsToColumnNameMappingConvention = new BelongsToColumnNameConvention(convention);
+            return BelongsToColumnNameMappingConvention;
         }
 
         public IEntityMap<T> GetMapFor<T>() where T : class, new()

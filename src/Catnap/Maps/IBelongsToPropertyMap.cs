@@ -6,5 +6,6 @@ namespace Catnap.Maps
     {
         void SetEntityMap(IEntityMap map);
         Type PropertyType { get; }
+        string PropertyName { get; }
     }
 }

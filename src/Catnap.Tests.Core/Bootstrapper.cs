@@ -10,7 +10,9 @@ namespace Catnap.Tests.Core
         {
             Domain.Configure(d =>
             {
-                d.IdConvention(new IdMappingConvention().Access(Access.Property));
+                d.IdConvention().Access(Access.Property);
+                d.BelongsToColumnNameConvention(x => x.PropertyName + "Id");
+
                 d.Entity<PersonGuid>(e => {
                     e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb);
                     e.Property(x => x.FirstName);
@@ -29,7 +31,7 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.Title);
                     e.Property(x => x.Body);
                     e.Property(x => x.DatePosted);
-                    e.BelongsTo(x => x.Poster).ColumnName("PosterId");
+                    e.BelongsTo(x => x.Poster);
                 })
                 .ParentColumn("ForumId");
 
@@ -48,7 +50,7 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.Title);
                     e.Property(x => x.Body);
                     e.Property(x => x.DatePosted);
-                    e.BelongsTo(x => x.Poster).ColumnName("PosterId");
+                    e.BelongsTo(x => x.Poster);
                 })
                 .ParentColumn("ForumId");
             });

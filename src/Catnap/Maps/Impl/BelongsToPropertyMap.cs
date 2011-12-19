@@ -41,5 +41,12 @@ namespace Catnap.Maps.Impl
         {
             get { return typeof(TProperty); }
         }
+
+        protected override string GetDeafultColumnName(IDomainMap domainMap)
+        {
+            return domainMap.BelongsToColumnNameMappingConvention == null 
+                ? PropertyName + "Id" 
+                : domainMap.BelongsToColumnNameMappingConvention.GetColumnName(this);
+        }
     }
 }

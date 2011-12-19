@@ -11,20 +11,21 @@ namespace Catnap.Maps.Impl
         where TConcrete : BasePropertyMap<TEntity, TProperty, TConcrete>
     {
         protected readonly Expression<Func<TEntity, TProperty>> property;
-        protected readonly string propertyName;
         protected IAccessStrategy<TEntity, TProperty> accessStrategy;
         private IAccessStrategyFactory access;
 
         protected BasePropertyMap(string propertyName)
         {
-            this.propertyName = propertyName;
+            PropertyName = propertyName;
         }
 
         protected BasePropertyMap(Expression<Func<TEntity, TProperty>> property)
         {
             this.property = property;
-            propertyName = property.GetMemberExpression().Member.Name;
+            PropertyName = property.GetMemberExpression().Member.Name;
         }
+
+        public string PropertyName { get; private set; }
 
         public TConcrete Access(IAccessStrategyFactory value)
         {
@@ -34,7 +35,7 @@ namespace Catnap.Maps.Impl
 
         public void SetValue(TEntity instance, object value, ISession session)
         {
-            Log.Debug("Setting value '{0}' to property {1}", value, accessStrategy.PropertyInfo.Name);
+            Log.Debug("Setting value '{0}' to property {1}", value, PropertyName);
 
             if (value == DBNull.Value)
             {
@@ -47,7 +48,7 @@ namespace Catnap.Maps.Impl
             catch (Exception ex)
             {
                 throw new InvalidOperationException(string.Format("Failed to assign value to property: {0}.  Error converting '{1}' from type {2} to {3}",
-                    accessStrategy.PropertyInfo.Name, value, value == null ? null : value.GetType(), accessStrategy.PropertyInfo.PropertyType.Name), ex);
+                    accessStrategy.PropertyInfo.Name, value, value == null ? null : value.GetType(), PropertyName), ex);
             }
             try
             {
@@ -65,11 +66,11 @@ namespace Catnap.Maps.Impl
             get { return accessStrategy.PropertyInfo; }
         }
 
-        public virtual void Done()
+        public virtual void Done(IDomainMap domainMap)
         {
             access = access ?? DefaultAccess;
             accessStrategy = property == null
-                ? access.GetAccessStrategyFor<TEntity, TProperty>(propertyName)
+                ? access.GetAccessStrategyFor<TEntity, TProperty>(PropertyName)
                 : access.GetAccessStrategyFor(property);
         }
 

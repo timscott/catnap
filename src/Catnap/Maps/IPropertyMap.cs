@@ -6,6 +6,7 @@ namespace Catnap.Maps
     {
         void SetValue(TEntity instance, object value, ISession session);
         PropertyInfo PropertyInfo { get; }
-        void Done();
+        string PropertyName { get; }
+        void Done(IDomainMap domainMap);
     }
 }

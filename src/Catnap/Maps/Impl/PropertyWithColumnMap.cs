@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
 {
@@ -8,7 +7,7 @@ namespace Catnap.Maps.Impl
         where TEntity : class, new()
         where TConcrete : PropertyWithColumnMap<TEntity, TProperty, TConcrete>
     {
-        private string columnName;
+        protected string columnName;
 
         protected PropertyWithColumnMap(string propertyName) : base(propertyName) { }
 
@@ -35,11 +34,15 @@ namespace Catnap.Maps.Impl
             return columnName;
         }
 
-        public override void Done()
+        public override void Done(IDomainMap domainMap)
         {
-            base.Done();
-            Log.Debug("Setting column name for Value property '{0}'.", propertyName);
-            ColumnName(columnName ?? accessStrategy.PropertyInfo.Name);
+            base.Done(domainMap);
+            columnName = columnName ?? GetDeafultColumnName(domainMap);
+        }
+
+        protected virtual string GetDeafultColumnName(IDomainMap domainMap)
+        {
+            return PropertyName;
         }
     }
 }

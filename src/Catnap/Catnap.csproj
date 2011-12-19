@@ -71,14 +71,16 @@
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Maps\IAccessStrategy.cs" />
     <Compile Include="Maps\IAccessStrategyFactory.cs" />
+    <Compile Include="Maps\IBelongsToColumnNameConvention.cs" />
     <Compile Include="Maps\IBelongsToPropertyMap.cs" />
-    <Compile Include="Maps\IdMappingConvention.cs" />
     <Compile Include="Maps\IDomainMappable.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
+    <Compile Include="Maps\IIdMappingConventionable.cs" />
     <Compile Include="Maps\IIdPropertyMap.cs" />
     <Compile Include="Maps\IIdValueGenerator.cs" />
     <Compile Include="Maps\Impl\Access.cs" />
     <Compile Include="Maps\Impl\AccessStrategy.cs" />
+    <Compile Include="Maps\Impl\BelongsToColumnNameConvention.cs" />
     <Compile Include="Maps\Impl\BelongsToPropertyMap.cs" />
     <Compile Include="Maps\Domain.cs" />
     <Compile Include="Entity.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Maps\IDomainMap.cs" />
     <Compile Include="Maps\Impl\FieldAccessStrategy.cs" />
     <Compile Include="Maps\Impl\Generator.cs" />
+    <Compile Include="Maps\Impl\IdMappingConvention.cs" />
     <Compile Include="Maps\Impl\IdPropertyMap.cs" />
     <Compile Include="Maps\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Maps\Impl\PropertyWithColumnMap.cs" />

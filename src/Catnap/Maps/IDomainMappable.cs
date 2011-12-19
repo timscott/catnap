@@ -4,7 +4,9 @@ namespace Catnap.Maps
 {
     public interface IDomainMappable
     {
-        IDomainMappable IdConvention(IdMappingConvention convention);
+        IIdMappingConventionMappable IdConvention();
+        IIdMappingConventionMappable IdConvention(string propertyName);
+        IBelongsToColumnNameConventionMappable BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention);
         IEntityMappable<T> Entity<T>(Action<IEntityMappable<T>> propertyMappings) where T : class, new();
     }
 }

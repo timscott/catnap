@@ -132,7 +132,7 @@ namespace Catnap.Maps.Impl
             }
             foreach (var map in propertyMaps)
             {
-                map.Done();
+                map.Done(domainMap);
             }
             idProperty = propertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
             idColumnName = idProperty.GetColumnName();
