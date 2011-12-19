@@ -29,10 +29,5 @@ namespace Catnap.Maps.Impl
             accessStrategy.Setter(entity, (TProperty)id);
             return id;
         }
-
-        protected override IAccessStrategyFactory DefaultAccess
-        {
-            get { return Impl.Access.CamelCaseField; }
-        }
     }
 }

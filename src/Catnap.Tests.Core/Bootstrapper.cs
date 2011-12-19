@@ -10,7 +10,7 @@ namespace Catnap.Tests.Core
         {
             Domain.Configure(d =>
             {
-                d.IdConvention().Access(Access.Property);
+                //d.IdConvention().Access(Access.Property);
                 d.BelongsToColumnNameConvention(x => x.PropertyName + "Id");
 
                 d.Entity<PersonGuid>(e => {
