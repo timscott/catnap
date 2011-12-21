@@ -71,7 +71,6 @@
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Maps\IAccessStrategy.cs" />
     <Compile Include="Maps\IAccessStrategyFactory.cs" />
-    <Compile Include="Maps\IBelongsToColumnNameConvention.cs" />
     <Compile Include="Maps\IBelongsToPropertyMap.cs" />
     <Compile Include="Maps\IDomainMappable.cs" />
     <Compile Include="Maps\IEntityMappable.cs" />
@@ -92,6 +91,7 @@
     <Compile Include="Maps\Impl\Generator.cs" />
     <Compile Include="Maps\Impl\IdMappingConvention.cs" />
     <Compile Include="Maps\Impl\IdPropertyMap.cs" />
+    <Compile Include="Maps\Impl\ListParentIdColumnNameConvention.cs" />
     <Compile Include="Maps\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Maps\Impl\PropertyWithColumnMap.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />

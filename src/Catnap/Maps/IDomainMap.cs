@@ -9,5 +9,6 @@ namespace Catnap.Maps
         IEntityMap GetMapFor(Type type);
         IdMappingConvention IdMappingConvention { get; }
         BelongsToColumnNameConvention BelongsToColumnNameMappingConvention { get; }
+        ListParentIdColumnNameConvention ListParentIdColumnNameMappingConvention { get; }
     }
 }

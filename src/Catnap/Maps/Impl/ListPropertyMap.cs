@@ -16,6 +16,7 @@ namespace Catnap.Maps.Impl
         private bool isLazy;
         private bool willCascadeSaves;
         private bool willCascadeDeletes;
+        private string parentIdColumnName;
 
         public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property) : base(property)
         {
@@ -77,10 +78,16 @@ namespace Catnap.Maps.Impl
             get { return typeof(TListMember); }
         }
 
-        public void SetMaps(IEntityMap parentMap, IEntityMap listItemMap)
+        public Type ParentType
+        {
+            get { return typeof(TEntity); }
+        }
+
+        public void Done(IDomainMap domainMap, IEntityMap parentMap, IEntityMap listItemMap)
         {
             this.listItemMap = listItemMap;
             this.parentMap = parentMap;
+            parentIdColumnName = parentIdColumnName ?? GetDeafultParentIdColumnColumnName(domainMap);
         }
 
         private void CascadeSaves(ISession session, TEntity parent, IEnumerable<TListMember> list)
@@ -91,7 +98,7 @@ namespace Catnap.Maps.Impl
             }
             foreach (var item in list)
             {
-                session.SaveOrUpdate(item, parentMap.GetId(parent));
+                session.SaveOrUpdate(item, parentIdColumnName, parentMap.GetId(parent));
             }
         }
 
@@ -110,7 +117,7 @@ namespace Catnap.Maps.Impl
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
             var builder = new FindCommandBuilder<TListMember>()
-                .AddCondition(listItemMap.ParentColumnName, "=", parentMap.GetId(parent));
+                .AddCondition(parentIdColumnName, "=", parentMap.GetId(parent));
             if (filter != null)
             {
                 builder.AddCondition(filter);
@@ -129,6 +136,18 @@ namespace Catnap.Maps.Impl
             {
                 base.InnerSetValue(instance, Load(session, instance), session);
             }
+        }
+
+        public void ParentIdColumn(string columnName)
+        {
+            parentIdColumnName = columnName;
+        }
+
+        protected string GetDeafultParentIdColumnColumnName(IDomainMap domainMap)
+        {
+            return domainMap.ListParentIdColumnNameMappingConvention  == null
+                ? parentMap.EntityType.Name + "Id"
+                : domainMap.ListParentIdColumnNameMappingConvention.GetColumnName(this);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Catnap.Maps
 {
     public interface IBelongsToPropertyMap
     {
-        void SetEntityMap(IEntityMap map);
+        void Done(IEntityMap map);
         Type PropertyType { get; }
         string PropertyName { get; }
     }

@@ -49,24 +49,6 @@ namespace Catnap
         {
             innerRepository.Delete<T>(id);
         }
-
-        protected void DeleteCollection<TList>(IEnumerable<TList> collection, IEntityMap map)
-            where TList : class, new()
-        {
-            foreach (var entity in collection)
-            {
-                innerRepository.Delete<T>(map.GetId(entity));
-            }
-        }
-
-        protected void SaveCollection<TList>(object parentId, IEnumerable<TList> collection, IEntityMap map)
-            where TList : class, new()
-        {
-            foreach (var entity in collection)
-            {
-                UnitOfWork.Current.Session.SaveOrUpdate(entity, parentId);
-            }
-        }
     }
 
     public class Repository : IRepository

@@ -2,7 +2,7 @@ using System;
 
 namespace Catnap.Maps.Impl
 {
-    public class BelongsToColumnNameConvention : IBelongsToColumnNameConventionMappable
+    public class BelongsToColumnNameConvention
     {
         private readonly Func<IBelongsToPropertyMap, string> convention;
 

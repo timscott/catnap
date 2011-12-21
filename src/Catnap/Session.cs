@@ -50,28 +50,21 @@ namespace Catnap
 
         public void SaveOrUpdate<T>(T entity) where T : class, new()
         {
-            SaveOrUpdate(entity, null);
+            SaveOrUpdate(entity, null, null);
         }
 
-        public void SaveOrUpdate<T>(T entity, object parentId) where T : class, new()
+        public void SaveOrUpdate<T>(T entity, string parentIdColumnName, object parentId) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
             var idMap = entityMap.PropertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
-            if (entityMap.IsTransient(entity))
+            var commandSpec = entityMap.GetSaveCommand(entity, parentIdColumnName, parentId);
+            ExecuteNonQuery(commandSpec);
+            if (entityMap.IsTransient(entity) && idMap.Insert == false)
             {
-                var commandSpec = entityMap.GetInsertCommand(entity, parentId);
-                ExecuteNonQuery(commandSpec);
-                if (idMap.Insert == false)
-                {
-                    var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
-                    var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
-                    var result = getIdCommand.ExecuteScalar();
-                    entityMap.SetId(entity, result, this);
-                }
-            }
-            else
-            {
-                ExecuteNonQuery(entityMap.GetUpdateCommand(entity, parentId));
+                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
+                var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
+                var result = getIdCommand.ExecuteScalar();
+                entityMap.SetId(entity, result, this);
             }
             Cascade(entityMap, entity);
         }

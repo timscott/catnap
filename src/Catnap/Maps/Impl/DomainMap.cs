@@ -10,6 +10,7 @@ namespace Catnap.Maps.Impl
 
         public IdMappingConvention IdMappingConvention { get; private set; }
         public BelongsToColumnNameConvention BelongsToColumnNameMappingConvention { get; private set; }
+        public ListParentIdColumnNameConvention ListParentIdColumnNameMappingConvention { get; private set; }
 
         public IEntityMappable<T> Entity<T>(Action<IEntityMappable<T>> propertyMappings) where T : class, new()
         {
@@ -34,10 +35,14 @@ namespace Catnap.Maps.Impl
             return IdMappingConvention;
         }
 
-        public IBelongsToColumnNameConventionMappable BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention)
+        public void BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention)
         {
             BelongsToColumnNameMappingConvention = new BelongsToColumnNameConvention(convention);
-            return BelongsToColumnNameMappingConvention;
+        }
+
+        public void ListParentIdColumnNameConvention(Func<IListPropertyMap, string> convention)
+        {
+            ListParentIdColumnNameMappingConvention = new ListParentIdColumnNameConvention(convention);
         }
 
         public IEntityMap<T> GetMapFor<T>() where T : class, new()

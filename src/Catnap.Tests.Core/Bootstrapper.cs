@@ -11,6 +11,7 @@ namespace Catnap.Tests.Core
             Domain.Configure(d =>
             {
                 //d.IdConvention().Access(Access.Property);
+                //d.ListParentIdColumnNameConvention(x => x.ParentType.Name + "Id");
                 d.BelongsToColumnNameConvention(x => x.PropertyName + "Id");
 
                 d.Entity<PersonGuid>(e => {
@@ -20,9 +21,9 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.Active);
                     e.Property(x => x.MemberSince);
                 });
-                d.Entity<ForumGuid>( e => {
+                d.Entity<ForumGuid>(e => {
                     e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb);
-                    e.List(x => x.Posts);
+                    e.List(x => x.Posts).ParentIdColumn("ForumId");
                     e.Property(x => x.Name);
                     e.Property(x => x.TimeOfDayLastUpdated);
                 });
@@ -32,8 +33,7 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.Body);
                     e.Property(x => x.DatePosted);
                     e.BelongsTo(x => x.Poster);
-                })
-                .ParentColumn("ForumId");
+                });
 
                 d.Entity<Person>(e => {
                     e.Property(x => x.FirstName);
@@ -51,8 +51,7 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.Body);
                     e.Property(x => x.DatePosted);
                     e.BelongsTo(x => x.Poster);
-                })
-                .ParentColumn("ForumId");
+                });
             });
         }
     }

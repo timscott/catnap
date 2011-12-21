@@ -9,7 +9,6 @@ namespace Catnap.Maps
     {
         string BaseSelectSql { get; }
         string TableName { get; }
-        string ParentColumnName { get; }
         Type EntityType { get; }
         object GetId(object entity);
         void SetId(object entity, object id, ISession session);
@@ -18,9 +17,10 @@ namespace Catnap.Maps
         DbCommandSpec GetGetCommand(object id);
         DbCommandSpec GetDeleteCommand(object id);
         DbCommandSpec GetInsertCommand(object entity);
-        DbCommandSpec GetInsertCommand(object entity, object parentId);
+        DbCommandSpec GetInsertCommand(object entity, string parentIdColumnName, object parentId);
         DbCommandSpec GetUpdateCommand(object entity);
-        DbCommandSpec GetUpdateCommand(object entity, object parentId);
+        DbCommandSpec GetUpdateCommand(object entity, string parentIdColumnName, object parentId);
+        DbCommandSpec GetSaveCommand(object entity, string parentIdColumnName, object parentId);
         string GetColumnNameForProperty(MemberExpression memberExpression);
         void Done(IDomainMap map);
     }

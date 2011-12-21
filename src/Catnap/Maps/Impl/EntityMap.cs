@@ -23,7 +23,6 @@ namespace Catnap.Maps.Impl
         }
 
         public string TableName { get; private set; }
-        public string ParentColumnName { get; private set; }
         public Type EntityType { get; private set; }
 
         public object GetId(object entity)
@@ -95,12 +94,6 @@ namespace Catnap.Maps.Impl
             return map;
         }
 
-        public IEntityMappable<T> ParentColumn(string parentColumnName)
-        {
-            ParentColumnName = parentColumnName;
-            return this;
-        }
-
         public IEntityMappable<T> Table(string tableName)
         {
             TableName = tableName;
@@ -113,12 +106,12 @@ namespace Catnap.Maps.Impl
             var listMaps = propertyMaps.Where(x => x is IListPropertyMap);
             foreach (IListPropertyMap map in listMaps)
             { 
-                map.SetMaps(this, domainMap.GetMapFor(map.ItemType));
+                map.Done(domainMap, this, domainMap.GetMapFor(map.ItemType));
             }
             var belongsToMaps = propertyMaps.Where(x => x is IBelongsToPropertyMap);
             foreach (IBelongsToPropertyMap map in belongsToMaps)
             {
-                map.SetEntityMap(domainMap.GetMapFor(map.PropertyType));
+                map.Done(domainMap.GetMapFor(map.PropertyType));
             }
             var idProperties = propertyMaps.Where(x => x is IIdPropertyMap<T>).ToList();
             if (idProperties.Any() == false)
@@ -197,10 +190,10 @@ namespace Catnap.Maps.Impl
 
         public DbCommandSpec GetInsertCommand(object entity)
         {
-            return GetInsertCommand(entity, null);
+            return GetInsertCommand(entity, null, null);
         }
 
-        public DbCommandSpec GetInsertCommand(object entity, object parentId)
+        public DbCommandSpec GetInsertCommand(object entity, string parentIdColumnName, object parentId)
         {
             var command = new DbCommandSpec();
 
@@ -209,11 +202,11 @@ namespace Catnap.Maps.Impl
             var columnNames = writableColumns.Select(x => x.GetColumnName()).ToList();
             var paramterNames = writableColumns.Select(x => x.GetColumnName()).ToList();
 
-            if (!string.IsNullOrEmpty(ParentColumnName))
+            if (!string.IsNullOrEmpty(parentIdColumnName))
             {
-                columnNames.Add(ParentColumnName);
-                paramterNames.Add(ParentColumnName);
-                command.AddParameter(ParentColumnName, parentId);
+                columnNames.Add(parentIdColumnName);
+                paramterNames.Add(parentIdColumnName);
+                command.AddParameter(parentIdColumnName, parentId);
             }
 
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
@@ -239,10 +232,10 @@ namespace Catnap.Maps.Impl
 
         public DbCommandSpec GetUpdateCommand(object entity)
         {
-            return GetUpdateCommand(entity, null);
+            return GetUpdateCommand(entity, null, null);
         }
 
-        public DbCommandSpec GetUpdateCommand(object entity, object parentId)
+        public DbCommandSpec GetUpdateCommand(object entity, string parentIdColumnName, object parentId)
         {
             var command = new DbCommandSpec();
 
@@ -254,10 +247,10 @@ namespace Catnap.Maps.Impl
                 .Where(x => x.GetColumnName() != "Id")
                 .Select(x => string.Format("{0}={1}{0}", x.GetColumnName(), SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
                 .ToList();
-            if (!string.IsNullOrEmpty(ParentColumnName))
+            if (!string.IsNullOrEmpty(parentIdColumnName))
             {
-                setPairs.Add(string.Format("{0}={1}{0}", ParentColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX));
-                command.AddParameter(ParentColumnName, parentId);
+                setPairs.Add(string.Format("{0}={1}{0}", parentIdColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX));
+                command.AddParameter(parentIdColumnName, parentId);
             }
 
             var sql = string.Format("update {0} set {1} where Id = {2}Id",
@@ -274,6 +267,13 @@ namespace Catnap.Maps.Impl
             }
 
             return command;
+        }
+
+        public DbCommandSpec GetSaveCommand(object entity, string parentIdColumnName, object parentId)
+        {
+            return IsTransient(entity) 
+                ? GetInsertCommand(entity, parentIdColumnName, parentId) 
+                : GetUpdateCommand(entity, parentIdColumnName, parentId);
         }
     }
 }

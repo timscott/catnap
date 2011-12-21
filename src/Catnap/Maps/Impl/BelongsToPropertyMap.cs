@@ -32,7 +32,7 @@ namespace Catnap.Maps.Impl
             return session.Get<TProperty>(id);
         }
 
-        public void SetEntityMap(IEntityMap map)
+        public void Done(IEntityMap map)
         {
             entityMap = map;
         }

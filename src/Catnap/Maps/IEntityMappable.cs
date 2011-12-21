@@ -12,7 +12,6 @@ namespace Catnap.Maps
         ValuePropertyMap<T, TProperty> Property<TProperty>(Expression<Func<T, TProperty>> property);
         ListPropertyMap<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property) where TListMember : class, new();
         BelongsToPropertyMap<T, TProperty> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property) where TProperty : class, new();
-        IEntityMappable<T> ParentColumn(string parentColumnName);
         IEntityMappable<T> Table(string tableName);
     }
 }

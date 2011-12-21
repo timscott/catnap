@@ -6,7 +6,8 @@ namespace Catnap.Maps
     {
         IIdMappingConventionMappable IdConvention();
         IIdMappingConventionMappable IdConvention(string propertyName);
-        IBelongsToColumnNameConventionMappable BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention);
+        void BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention);
+        void ListParentIdColumnNameConvention(Func<IListPropertyMap, string> convention);
         IEntityMappable<T> Entity<T>(Action<IEntityMappable<T>> propertyMappings) where T : class, new();
     }
 }
