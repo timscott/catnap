@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Catnap.Common.Logging;
 using Catnap.Database;
-using Catnap.Maps;
+using Catnap.Logging;
+using Catnap.Mapping;
 
 namespace Catnap
 {

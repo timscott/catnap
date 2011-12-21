@@ -1,4 +1,4 @@
-using Catnap.Adapters;
+using Catnap.Database.Sqlite;
 using Catnap.Migration;
 
 namespace Catnap.IntegrationTests.Migrations

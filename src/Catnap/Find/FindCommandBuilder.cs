@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Catnap.Database;
 using Catnap.Find.Conditions;
-using Catnap.Maps;
+using Catnap.Mapping;
 
 namespace Catnap.Find
 {

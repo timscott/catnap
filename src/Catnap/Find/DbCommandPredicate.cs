@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using Catnap.Database;
 using Catnap.Find.Conditions;
-using Catnap.Maps;
+using Catnap.Mapping;
 
 namespace Catnap.Find
 {

@@ -1,8 +1,7 @@
-using Catnap.Common.Logging;
 using Catnap.Find;
 using Catnap.Find.Conditions;
-using Catnap.Maps;
-using Catnap.Maps.Impl;
+using Catnap.Logging;
+using Catnap.Mapping;
 using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;

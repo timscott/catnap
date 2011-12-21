@@ -1,4 +1,4 @@
-namespace Catnap.Common.Logging
+namespace Catnap.Logging
 {
     public interface ILogger
     {

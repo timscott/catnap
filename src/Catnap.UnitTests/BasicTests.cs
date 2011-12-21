@@ -1,7 +1,7 @@
 ﻿using System;
-using Catnap.Common.Logging;
 using Catnap.Database;
 using Catnap.Find;
+using Catnap.Logging;
 using Catnap.Tests.Core;
 using Catnap.Tests.Core.Models;
 using Machine.Specifications;

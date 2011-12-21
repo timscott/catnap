@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Catnap.Find;
 using Catnap.Find.Conditions;
-using Catnap.Maps;
+using Catnap.Mapping;
 
 namespace Catnap
 {

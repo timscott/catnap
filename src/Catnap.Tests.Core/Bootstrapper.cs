@@ -1,5 +1,4 @@
-using Catnap.Maps;
-using Catnap.Maps.Impl;
+using Catnap.Mapping;
 using Catnap.Tests.Core.Models;
 
 namespace Catnap.Tests.Core

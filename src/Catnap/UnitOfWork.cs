@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Catnap.Common.Logging;
+using Catnap.Logging;
 
 namespace Catnap
 {

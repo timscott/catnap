@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Adapters;
-using Catnap.Common.Logging;
+using Catnap.Database.Sqlite;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Repositories;
+using Catnap.Logging;
 using Catnap.Tests.Core;
 using Catnap.Tests.Core.Models;
 using Machine.Specifications;
