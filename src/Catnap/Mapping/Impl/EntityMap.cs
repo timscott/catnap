@@ -175,16 +175,16 @@ namespace Catnap.Mapping.Impl
         public DbCommandSpec GetGetCommand(object id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("{0} where Id = {1}Id", BaseSelectSql,
-                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .SetCommandText(string.Format("{0} where Id = {1}", BaseSelectSql,
+                    SessionFactory.FormatParameterName("Id")))
                 .AddParameter("Id", id);
         }
 
         public DbCommandSpec GetDeleteCommand(object id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("delete from {0} where Id = {1}Id", TableName,
-                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .SetCommandText(string.Format("delete from {0} where Id = {1}", TableName,
+                    SessionFactory.FormatParameterName("Id")))
                 .AddParameter("Id", id);
         }
 
@@ -212,7 +212,7 @@ namespace Catnap.Mapping.Impl
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
                 TableName,
                 string.Join(",", columnNames.ToArray()),
-                string.Join(",", paramterNames.Select(x => SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX + x).ToArray()));
+                string.Join(",", paramterNames.Select(x => SessionFactory.FormatParameterName(x)).ToArray()));
 
             command.SetCommandText(sql);
 
@@ -245,18 +245,18 @@ namespace Catnap.Mapping.Impl
                 .ToList();
             var setPairs = columnProperties
                 .Where(x => x.GetColumnName() != "Id")
-                .Select(x => string.Format("{0}={1}{0}", x.GetColumnName(), SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .Select(x => string.Format("{0}={1}", x.GetColumnName(), SessionFactory.FormatParameterName(x.GetColumnName())))
                 .ToList();
             if (!string.IsNullOrEmpty(parentIdColumnName))
             {
-                setPairs.Add(string.Format("{0}={1}{0}", parentIdColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX));
+                setPairs.Add(string.Format("{0}={1}", parentIdColumnName, SessionFactory.FormatParameterName(parentIdColumnName)));
                 command.AddParameter(parentIdColumnName, parentId);
             }
 
-            var sql = string.Format("update {0} set {1} where Id = {2}Id",
+            var sql = string.Format("update {0} set {1} where Id = {2}",
                 TableName,
                 string.Join(",", setPairs.ToArray()),
-                SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX);
+                SessionFactory.FormatParameterName("Id"));
             command.AddParameter("Id", GetId(entity));
 
             command.SetCommandText(sql);

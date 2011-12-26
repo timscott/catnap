@@ -31,7 +31,11 @@ namespace Catnap
             {
                 throw new InvalidOperationException(string.Format("Cannot start current unit of work {0} because it is already started. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId));
             }
-            current = new UnitOfWork { Session = SessionFactory.New(), id = Guid.NewGuid() };
+            current = new UnitOfWork
+            {
+                Session = SessionFactory.New(), 
+                id = Guid.NewGuid()
+            };
             Log.Debug("Starting unit of work {0}. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId);
             current.Session.Open();
             return current;

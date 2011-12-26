@@ -19,8 +19,11 @@ namespace Catnap.IntegrationTests
         Establish context = () =>
         {
             Log.Level = LogLevel.Debug;
-            SessionFactory.Initialize("Data source=:memory:", new SqliteAdapter());
-            Bootstrapper.ConfigureDomain();
+            Fluently.Configure
+                .ConnectionString("Data source=:memory:")
+                .DatabaseAdapter(new SqliteAdapter())
+                .Domain(DomainMapping.Get())
+                .Done();
             UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
             DatabaseMigrator.Execute();
         };

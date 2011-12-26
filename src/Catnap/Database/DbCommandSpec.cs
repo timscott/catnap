@@ -37,7 +37,7 @@ namespace Catnap.Database
         public IDbCommand CreateCommand(IDbAdapter dbAdapter, IDbConnection connection)
         {
             var command = connection.CreateCommand();
-            command.CommandText = dbAdapter.FormatCommandText(CommandText);
+            command.CommandText = CommandText;
             foreach (var parameter in Parameters)
             {
                 var p = parameter.CreateDbParameter(command, dbAdapter);

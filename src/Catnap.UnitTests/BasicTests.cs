@@ -14,7 +14,9 @@ namespace Catnap.UnitTests
         Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            Bootstrapper.ConfigureDomain();
+            Fluently.Configure
+                .Domain(DomainMapping.Get())
+                .Done();
         };
     }
 

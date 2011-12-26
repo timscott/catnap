@@ -45,10 +45,9 @@ namespace Catnap.Find
         {
             if (value != null)
             {
-                conditions.Add(string.Format("{0}{1}{2}{0}", columnName, @operator,
-                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX));
-                parameters.Add(new Parameter(string.Format("{0}{1}",
-                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX, columnName), value));
+                conditions.Add(string.Format("{0}{1}{2}", columnName, @operator,
+                    SessionFactory.FormatParameterName(columnName)));
+                parameters.Add(new Parameter(SessionFactory.FormatParameterName(columnName), value));
             }
             return this;
         }
@@ -194,7 +193,7 @@ namespace Catnap.Find
 
         private void AppendValue(StringBuilder sql, object value)
         {
-            var parameterName = SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX + parameterNumber;
+            var parameterName = SessionFactory.FormatParameterName(parameterNumber.ToString());
             sql.Append(parameterName);
             Parameters.Add(new Parameter(parameterName, ConvertValue(value)));
             parameterNumber++;

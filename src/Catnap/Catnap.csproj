@@ -44,6 +44,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configurator.cs" />
     <Compile Include="Database\Sqlite\BaseSqliteAdapter.cs" />
     <Compile Include="Database\DbCommandSpec.cs" />
     <Compile Include="Database\IDbAdapter.cs" />
@@ -64,6 +65,8 @@
     <Compile Include="Find\Conditions\LessThanOrEqual.cs" />
     <Compile Include="Find\Conditions\NotEqual.cs" />
     <Compile Include="Find\Conditions\Or.cs" />
+    <Compile Include="Fluently.cs" />
+    <Compile Include="IConfigurator.cs" />
     <Compile Include="Logging\Impl\ConsoleLogger.cs" />
     <Compile Include="Logging\Impl\FileLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />

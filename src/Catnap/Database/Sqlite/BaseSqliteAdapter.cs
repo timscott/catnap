@@ -53,14 +53,14 @@ namespace Catnap.Database.Sqlite
 
         public string FormatCommandText(string sql)
         {
-            return sql.Replace(SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX, PARAMETER_PREFIX);
+            return sql.Replace(PARAMETER_PREFIX, PARAMETER_PREFIX);
         }
 
         public string FormatParameterName(string name)
         {
             return name.StartsWith(PARAMETER_PREFIX)
-                       ? name :
-                                  PARAMETER_PREFIX + name;
+                ? name 
+                : PARAMETER_PREFIX + name;
         }
 
         public DbCommandSpec CreateLastInsertIdCommand()

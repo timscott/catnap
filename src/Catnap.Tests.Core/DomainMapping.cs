@@ -1,13 +1,14 @@
+using System;
 using Catnap.Mapping;
 using Catnap.Tests.Core.Models;
 
 namespace Catnap.Tests.Core
 {
-    public static class Bootstrapper
+    public static class DomainMapping
     {
-        public static void ConfigureDomain()
+        public static Action<IDomainMappable> Get()
         {
-            Domain.Configure(d =>
+            return d =>
             {
                 //d.IdConvention().Access(Access.Property);
                 //d.ListParentIdColumnNameConvention(x => x.ParentType.Name + "Id");
@@ -51,7 +52,7 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.DatePosted);
                     e.BelongsTo(x => x.Poster);
                 });
-            });
+            };
         }
     }
 }

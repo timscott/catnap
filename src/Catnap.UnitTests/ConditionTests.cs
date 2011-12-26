@@ -18,12 +18,13 @@ namespace Catnap.UnitTests
         Because of = () =>
         {
             Log.Level = LogLevel.Off;
-            Domain.Configure(d => 
-                d.Entity<Person>(e =>
-                {
-                    e.Id(x => x.Id).Access(Access.Property);
-                    e.Property(x => x.FirstName);
-                }));
+            Fluently.Configure
+                .Domain(d => 
+                    d.Entity<Person>(e =>
+                    {
+                        e.Id(x => x.Id).Access(Access.Property);
+                        e.Property(x => x.FirstName);
+                    }));
             target = new Criteria
             (
                 Condition.Less("Bar", 1000),

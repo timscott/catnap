@@ -28,8 +28,8 @@ namespace Catnap.Migration
         private void RecordMigration(IDatabaseMigration migration)
         {
             var migrationsTableExistsCommand = new DbCommandSpec()
-                .SetCommandText(string.Format("insert into {0} (Name) values ({1}name)", MIGRATIONS_TABLE_NAME,
-                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .SetCommandText(string.Format("insert into {0} (Name) values ({1})", MIGRATIONS_TABLE_NAME,
+                    SessionFactory.FormatParameterName("name")))
                 .AddParameter("name", migration.Name);
             UnitOfWork.Current.Session.ExecuteNonQuery(migrationsTableExistsCommand);
         }
@@ -37,8 +37,8 @@ namespace Catnap.Migration
         private bool PreviouslyRun(IDatabaseMigration migration)
         {
             var command = new DbCommandSpec()
-                .SetCommandText(string.Format("select count(*) from {0} where Name = {1}name",
-                    MIGRATIONS_TABLE_NAME, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .SetCommandText(string.Format("select count(*) from {0} where Name = {1}",
+                    MIGRATIONS_TABLE_NAME, SessionFactory.FormatParameterName("name")))
                 .AddParameter("name", migration.Name);
             var result = (long)UnitOfWork.Current.Session.ExecuteScalar(command);
             return result > 0;
