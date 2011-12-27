@@ -29,7 +29,7 @@ namespace Catnap.Migration
         {
             var migrationsTableExistsCommand = new DbCommandSpec()
                 .SetCommandText(string.Format("insert into {0} (Name) values ({1})", MIGRATIONS_TABLE_NAME,
-                    SessionFactory.FormatParameterName("name")))
+                    SessionFactory.Current.FormatParameterName("name")))
                 .AddParameter("name", migration.Name);
             UnitOfWork.Current.Session.ExecuteNonQuery(migrationsTableExistsCommand);
         }
@@ -38,7 +38,7 @@ namespace Catnap.Migration
         {
             var command = new DbCommandSpec()
                 .SetCommandText(string.Format("select count(*) from {0} where Name = {1}",
-                    MIGRATIONS_TABLE_NAME, SessionFactory.FormatParameterName("name")))
+                    MIGRATIONS_TABLE_NAME, SessionFactory.Current.FormatParameterName("name")))
                 .AddParameter("name", migration.Name);
             var result = (long)UnitOfWork.Current.Session.ExecuteScalar(command);
             return result > 0;

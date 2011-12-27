@@ -56,7 +56,7 @@ namespace Catnap.Find.Conditions
 
         private string Visit(ColumnCondition condition)
         {
-            var parameterName = SessionFactory.FormatParameterName(parameterCount.ToString());
+            var parameterName = SessionFactory.Current.FormatParameterName(parameterCount.ToString());
             parameterCount++;
             parameters.Add(new Parameter(parameterName, condition.Value));
             return condition.ToString(parameterName);

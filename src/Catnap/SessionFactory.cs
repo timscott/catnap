@@ -1,25 +1,45 @@
+using System;
 using Catnap.Database;
 
 namespace Catnap
 {
-    public static class SessionFactory
+    public class SessionFactory : ISessionFactory
     {
-        private static IDbAdapter dbAdapter;
-        private static string connectionString;
+        private static ISessionFactory current;
+
+        private readonly IDbAdapter dbAdapter;
+        private readonly string connectionString;
+
+        public SessionFactory(string connectionString, IDbAdapter dbAdapter)
+        {
+            this.connectionString = connectionString;
+            this.dbAdapter = dbAdapter;
+        }
+
+        public static ISessionFactory Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    throw new InvalidOperationException("SessionFactory not initialized.");
+                }
+                return current;
+            }
+        }
 
         internal static void Initialize(string connectionString, IDbAdapter dbAdapter)
         {
-            SessionFactory.connectionString = connectionString;
-            SessionFactory.dbAdapter = dbAdapter;
+            current = new SessionFactory(connectionString, dbAdapter);
         }
 
-        public static ISession New()
+        public ISession New()
         {
             return new Session(connectionString, dbAdapter);
         }
 
         //TODO: This does not belong here
-        internal static string FormatParameterName(string name)
+        public string FormatParameterName(string name)
         {
             const string defaultSqlParameterPrefix = "@";
             return dbAdapter == null

@@ -33,7 +33,7 @@ namespace Catnap
             }
             current = new UnitOfWork
             {
-                Session = SessionFactory.New(), 
+                Session = SessionFactory.Current.New(), 
                 id = Guid.NewGuid()
             };
             Log.Debug("Starting unit of work {0}. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId);

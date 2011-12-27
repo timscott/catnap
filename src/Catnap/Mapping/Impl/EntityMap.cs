@@ -176,7 +176,7 @@ namespace Catnap.Mapping.Impl
         {
             return new DbCommandSpec()
                 .SetCommandText(string.Format("{0} where Id = {1}", BaseSelectSql,
-                    SessionFactory.FormatParameterName("Id")))
+                    SessionFactory.Current.FormatParameterName("Id")))
                 .AddParameter("Id", id);
         }
 
@@ -184,7 +184,7 @@ namespace Catnap.Mapping.Impl
         {
             return new DbCommandSpec()
                 .SetCommandText(string.Format("delete from {0} where Id = {1}", TableName,
-                    SessionFactory.FormatParameterName("Id")))
+                    SessionFactory.Current.FormatParameterName("Id")))
                 .AddParameter("Id", id);
         }
 
@@ -212,7 +212,7 @@ namespace Catnap.Mapping.Impl
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
                 TableName,
                 string.Join(",", columnNames.ToArray()),
-                string.Join(",", paramterNames.Select(x => SessionFactory.FormatParameterName(x)).ToArray()));
+                string.Join(",", paramterNames.Select(x => SessionFactory.Current.FormatParameterName(x)).ToArray()));
 
             command.SetCommandText(sql);
 
@@ -245,18 +245,18 @@ namespace Catnap.Mapping.Impl
                 .ToList();
             var setPairs = columnProperties
                 .Where(x => x.GetColumnName() != "Id")
-                .Select(x => string.Format("{0}={1}", x.GetColumnName(), SessionFactory.FormatParameterName(x.GetColumnName())))
+                .Select(x => string.Format("{0}={1}", x.GetColumnName(), SessionFactory.Current.FormatParameterName(x.GetColumnName())))
                 .ToList();
             if (!string.IsNullOrEmpty(parentIdColumnName))
             {
-                setPairs.Add(string.Format("{0}={1}", parentIdColumnName, SessionFactory.FormatParameterName(parentIdColumnName)));
+                setPairs.Add(string.Format("{0}={1}", parentIdColumnName, SessionFactory.Current.FormatParameterName(parentIdColumnName)));
                 command.AddParameter(parentIdColumnName, parentId);
             }
 
             var sql = string.Format("update {0} set {1} where Id = {2}",
                 TableName,
                 string.Join(",", setPairs.ToArray()),
-                SessionFactory.FormatParameterName("Id"));
+                SessionFactory.Current.FormatParameterName("Id"));
             command.AddParameter("Id", GetId(entity));
 
             command.SetCommandText(sql);
