@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Catnap.Database;
 using Catnap.Mapping.Conventions;
 using Catnap.Mapping.Conventions.Impl;
 
@@ -8,7 +9,13 @@ namespace Catnap.Mapping.Impl
 {
     public class DomainMap : IDomainMap, IDomainMappable
     {
+        private readonly IDbAdapter dbAdapter;
         private readonly IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
+
+        public DomainMap(IDbAdapter dbAdapter)
+        {
+            this.dbAdapter = dbAdapter;
+        }
 
         public IdMappingConvention IdMappingConvention { get; private set; }
         public BelongsToColumnNameConvention BelongsToColumnNameMappingConvention { get; private set; }
@@ -65,7 +72,7 @@ namespace Catnap.Mapping.Impl
             }
             foreach (var map in entityMaps.Values)
             {
-                map.Done(this);
+                map.Done(this, dbAdapter);
             }
         }
     }

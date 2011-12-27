@@ -22,7 +22,7 @@ namespace Catnap.Mapping
         DbCommandSpec GetUpdateCommand(object entity, string parentIdColumnName, object parentId);
         DbCommandSpec GetSaveCommand(object entity, string parentIdColumnName, object parentId);
         string GetColumnNameForProperty(MemberExpression memberExpression);
-        void Done(IDomainMap map);
+        void Done(IDomainMap map, IDbAdapter dbAdapter);
     }
 
     public interface IEntityMap<T> : IEntityMap where T : class, new()

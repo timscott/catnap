@@ -31,10 +31,7 @@ namespace Catnap
 
         public void Done()
         {
-            var map = new DomainMap();
-            domainConfig(map);
-            map.Done();
-            SessionFactory.Initialize(connString, dbAdapter, map);
+            SessionFactory.Initialize(connString, dbAdapter, domainConfig);
         }
     }
 }

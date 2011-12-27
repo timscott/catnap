@@ -11,6 +11,7 @@ namespace Catnap.Mapping.Impl
     public class EntityMap<T> : IEntityMap<T>, IEntityMappable<T> where T : class, new()
     {
         private readonly IList<IPropertyMap<T>> propertyMaps = new List<IPropertyMap<T>>();
+        private IDbAdapter dbAdapter;
         private object transientIdValue;
         private IIdPropertyMap<T> idProperty;
         private string idColumnName;
@@ -100,9 +101,10 @@ namespace Catnap.Mapping.Impl
             return this;
         }
 
-        public void Done(IDomainMap domainMap)
+        public void Done(IDomainMap domainMap, IDbAdapter dbAdapter)
         {
             Log.Debug("Setting list maps for entity '{0}'", EntityType.Name);
+            this.dbAdapter = dbAdapter;
             var listMaps = propertyMaps.Where(x => x is IListPropertyMap);
             foreach (IListPropertyMap map in listMaps)
             { 
@@ -175,16 +177,14 @@ namespace Catnap.Mapping.Impl
         public DbCommandSpec GetGetCommand(object id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("{0} where Id = {1}", BaseSelectSql,
-                    SessionFactory.Current.FormatParameterName("Id")))
+                .SetCommandText(string.Format("{0} where Id = {1}", BaseSelectSql, dbAdapter.FormatParameterName("Id")))
                 .AddParameter("Id", id);
         }
 
         public DbCommandSpec GetDeleteCommand(object id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("delete from {0} where Id = {1}", TableName,
-                    SessionFactory.Current.FormatParameterName("Id")))
+                .SetCommandText(string.Format("delete from {0} where Id = {1}", TableName, dbAdapter.FormatParameterName("Id")))
                 .AddParameter("Id", id);
         }
 
@@ -212,7 +212,7 @@ namespace Catnap.Mapping.Impl
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
                 TableName,
                 string.Join(",", columnNames.ToArray()),
-                string.Join(",", paramterNames.Select(x => SessionFactory.Current.FormatParameterName(x)).ToArray()));
+                string.Join(",", paramterNames.Select(x => dbAdapter.FormatParameterName(x)).ToArray()));
 
             command.SetCommandText(sql);
 
@@ -245,18 +245,18 @@ namespace Catnap.Mapping.Impl
                 .ToList();
             var setPairs = columnProperties
                 .Where(x => x.GetColumnName() != "Id")
-                .Select(x => string.Format("{0}={1}", x.GetColumnName(), SessionFactory.Current.FormatParameterName(x.GetColumnName())))
+                .Select(x => string.Format("{0}={1}", x.GetColumnName(), dbAdapter.FormatParameterName(x.GetColumnName())))
                 .ToList();
             if (!string.IsNullOrEmpty(parentIdColumnName))
             {
-                setPairs.Add(string.Format("{0}={1}", parentIdColumnName, SessionFactory.Current.FormatParameterName(parentIdColumnName)));
+                setPairs.Add(string.Format("{0}={1}", parentIdColumnName, dbAdapter.FormatParameterName(parentIdColumnName)));
                 command.AddParameter(parentIdColumnName, parentId);
             }
 
             var sql = string.Format("update {0} set {1} where Id = {2}",
                 TableName,
                 string.Join(",", setPairs.ToArray()),
-                SessionFactory.Current.FormatParameterName("Id"));
+                dbAdapter.FormatParameterName("Id"));
             command.AddParameter("Id", GetId(entity));
 
             command.SetCommandText(sql);
