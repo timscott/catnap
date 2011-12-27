@@ -50,6 +50,7 @@
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\IDbTypeConverter.cs" />
     <Compile Include="Database\Parameter.cs" />
+    <Compile Include="DbAdapter.cs" />
     <Compile Include="Find\Conditions\And.cs" />
     <Compile Include="Find\Conditions\ColumnCondition.cs" />
     <Compile Include="Find\Condition.cs" />

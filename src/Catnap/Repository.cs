@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Catnap.Find;
 using Catnap.Find.Conditions;
-using Catnap.Mapping;
 
 namespace Catnap
 {
     public abstract class Repository<T> : IRepository<T> where T : class, new() 
     {
         protected readonly IRepository innerRepository;
-        protected readonly IEntityMap<T> entityMap;
 
-        protected Repository() : this(new Repository(), SessionFactory.Current.DomainMap.GetMapFor<T>()) { }
+        protected Repository() : this(new Repository()) { }
 
-        protected Repository(IRepository innerRepository, IEntityMap<T> entityMap)
+        protected Repository(IRepository innerRepository)
         {
             this.innerRepository = innerRepository;
-            this.entityMap = entityMap;
         }
 
         public IEnumerable<T> Find()

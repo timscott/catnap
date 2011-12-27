@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catnap.Database.Sqlite;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Repositories;
 using Catnap.Logging;
@@ -21,7 +20,7 @@ namespace Catnap.IntegrationTests
             Log.Level = LogLevel.Debug;
             Fluently.Configure
                 .ConnectionString("Data source=:memory:")
-                .DatabaseAdapter(new SqliteAdapter())
+                .DatabaseAdapter(DbAdapter.Sqlite)
                 .Domain(DomainMapping.Get())
                 .Done();
             UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
