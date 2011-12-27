@@ -12,7 +12,7 @@ namespace Catnap
         protected readonly IRepository innerRepository;
         protected readonly IEntityMap<T> entityMap;
 
-        protected Repository() : this(new Repository(), Domain.Map.GetMapFor<T>()) { }
+        protected Repository() : this(new Repository(), SessionFactory.Current.DomainMap.GetMapFor<T>()) { }
 
         protected Repository(IRepository innerRepository, IEntityMap<T> entityMap)
         {

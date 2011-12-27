@@ -15,9 +15,6 @@ namespace Catnap
         private readonly IDbAdapter dbAdapter;
         private IDbTransaction transaction;
 
-        public Session(string connectionString, IDbAdapter dbAdapter) :
-            this(Domain.Map, connectionString, dbAdapter) { }
-
         public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter)
         {
             this.domainMap = domainMap;

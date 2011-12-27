@@ -11,7 +11,7 @@ namespace Catnap.Find
         private readonly IDomainMap domainMap;
         private readonly DbCommandPredicate<T> dbCommandPredicate;
 
-        public FindCommandBuilder() : this(Domain.Map) { }
+        public FindCommandBuilder() : this(SessionFactory.Current.DomainMap) { }
 
         public FindCommandBuilder(IDomainMap domainMap)
         {

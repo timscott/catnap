@@ -16,7 +16,7 @@ namespace Catnap.Find
         private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterNumber;
 
-        public DbCommandPredicate() : this(Domain.Map) { }
+        public DbCommandPredicate() : this(SessionFactory.Current.DomainMap) { }
 
         public DbCommandPredicate(IDomainMap domainMap)
         {

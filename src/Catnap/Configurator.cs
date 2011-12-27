@@ -34,8 +34,7 @@ namespace Catnap
             var map = new DomainMap();
             domainConfig(map);
             map.Done();
-            Mapping.Domain.Initialize(map);
-            SessionFactory.Initialize(connString, dbAdapter);
+            SessionFactory.Initialize(connString, dbAdapter, map);
         }
     }
 }

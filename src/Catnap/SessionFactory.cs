@@ -1,5 +1,6 @@
 using System;
 using Catnap.Database;
+using Catnap.Mapping;
 
 namespace Catnap
 {
@@ -9,11 +10,13 @@ namespace Catnap
 
         private readonly IDbAdapter dbAdapter;
         private readonly string connectionString;
+        private readonly IDomainMap domainMap;
 
-        public SessionFactory(string connectionString, IDbAdapter dbAdapter)
+        public SessionFactory(string connectionString, IDbAdapter dbAdapter, IDomainMap domainMap)
         {
             this.connectionString = connectionString;
             this.dbAdapter = dbAdapter;
+            this.domainMap = domainMap;
         }
 
         public static ISessionFactory Current
@@ -28,14 +31,19 @@ namespace Catnap
             }
         }
 
-        internal static void Initialize(string connectionString, IDbAdapter dbAdapter)
+        public IDomainMap DomainMap
         {
-            current = new SessionFactory(connectionString, dbAdapter);
+            get { return domainMap; }
+        }
+
+        internal static void Initialize(string connectionString, IDbAdapter dbAdapter, IDomainMap domainMap)
+        {
+            current = new SessionFactory(connectionString, dbAdapter, domainMap);
         }
 
         public ISession New()
         {
-            return new Session(connectionString, dbAdapter);
+            return new Session(domainMap, connectionString, dbAdapter);
         }
 
         //TODO: This does not belong here

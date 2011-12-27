@@ -7,6 +7,13 @@ namespace Catnap.Find
 {
     public class Condition
     {
+        private static readonly IDomainMap domainMap;
+
+        static Condition()
+        {
+            domainMap = SessionFactory.Current.DomainMap;
+        }
+
         public static ICondition Equal(string columnName, object value)
         {
             return new Equal(columnName, value);
@@ -14,7 +21,7 @@ namespace Catnap.Find
 
         public static ICondition Equal<T>(Expression<Func<T, object>> property, object value) where T : class, new()
         {
-            return Equal(Domain.Map.GetMapFor<T>().GetColumnNameForProperty(property), value);
+            return Equal(domainMap.GetMapFor<T>().GetColumnNameForProperty(property), value);
         }
 
         public static ICondition NotEqual(string columnName, object value)
@@ -24,7 +31,7 @@ namespace Catnap.Find
 
         public static ICondition NotEqual<T>(Expression<Func<T, object>> property, object value) where T : class, new()
         {
-            return NotEqual(Domain.Map.GetMapFor<T>().GetColumnNameForProperty(property), value);
+            return NotEqual(domainMap.GetMapFor<T>().GetColumnNameForProperty(property), value);
         }
 
         public static ICondition Greater(string columnName, object value)
@@ -34,7 +41,7 @@ namespace Catnap.Find
 
         public static ICondition Greater<T>(Expression<Func<T, object>> property, object value) where T : class, new()
         {
-            return Greater(Domain.Map.GetMapFor<T>().GetColumnNameForProperty(property), value);
+            return Greater(domainMap.GetMapFor<T>().GetColumnNameForProperty(property), value);
         }
 
         public static ICondition Less(string columnName, object value)
@@ -44,7 +51,7 @@ namespace Catnap.Find
 
         public static ICondition Less<T>(Expression<Func<T, object>> property, object value) where T : class, new()
         {
-            return Less(Domain.Map.GetMapFor<T>().GetColumnNameForProperty(property), value);
+            return Less(domainMap.GetMapFor<T>().GetColumnNameForProperty(property), value);
         }
 
 
@@ -55,7 +62,7 @@ namespace Catnap.Find
 
         public static ICondition GreaterOrEqual<T>(Expression<Func<T, object>> property, object value) where T : class, new()
         {
-            return GreaterOrEqual(Domain.Map.GetMapFor<T>().GetColumnNameForProperty(property), value);
+            return GreaterOrEqual(domainMap.GetMapFor<T>().GetColumnNameForProperty(property), value);
         }
 
         public static ICondition LessOrEqual(string columnName, object value)
@@ -65,7 +72,7 @@ namespace Catnap.Find
 
         public static ICondition LessOrEqual<T>(Expression<Func<T, object>> property, object value) where T : class, new()
         {
-            return LessOrEqual(Domain.Map.GetMapFor<T>().GetColumnNameForProperty(property), value);
+            return LessOrEqual(domainMap.GetMapFor<T>().GetColumnNameForProperty(property), value);
         }
 
         public static ICondition Or(params ICondition[] conditions)
