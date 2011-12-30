@@ -1,14 +1,13 @@
 using System;
 using Catnap.Database;
 using Catnap.Mapping;
-using Catnap.Mapping.Impl;
 
 namespace Catnap
 {
     public class Configurator : IConfigurator
     {
         private string connString;
-        private IDbAdapter dbAdapter;
+        private IDbAdapter dbAdapter = new NullDbAdapter();
         private Action<IDomainMappable> domainConfig;
 
         public IConfigurator Domain(Action<IDomainMappable> config)

@@ -51,11 +51,6 @@ namespace Catnap.Database.Sqlite
             return typeConverter.ConvertFromDbType(value, toType);
         }
 
-        public string FormatCommandText(string sql)
-        {
-            return sql.Replace(PARAMETER_PREFIX, PARAMETER_PREFIX);
-        }
-
         public string FormatParameterName(string name)
         {
             return name.StartsWith(PARAMETER_PREFIX)

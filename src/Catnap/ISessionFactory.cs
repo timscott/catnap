@@ -1,3 +1,4 @@
+using Catnap.Database;
 using Catnap.Mapping;
 
 namespace Catnap
@@ -7,5 +8,6 @@ namespace Catnap
         ISession New();
         string FormatParameterName(string name);
         IDomainMap DomainMap { get; }
+        IDbAdapter DbAdapter { get; }
     }
 }

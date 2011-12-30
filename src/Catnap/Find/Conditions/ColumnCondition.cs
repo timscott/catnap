@@ -1,22 +1,28 @@
+using Catnap.Database;
+
 namespace Catnap.Find.Conditions
 {
-    public abstract class ColumnCondition : ICondition
+    public abstract class ColumnCondition : IConditionMarker
     {
-        protected ColumnCondition(string columnName, object value)
+        private readonly string columnName;
+        protected string format;
+        public object value;
+
+        protected ColumnCondition(string columnName, string format, object value)
         {
-            ColumnName = columnName;
-            Value = value;
+            this.columnName = columnName;
+            this.format = format;
+            this.value = value;
         }
 
-        public object Value { get; private set; }
-
-        public string ColumnName { get; private set; }
-
-        protected abstract string Format { get; }
-
-        public string ToString(string parameterName)
+        public Parameter ToParameter(string paramterName)
         {
-            return string.Format("({0})", string.Format(Format, ColumnName, parameterName));
+            return new Parameter(paramterName, value);
+        }
+
+        public string ToSql(string parameterName)
+        {
+            return string.Format("({0})", string.Format(format, columnName, parameterName));
         }
     }
 }

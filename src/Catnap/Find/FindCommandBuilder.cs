@@ -8,15 +8,15 @@ namespace Catnap.Find
 {
     public class FindCommandBuilder<T> where T : class, new()
     {
-        private readonly IDomainMap domainMap;
+        private readonly IEntityMap<T> entityMap;
         private readonly DbCommandPredicate<T> dbCommandPredicate;
 
-        public FindCommandBuilder() : this(SessionFactory.Current.DomainMap) { }
+        public FindCommandBuilder() : this(SessionFactory.Current.DomainMap.GetMapFor<T>(), SessionFactory.Current.DbAdapter) { }
 
-        public FindCommandBuilder(IDomainMap domainMap)
+        public FindCommandBuilder(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            this.domainMap = domainMap;
-            dbCommandPredicate = new DbCommandPredicate<T>();
+            this.entityMap = entityMap;
+            dbCommandPredicate = new DbCommandPredicate<T>(entityMap, dbAdapter);
         }
 
         public FindCommandBuilder<T> AddCondition(Expression<Func<T, bool>> predicate)
@@ -25,7 +25,7 @@ namespace Catnap.Find
             return this;
         }
 
-        public FindCommandBuilder<T> AddCriteria(ICriteria criteria)
+        public FindCommandBuilder<T> AddCriteria(ICriteria<T> criteria)
         {
             dbCommandPredicate.AddCriteria(criteria);
             return this;
@@ -33,8 +33,7 @@ namespace Catnap.Find
 
         public FindCommandBuilder<T> AddCondition(Expression<Func<T, object>> property, string @operator, object value)
         {
-            var map = domainMap.GetMapFor<T>();
-            var columnName = map.GetColumnNameForProperty(property);
+            var columnName = entityMap.GetColumnNameForProperty(property);
             return AddCondition(columnName, @operator, value);
         }
 
@@ -46,8 +45,7 @@ namespace Catnap.Find
 
         public DbCommandSpec Build()
         {
-            var map = domainMap.GetMapFor<T>();
-            return map.GetFindCommand(dbCommandPredicate.Parameters, dbCommandPredicate.Conditions);
+            return entityMap.GetFindCommand(dbCommandPredicate.Parameters, dbCommandPredicate.Conditions);
         }
     }
 }

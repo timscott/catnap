@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Database;
-using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.Tests.Core.Models;
 
@@ -12,8 +11,8 @@ namespace Catnap.IntegrationTests.Repositories
     {
         public IEnumerable<PersonGuid> FindByFirstName(string firstName)
         {
-            var criteria = new Criteria()
-                .Add(Condition.Equal<PersonGuid>(x => x.FirstName, firstName));
+            var criteria = Criteria.For<PersonGuid>()
+                .Equal(x => x.FirstName, firstName);
             return Find(criteria).ToList();
         }
 
@@ -37,8 +36,7 @@ namespace Catnap.IntegrationTests.Repositories
     {
         public IEnumerable<Person> FindByFirstName(string firstName)
         {
-            var criteria = new Criteria()
-                .Add(Condition.Equal<Person>(x => x.FirstName, firstName));
+            var criteria = Criteria.For<Person>().Equal(x => x.FirstName, firstName);
             return Find(criteria).ToList();
         }
 

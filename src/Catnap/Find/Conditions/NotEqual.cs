@@ -1,12 +1,15 @@
+using System;
+using System.Linq.Expressions;
+
 namespace Catnap.Find.Conditions
 {
     public class NotEqual : LeftRightCondition
     {
-        public NotEqual(string columnName, object value) : base(columnName, value) { }
+        public NotEqual(string columnName, object value) : base(columnName, "!=", value) { }
+    }
 
-        protected override string Operator
-        {
-            get { return "!="; }
-        }
+    public class NotEqual<T> : LeftRightCondition<T> where T : class, new()
+    {
+        public NotEqual(Expression<Func<T, object>> property, object value) : base(property, "!=", value) { }
     }
 }

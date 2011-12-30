@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Catnap.Database;
+using Catnap.Find;
+using Catnap.Find.Conditions;
 
 namespace Catnap
 {
@@ -9,6 +11,7 @@ namespace Catnap
         void Open();
         IList<IDictionary<string, object>> List(DbCommandSpec commandSpec);
         IList<T> List<T>(DbCommandSpec commandSpec) where T : class, new();
+        IList<T> List<T>(DbCommandPredicate<T> commandPredicate) where T : class, new();
         T Get<T>(object id) where T : class, new();
         void SaveOrUpdate<T>(T entity) where T : class, new();
         void SaveOrUpdate<T>(T entity, string parentIdColumnName, object parentId) where T : class, new();
@@ -19,5 +22,6 @@ namespace Catnap
         object ExecuteScalar(DbCommandSpec commandSpec);
         void RollbackTransaction();
         object ConvertFromDbType(object value, Type type);
+        string ToSql<T>(ICriteria<T> criteria) where T : class, new();
     }
 }

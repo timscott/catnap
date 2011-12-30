@@ -37,6 +37,11 @@ namespace Catnap
             get { return domainMap; }
         }
 
+        public IDbAdapter DbAdapter
+        {
+            get { return dbAdapter; }
+        }
+
         internal static void Initialize(string connectionString, IDbAdapter dbAdapter, Action<IDomainMappable> domainConfig)
         {
             var domainMap = new DomainMap(dbAdapter);
@@ -47,18 +52,18 @@ namespace Catnap
 
         public ISession New()
         {
-            return new Session(domainMap, connectionString, dbAdapter);
+            return new Session(DomainMap, connectionString, DbAdapter);
         }
 
         //TODO: This does not belong here
         public string FormatParameterName(string name)
         {
             const string defaultSqlParameterPrefix = "@";
-            return dbAdapter == null
+            return DbAdapter == null
                 ? name.StartsWith(defaultSqlParameterPrefix)
                     ? name
                     : defaultSqlParameterPrefix + name
-                : dbAdapter.FormatParameterName(name);
+                : DbAdapter.FormatParameterName(name);
         }
     }
 }

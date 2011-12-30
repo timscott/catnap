@@ -12,7 +12,7 @@ namespace Catnap
         void Delete(object id);
         IEnumerable<T> Find();
         IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> Find(ICriteria criteria);
+        IEnumerable<T> Find(ICriteria<T> criteria);
     }
 
     public interface IRepository
@@ -22,6 +22,6 @@ namespace Catnap
         void Delete<T>(object id) where T : class, new();
         IEnumerable<T> Find<T>() where T : class, new();
         IEnumerable<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, new();
-        IEnumerable<T> Find<T>(ICriteria criteria) where T : class, new();
+        IEnumerable<T> Find<T>(ICriteria<T> criteria) where T : class, new();
     }
 }

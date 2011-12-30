@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Catnap.Database;
+using Catnap.Find;
+using Catnap.Find.Conditions;
 using Catnap.Logging;
 using Catnap.Mapping;
 
@@ -37,6 +39,13 @@ namespace Catnap
         {
             var entityMap = domainMap.GetMapFor<T>();
             return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
+        }
+
+        public IList<T> List<T>(DbCommandPredicate<T> commandPredicate) where T : class, new()
+        {
+            var entityMap = domainMap.GetMapFor<T>();
+            var command = entityMap.GetFindCommand(commandPredicate.Parameters, commandPredicate.Conditions);
+            return List<T>(command);
         }
 
         public T Get<T>(object id) where T : class, new()
@@ -129,6 +138,11 @@ namespace Catnap
         public object ConvertFromDbType(object value, Type type)
         {
             return dbAdapter.ConvertFromDbType(value, type);
+        }
+
+        public string ToSql<T>(ICriteria<T> criteria) where T : class, new()
+        {
+            return criteria.ToSql(domainMap.GetMapFor<T>(), dbAdapter);
         }
 
         public void Dispose()

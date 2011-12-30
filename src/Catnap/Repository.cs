@@ -22,9 +22,9 @@ namespace Catnap
             return innerRepository.Find<T>();
         }
 
-        public IEnumerable<T> Find(ICriteria criteria)
+        public IEnumerable<T> Find(ICriteria<T> criteria)
         {
-            return innerRepository.Find<T>(criteria);
+            return innerRepository.Find(criteria);
         }
 
         public virtual IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
@@ -76,7 +76,7 @@ namespace Catnap
             return UnitOfWork.Current.Session.List<T>(commandSpec);
         }
 
-        public IEnumerable<T> Find<T>(ICriteria criteria) where T : class, new()
+        public IEnumerable<T> Find<T>(ICriteria<T> criteria) where T : class, new()
         {
             var commandSpec = new FindCommandBuilder<T>().AddCriteria(criteria).Build();
             return UnitOfWork.Current.Session.List<T>(commandSpec);

@@ -1,12 +1,15 @@
+using System;
+using System.Linq.Expressions;
+
 namespace Catnap.Find.Conditions
 {
     public class GreaterThanOrEqual : LeftRightCondition
     {
-        public GreaterThanOrEqual(string columnName, object value) : base(columnName, value) { }
+        public GreaterThanOrEqual(string columnName, object value) : base(columnName, ">=", value) { }
+    }
 
-        protected override string Operator
-        {
-            get { return ">="; }
-        }
+    public class GreaterThanOrEqual<T> : LeftRightCondition<T> where T : class, new()
+    {
+        public GreaterThanOrEqual(Expression<Func<T, object>> property, object value) : base(property, ">=", value) { }
     }
 }

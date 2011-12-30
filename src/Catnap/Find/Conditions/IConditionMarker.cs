@@ -1,6 +1,6 @@
 namespace Catnap.Find.Conditions
 {
-    public interface ICondition
+    public interface IConditionMarker
     {
     }
 }

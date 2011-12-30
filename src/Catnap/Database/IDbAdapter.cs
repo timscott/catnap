@@ -11,7 +11,6 @@ namespace Catnap.Database
         DbCommandSpec CreateGetTableMetadataCommand(string tableName);
         object ConvertToDbType(object value);
         object ConvertFromDbType(object value, Type toType);
-        string FormatCommandText(string sql);
         string FormatParameterName(string name);
     }
 }

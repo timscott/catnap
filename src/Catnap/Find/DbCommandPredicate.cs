@@ -11,16 +11,16 @@ namespace Catnap.Find
 {
     public class DbCommandPredicate<T> where T : class, new()
     {
-        private readonly IDomainMap domainMap;
+        private readonly IEntityMap<T> entityMap;
+        private readonly IDbAdapter dbAdapter;
         private readonly List<string> conditions = new List<string>();
         private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterNumber;
 
-        public DbCommandPredicate() : this(SessionFactory.Current.DomainMap) { }
-
-        public DbCommandPredicate(IDomainMap domainMap)
+        public DbCommandPredicate(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            this.domainMap = domainMap;
+            this.entityMap = entityMap;
+            this.dbAdapter = dbAdapter;
         }
 
         public IList<string> Conditions
@@ -52,10 +52,10 @@ namespace Catnap.Find
             return this;
         }
 
-        public DbCommandPredicate<T> AddCriteria(ICriteria criteria)
+        public DbCommandPredicate<T> AddCriteria(ICriteria<T> criteria)
         {
-            criteria.Build();
-            conditions.Add(criteria.ToString());
+            var sql = criteria.ToSql(entityMap, dbAdapter);
+            conditions.Add(sql);
             parameters.AddRange(criteria.Parameters);
             return this;
         }
@@ -130,7 +130,7 @@ namespace Catnap.Find
             }
             else
             {
-                var columnName = domainMap.GetMapFor<T>().GetColumnNameForProperty(expression);
+                var columnName = entityMap.GetColumnNameForProperty(expression);
                 sql.Append(columnName);
             }
         }
