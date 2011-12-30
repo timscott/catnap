@@ -13,7 +13,7 @@ namespace Catnap.IntegrationTests.Repositories
         {
             var criteria = Criteria.For<PersonGuid>()
                 .Equal(x => x.FirstName, firstName);
-            return Find(criteria).ToList();
+            return List(criteria).ToList();
         }
 
         public IEnumerable<PersonGuid> GetPesonsWhoHavePosted()
@@ -37,7 +37,7 @@ namespace Catnap.IntegrationTests.Repositories
         public IEnumerable<Person> FindByFirstName(string firstName)
         {
             var criteria = Criteria.For<Person>().Equal(x => x.FirstName, firstName);
-            return Find(criteria).ToList();
+            return List(criteria).ToList();
         }
 
         public IEnumerable<Person> GetPesonsWhoHavePosted()

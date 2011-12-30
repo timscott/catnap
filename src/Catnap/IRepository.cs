@@ -10,9 +10,9 @@ namespace Catnap
         T Get(object id);
         void Save(T entity);
         void Delete(object id);
-        IEnumerable<T> Find();
-        IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> Find(ICriteria<T> criteria);
+        IEnumerable<T> List();
+        IEnumerable<T> List(Expression<Func<T, bool>> predicate);
+        IEnumerable<T> List(ICriteria<T> criteria);
     }
 
     public interface IRepository
@@ -20,8 +20,8 @@ namespace Catnap
         T Get<T>(object id) where T : class, new();
         void Save<T>(T entity) where T : class, new();
         void Delete<T>(object id) where T : class, new();
-        IEnumerable<T> Find<T>() where T : class, new();
-        IEnumerable<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, new();
-        IEnumerable<T> Find<T>(ICriteria<T> criteria) where T : class, new();
+        IEnumerable<T> List<T>() where T : class, new();
+        IEnumerable<T> List<T>(Expression<Func<T, bool>> predicate) where T : class, new();
+        IEnumerable<T> List<T>(ICriteria<T> criteria) where T : class, new();
     }
 }

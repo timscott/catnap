@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Find;
+using Catnap.Find.Conditions;
 
 namespace Catnap.Mapping.Impl
 {
@@ -11,14 +12,15 @@ namespace Catnap.Mapping.Impl
         where TListMember : class, new()
     {
         private Expression<Func<TListMember, bool>> filter;
-        private IEntityMap listItemMap;
+        private IEntityMap<TListMember> listItemMap;
         private IEntityMap parentMap;
         private bool isLazy;
         private bool willCascadeSaves;
         private bool willCascadeDeletes;
         private string parentIdColumnName;
 
-        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property) : base(property)
+        public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property)
+            : base(property)
         {
             Lazy(true);
             CascadeSaves(true);
@@ -85,7 +87,8 @@ namespace Catnap.Mapping.Impl
 
         public void Done(IDomainMap domainMap, IEntityMap parentMap, IEntityMap listItemMap)
         {
-            this.listItemMap = listItemMap;
+            //TODO: This casting smells a little funny.
+            this.listItemMap = (IEntityMap<TListMember>)listItemMap;
             this.parentMap = parentMap;
             parentIdColumnName = parentIdColumnName ?? GetDeafultParentIdColumnColumnName(domainMap);
         }
@@ -116,13 +119,13 @@ namespace Catnap.Mapping.Impl
 
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
-            var builder = new FindCommandBuilder<TListMember>()
-                .AddCondition(parentIdColumnName, "=", parentMap.GetId(parent));
+            var criteria = Criteria.For<TListMember>()
+                .Where(parentIdColumnName, "=", parentMap.GetId(parent));
             if (filter != null)
             {
-                builder.AddCondition(filter);
+                criteria.Where(filter);
             }
-            return session.List<TListMember>(builder.Build());
+            return session.List(criteria);
         }
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
@@ -145,7 +148,7 @@ namespace Catnap.Mapping.Impl
 
         protected string GetDeafultParentIdColumnColumnName(IDomainMap domainMap)
         {
-            return domainMap.ListParentIdColumnNameMappingConvention  == null
+            return domainMap.ListParentIdColumnNameMappingConvention == null
                 ? parentMap.EntityType.Name + "Id"
                 : domainMap.ListParentIdColumnNameMappingConvention.GetColumnName(this);
         }

@@ -19,9 +19,11 @@ namespace Catnap.Find.Conditions
     {
         private readonly string conjunction;
         private readonly List<IConditionMarker> conditions = new List<IConditionMarker>();
+        private readonly List<Expression<Func<T, bool>>> predicates = new List<Expression<Func<T, bool>>>();
         private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterCount;
         private Parameter parameter;
+        private string sql;
 
         public Criteria() : this("and") { }
 
@@ -36,7 +38,8 @@ namespace Catnap.Find.Conditions
             criteria(this);
         }
 
-        internal Criteria(IEnumerable<IConditionMarker> conditions) : this("and")
+        internal Criteria(IEnumerable<IConditionMarker> conditions)
+            : this("and")
         {
             this.conditions.AddRange(conditions);
         }
@@ -55,9 +58,24 @@ namespace Catnap.Find.Conditions
             return this;
         }
 
-        public ICriteria<T> Add(Expression<Func<object, bool>> filter)
+        public ICriteria<T> Where(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            predicates.Add(predicate);
+            return this;
+        }
+
+        public ICriteria<T> Where(Expression<Func<T, object>> property, string @operator, object value)
+        {
+            var condition = new LeftRightCondition<T>(property, @operator, value);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> Where(string columnName, string @operator, object value)
+        {
+            var condition = new LeftRightCondition(columnName, @operator, value);
+            conditions.Add(condition);
+            return this;
         }
 
         public ICriteria<T> Equal(string columnName, object value)
@@ -90,7 +108,7 @@ namespace Catnap.Find.Conditions
 
         public ICriteria<T> Greater(string columnName, object value)
         {
-             var condition = new GreaterThan(columnName, value);
+            var condition = new GreaterThan(columnName, value);
             conditions.Add(condition);
             return this;
         }
@@ -103,7 +121,7 @@ namespace Catnap.Find.Conditions
         }
 
         public ICriteria<T> Less(string columnName, object value)
-        {       
+        {
             var condition = new LessThan(columnName, value);
             conditions.Add(condition);
             return this;
@@ -144,21 +162,35 @@ namespace Catnap.Find.Conditions
             return this;
         }
 
-        public IList<Parameter> Parameters
+        public IEnumerable<Parameter> Parameters
         {
             get { return parameters; }
         }
 
-        public string ToSql(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        public string Sql
         {
-            return ToSql(entityMap, dbAdapter, parameterCount);
+            get { return sql; }
         }
 
-        private string ToSql(IEntityMap<T> entityMap, IDbAdapter dbAdapter, int parameterCount)
+        public ICriteria<T> Done(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            this.parameterCount = parameterCount;
-            var conditionSqls = conditions.Select(x => Visit(x, entityMap, dbAdapter));
-            return string.Format("({0})", 
+            Done(entityMap, dbAdapter, parameterCount);
+            return this;
+        }
+
+        private void Done(IEntityMap<T> entityMap, IDbAdapter dbAdapter, int currentParameterCount)
+        {
+            parameterCount = currentParameterCount;
+            var conditionSqls = conditions.Select(x => Visit(x, entityMap, dbAdapter)).ToList();
+            foreach (var predicate in predicates)
+            {
+                var builder = new CriteriaPredicateBuilder<T>(entityMap);
+                builder.Build(predicate, parameterCount);
+                parameterCount = builder.LastParameterNumber;
+                conditionSqls.Add(builder.Sql);
+                parameters.AddRange(builder.Parameters);
+            }
+            sql = string.Format("({0})",
                 string.Join(string.Format(" {0} ", conjunction.Trim()), conditionSqls.ToArray()));
         }
 
@@ -181,10 +213,10 @@ namespace Catnap.Find.Conditions
 
         private string Visit(Criteria<T> condition, IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            var sql = condition.ToSql(entityMap, dbAdapter, parameterCount);
+            condition.Done(entityMap, dbAdapter, parameterCount);
             parameterCount = condition.parameterCount;
-            parameters.AddRange(condition.Parameters);
-            return sql;
+            parameters.AddRange(condition.parameters);
+            return condition.sql;
         }
 
         private string Visit(ColumnCondition condition, IDbAdapter dbAdapter)

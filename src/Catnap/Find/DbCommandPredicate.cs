@@ -4,83 +4,72 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using Catnap.Database;
-using Catnap.Find.Conditions;
 using Catnap.Mapping;
 
 namespace Catnap.Find
 {
-    public class DbCommandPredicate<T> where T : class, new()
+    public class CriteriaPredicateBuilder<T> where T : class, new()
     {
         private readonly IEntityMap<T> entityMap;
-        private readonly IDbAdapter dbAdapter;
-        private readonly List<string> conditions = new List<string>();
-        private readonly List<Parameter> parameters = new List<Parameter>();
+        private List<Parameter> parameters;
+        private StringBuilder sql;
         private int parameterNumber;
 
-        public DbCommandPredicate(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        public CriteriaPredicateBuilder(IEntityMap<T> entityMap)
         {
             this.entityMap = entityMap;
-            this.dbAdapter = dbAdapter;
+            sql = new StringBuilder();
         }
 
-        public IList<string> Conditions
+        public string Sql
         {
-            get { return conditions; }
+            get { return sql.ToString(); }
         }
 
-        public IList<Parameter> Parameters
+        public IEnumerable<Parameter> Parameters
         {
             get { return parameters; }
         }
 
-        public DbCommandPredicate<T> AddCondition(Expression<Func<T, bool>> predicate)
+        public int LastParameterNumber
         {
-            var sql = new StringBuilder();
-            Visit(sql, predicate, false);
-            conditions.Add(sql.ToString());
-            return this;
+            get { return parameterNumber; }
         }
 
-        public DbCommandPredicate<T> AddCondition(string columnName, string @operator, object value)
+        public void Build( Expression<Func<T, bool>> predicate, int startingParamterNumber)
         {
-            if (value != null)
-            {
-                conditions.Add(string.Format("{0}{1}{2}", columnName, @operator,
-                    SessionFactory.Current.FormatParameterName(columnName)));
-                parameters.Add(new Parameter(SessionFactory.Current.FormatParameterName(columnName), value));
-            }
-            return this;
+            Reset();
+            parameterNumber = startingParamterNumber;
+            Visit(predicate, false);
         }
 
-        public DbCommandPredicate<T> AddCriteria(ICriteria<T> criteria)
+        private void Reset()
         {
-            var sql = criteria.ToSql(entityMap, dbAdapter);
-            conditions.Add(sql);
-            parameters.AddRange(criteria.Parameters);
-            return this;
+            sql = new StringBuilder();
+            parameters = new List<Parameter>();
         }
 
-        private void Visit(StringBuilder sql, Expression expression, bool isOnRightSide)
+        private void Visit(Expression expression, bool isOnRightSide)
         {
             if (expression is LambdaExpression)
             {
-                Visit(sql, ((LambdaExpression)expression).Body, false);
+                Visit(((LambdaExpression)expression).Body, false);
             }
             else if (expression is BinaryExpression)
             {
-                Visit(sql, (BinaryExpression)expression);
+                Visit((BinaryExpression)expression);
             }
             else if (expression is MemberExpression)
             {
-                VisitMember(sql, (MemberExpression)expression, isOnRightSide);
+                VisitMember((MemberExpression)expression, isOnRightSide);
             }
             else if (expression is ConstantExpression)
             {
-                Visit(sql, (ConstantExpression)expression);
+                Visit((ConstantExpression)expression);
             }
             else if (expression is UnaryExpression)
             {
-                Visit(sql, ((UnaryExpression)expression).Operand, isOnRightSide);
+                Visit(((UnaryExpression)expression).Operand, isOnRightSide);
             }
             else
             {
@@ -88,19 +77,19 @@ namespace Catnap.Find
             }
         }
 
-        private void Visit(StringBuilder sql, ConstantExpression expression)
+        private void Visit(ConstantExpression expression)
         {
-            AppendValue(sql, expression.Value);
+            AppendValue(expression.Value);
         }
 
-        private void Visit(StringBuilder sql, ConstantExpression expression, string memberName)
+        private void Visit(ConstantExpression expression, string memberName)
         {
             const BindingFlags types = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             var fieldInfo = expression.Value.GetType().GetField(memberName, types);
             if (fieldInfo != null)
             {
                 var value = fieldInfo.GetValue(expression.Value);
-                AppendValue(sql, value);
+                AppendValue(value);
             }
             else
             {
@@ -108,25 +97,25 @@ namespace Catnap.Find
                 if (propertyInfo != null)
                 {
                     var value = propertyInfo.GetValue(expression.Value, null);
-                    AppendValue(sql, value);
+                    AppendValue(value);
                 }
             }
         }
 
-        private void Visit(StringBuilder sql, BinaryExpression expression)
+        private void Visit(BinaryExpression expression)
         {
             sql.Append("(");
-            Visit(sql, expression.Left, false);
+            Visit(expression.Left, false);
             sql.Append(string.Format(" {0} ", GetOperandFromExpression(expression)));
-            Visit(sql, expression.Right, true);
+            Visit(expression.Right, true);
             sql.Append(")");
         }
 
-        private void VisitMember(StringBuilder sql, MemberExpression expression, bool isOnRightSide)
+        private void VisitMember(MemberExpression expression, bool isOnRightSide)
         {
             if (isOnRightSide)
             {
-                AppendRightSideMember(sql, expression);
+                AppendRightSideMember(expression);
             }
             else
             {
@@ -135,20 +124,20 @@ namespace Catnap.Find
             }
         }
 
-        private void AppendRightSideMember(StringBuilder sql, MemberExpression expression)
+        private void AppendRightSideMember(MemberExpression expression)
         {
             if (expression.Expression is ConstantExpression)
             {
-                Visit(sql, (ConstantExpression)expression.Expression, expression.Member.Name);
+                Visit((ConstantExpression)expression.Expression, expression.Member.Name);
             }
-                //else if (expression.Expression == null)
-                //{
-                //var value = Expression.Lambda(expression).Compile().DynamicInvoke();
-                //AppendValue(sql, value);
-                //}
+            //else if (expression.Expression == null)
+            //{
+            //var value = Expression.Lambda(expression).Compile().DynamicInvoke();
+            //AppendValue(sql, value);
+            //}
             else if (expression.Expression is MemberExpression)
             {
-                Visit(sql, expression.Expression, true);
+                Visit(expression.Expression, true);
             }
             else
             {
@@ -174,7 +163,7 @@ namespace Catnap.Find
                 //        AppendValue(sql, value);
                 //    }
                 //}
-            }  
+            }
         }
 
         //NOTE: other conversions needed?
@@ -182,20 +171,20 @@ namespace Catnap.Find
         {
             if (value is bool)
             {
-                return (bool) value ? 1 : 0;
+                return (bool)value ? 1 : 0;
             }
             if (value.GetType().IsEnum)
             {
-                return (int) value;
+                return (int)value;
             }
             return value;
         }
 
-        private void AppendValue(StringBuilder sql, object value)
+        private void AppendValue(object value)
         {
-            var parameterName = SessionFactory.Current.FormatParameterName(parameterNumber.ToString());
+            var parameterName = SessionFactory.Current.FormatParameterName(LastParameterNumber.ToString());
             sql.Append(parameterName);
-            Parameters.Add(new Parameter(parameterName, ConvertValue(value)));
+            parameters.Add(new Parameter(parameterName, ConvertValue(value)));
             parameterNumber++;
         }
 

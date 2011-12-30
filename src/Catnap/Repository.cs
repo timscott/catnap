@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Catnap.Find;
 using Catnap.Find.Conditions;
 
 namespace Catnap
@@ -17,19 +16,19 @@ namespace Catnap
             this.innerRepository = innerRepository;
         }
 
-        public IEnumerable<T> Find()
+        public IEnumerable<T> List()
         {
-            return innerRepository.Find<T>();
+            return innerRepository.List<T>();
         }
 
-        public IEnumerable<T> Find(ICriteria<T> criteria)
+        public IEnumerable<T> List(ICriteria<T> criteria)
         {
-            return innerRepository.Find(criteria);
+            return innerRepository.List(criteria);
         }
 
-        public virtual IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
+        public virtual IEnumerable<T> List(Expression<Func<T, bool>> predicate)
         {
-            return innerRepository.Find(predicate);
+            return innerRepository.List(predicate);
         }
 
         public virtual void Save(T entity)
@@ -65,21 +64,20 @@ namespace Catnap
             UnitOfWork.Current.Session.Delete<T>(id);
         }
 
-        public IEnumerable<T> Find<T>() where T : class, new()
+        public IEnumerable<T> List<T>() where T : class, new()
         {
-            return UnitOfWork.Current.Session.List<T>(new FindCommandBuilder<T>().Build());
+            return UnitOfWork.Current.Session.List<T>();
         }
 
-        public IEnumerable<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, new()
+        public IEnumerable<T> List<T>(Expression<Func<T, bool>> predicate) where T : class, new()
         {
-            var commandSpec = new FindCommandBuilder<T>().AddCondition(predicate).Build();
-            return UnitOfWork.Current.Session.List<T>(commandSpec);
+            var criteria = Criteria.For<T>().Where(predicate);
+            return UnitOfWork.Current.Session.List(criteria);
         }
 
-        public IEnumerable<T> Find<T>(ICriteria<T> criteria) where T : class, new()
+        public IEnumerable<T> List<T>(ICriteria<T> criteria) where T : class, new()
         {
-            var commandSpec = new FindCommandBuilder<T>().AddCriteria(criteria).Build();
-            return UnitOfWork.Current.Session.List<T>(commandSpec);
+            return UnitOfWork.Current.Session.List(criteria);
         }
     }
 }

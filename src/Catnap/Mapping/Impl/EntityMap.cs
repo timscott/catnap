@@ -42,7 +42,7 @@ namespace Catnap.Mapping.Impl
             return Equals(id, transientIdValue);
         }
 
-        public IList<IPropertyMap<T>> PropertyMaps
+        public IEnumerable<IPropertyMap<T>> PropertyMaps
         {
             get { return propertyMaps; }
         }
@@ -158,20 +158,17 @@ namespace Catnap.Mapping.Impl
             get { return string.Format("select * from {0}", TableName); }
         }
 
-        public DbCommandSpec GetFindCommand(IList<Parameter> parameters, IList<string> condtions)
+        public DbCommandSpec GetListCommand(IEnumerable<Parameter> parameters, string whereSql)
         {
-            var command = new DbCommandSpec();
-            foreach (var parameter in parameters)
-            {
-                command.AddParameters(parameter);
-            }
-            var sql = BaseSelectSql;
-            if (condtions.Count > 0)
-            {
-                sql += " where " + string.Join(" and ", condtions.ToArray());
-            }
-            command.SetCommandText(sql);
-            return command;
+            return new DbCommandSpec()
+                .SetCommandText(BaseSelectSql + " where " + whereSql)
+                .AddParameters(parameters.ToArray());
+        }
+
+        public DbCommandSpec GetListAllCommand()
+        {
+            return new DbCommandSpec()
+                .SetCommandText(BaseSelectSql);
         }
 
         public DbCommandSpec GetGetCommand(object id)

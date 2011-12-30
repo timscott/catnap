@@ -46,7 +46,7 @@ namespace Catnap.Migration
 
         private void CreateMigrationsTableIfNotExists()
         {
-            var existsResult = UnitOfWork.Current.Session.ExecuteQuery(
+            var existsResult = UnitOfWork.Current.Session.List(
                 dbAdapter.CreateGetTableMetadataCommand(MIGRATIONS_TABLE_NAME));
         	if (existsResult.Count() != 0)
         	{

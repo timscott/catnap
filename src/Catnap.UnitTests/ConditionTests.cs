@@ -45,11 +45,9 @@ namespace Catnap.UnitTests
                 });
         };
 
-        Because of = () => sql = target.ToSql(
-            SessionFactory.Current.DomainMap.GetMapFor<Person>(), 
-            SessionFactory.Current.DbAdapter);
+        Because of = () => target.Done(SessionFactory.Current.DomainMap.GetMapFor<Person>(), SessionFactory.Current.DbAdapter);
 
-        It should_render_correct_sql = () => sql
+        It should_render_correct_sql = () => target.Sql
             .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6)))");
 
         It should_contain_expected_parameters = () =>

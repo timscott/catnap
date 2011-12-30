@@ -86,7 +86,6 @@
     <Compile Include="Mapping\Impl\BelongsToPropertyMap.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
-    <Compile Include="Find\FindCommandBuilder.cs" />
     <Compile Include="Mapping\Impl\DomainMap.cs" />
     <Compile Include="Mapping\IDomainMap.cs" />
     <Compile Include="Mapping\Impl\FieldAccessStrategy.cs" />

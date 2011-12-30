@@ -13,7 +13,8 @@ namespace Catnap.Mapping
         object GetId(object entity);
         void SetId(object entity, object id, ISession session);
         bool IsTransient(object entity);
-        DbCommandSpec GetFindCommand(IList<Parameter> parameters, IList<string> condtions);
+        DbCommandSpec GetListCommand(IEnumerable<Parameter> parameters, string whereSql);
+        DbCommandSpec GetListAllCommand();
         DbCommandSpec GetGetCommand(object id);
         DbCommandSpec GetDeleteCommand(object id);
         DbCommandSpec GetInsertCommand(object entity);
@@ -27,7 +28,7 @@ namespace Catnap.Mapping
 
     public interface IEntityMap<T> : IEntityMap where T : class, new()
     {
-        IList<IPropertyMap<T>> PropertyMaps { get; }
+        IEnumerable<IPropertyMap<T>> PropertyMaps { get; }
         T BuildFrom(IDictionary<string, object> record, ISession session);
         string GetColumnNameForProperty(Expression<Func<T, object>> property);
     }

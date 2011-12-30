@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Catnap.Database;
-using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.Logging;
 using Catnap.Mapping;
@@ -32,7 +31,8 @@ namespace Catnap
 
         public IList<IDictionary<string, object>> List(DbCommandSpec commandSpec)
         {
-            return ExecuteQuery(commandSpec).ToList();
+            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            return Try(() => ExecuteQuery(command)).ToList();
         }
 
         public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, new()
@@ -41,11 +41,19 @@ namespace Catnap
             return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
-        public IList<T> List<T>(DbCommandPredicate<T> commandPredicate) where T : class, new()
+        public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            var command = entityMap.GetFindCommand(commandPredicate.Parameters, commandPredicate.Conditions);
-            return List<T>(command);
+            criteria.Done(entityMap, dbAdapter);
+            var commandSpec = entityMap.GetListCommand(criteria.Parameters, criteria.Sql);
+            return List<T>(commandSpec);
+        }
+
+        public IList<T> List<T>() where T : class, new()
+        {
+            var entityMap = domainMap.GetMapFor<T>();
+            var commandSpec = entityMap.GetListAllCommand();
+            return List<T>(commandSpec);
         }
 
         public T Get<T>(object id) where T : class, new()
@@ -97,12 +105,6 @@ namespace Catnap
             Try(command.ExecuteNonQuery);
         }
 
-        public IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec)
-        {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
-            return Try(() => ExecuteQuery(command));
-        }
-
         public IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
         {
             var reader = command.ExecuteReader();
@@ -142,7 +144,9 @@ namespace Catnap
 
         public string ToSql<T>(ICriteria<T> criteria) where T : class, new()
         {
-            return criteria.ToSql(domainMap.GetMapFor<T>(), dbAdapter);
+            var entityMap = domainMap.GetMapFor<T>();
+            criteria.Done(entityMap, dbAdapter);
+            return criteria.Sql;
         }
 
         public void Dispose()
