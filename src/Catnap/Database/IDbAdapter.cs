@@ -6,7 +6,7 @@ namespace Catnap.Database
     public interface IDbAdapter
     {
         IDbConnection CreateConnection(string connectionString);
-        DbCommandSpec CreateLastInsertIdCommand();
+        DbCommandSpec CreateLastInsertIdCommand(string tableName);
         DbCommandSpec CreateGetTableMetadataCommand();
         DbCommandSpec CreateGetTableMetadataCommand(string tableName);
         object ConvertToDbType(object value);

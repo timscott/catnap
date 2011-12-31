@@ -60,7 +60,7 @@ namespace Catnap
             {
                 var commandSpec = entityMap.GetInsertCommand(entity, parentId);
                 ExecuteNonQuery(commandSpec);
-                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
+                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName);
                 var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
                 var result = getIdCommand.ExecuteScalar();
                 var id = Convert.ToInt32(result);
