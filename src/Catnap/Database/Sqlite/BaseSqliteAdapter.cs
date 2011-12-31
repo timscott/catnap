@@ -58,7 +58,7 @@ namespace Catnap.Database.Sqlite
                 : PARAMETER_PREFIX + name;
         }
 
-        public DbCommandSpec CreateLastInsertIdCommand()
+        public DbCommandSpec CreateLastInsertIdCommand(string tableName)
         {
             return new DbCommandSpec().SetCommandText("SELECT last_insert_rowid()");
         }

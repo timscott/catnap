@@ -75,7 +75,7 @@ namespace Catnap
             ExecuteNonQuery(commandSpec);
             if (entityMap.IsTransient(entity) && idMap.Insert == false)
             {
-                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand();
+                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName);
                 var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
                 var result = getIdCommand.ExecuteScalar();
                 entityMap.SetId(entity, result, this);

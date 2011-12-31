@@ -19,7 +19,7 @@ namespace Catnap.Database
             return null;
         }
 
-        public DbCommandSpec CreateLastInsertIdCommand()
+        public DbCommandSpec CreateLastInsertIdCommand(string tableName)
         {
             return null;
         }
