@@ -1,6 +1,7 @@
 using System;
 using Catnap.Database;
 using Catnap.Mapping;
+using Catnap.Mapping.Impl;
 
 namespace Catnap
 {
@@ -30,7 +31,12 @@ namespace Catnap
 
         public void Done()
         {
-            SessionFactory.Initialize(connString, dbAdapter, domainConfig);
+            var domainMap = new DomainMap(dbAdapter);
+            domainConfig(domainMap);
+            domainMap.Done();
+            var sessionFactory = new SessionFactory(connString, dbAdapter, domainMap);
+            UnitOfWork.Initialize(sessionFactory);
+            SessionFactory.SetCurrent(sessionFactory);
         }
     }
 }

@@ -184,7 +184,7 @@ namespace Catnap.Find.Conditions
             var conditionSqls = conditions.Select(x => Visit(x, entityMap, dbAdapter)).ToList();
             foreach (var predicate in predicates)
             {
-                var builder = new CriteriaPredicateBuilder<T>(entityMap);
+                var builder = new CriteriaPredicateBuilder<T>(entityMap, dbAdapter);
                 builder.Build(predicate, parameterCount);
                 parameterCount = builder.LastParameterNumber;
                 conditionSqls.Add(builder.Sql);

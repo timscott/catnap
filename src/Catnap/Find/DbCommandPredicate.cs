@@ -11,13 +11,15 @@ namespace Catnap.Find
     public class CriteriaPredicateBuilder<T> where T : class, new()
     {
         private readonly IEntityMap<T> entityMap;
+        private readonly IDbAdapter dbAdapter;
         private List<Parameter> parameters;
         private StringBuilder sql;
         private int parameterNumber;
 
-        public CriteriaPredicateBuilder(IEntityMap<T> entityMap)
+        public CriteriaPredicateBuilder(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
             this.entityMap = entityMap;
+            this.dbAdapter = dbAdapter;
             sql = new StringBuilder();
         }
 
@@ -36,7 +38,7 @@ namespace Catnap.Find
             get { return parameterNumber; }
         }
 
-        public void Build( Expression<Func<T, bool>> predicate, int startingParamterNumber)
+        public void Build(Expression<Func<T, bool>> predicate, int startingParamterNumber)
         {
             Reset();
             parameterNumber = startingParamterNumber;
@@ -182,7 +184,7 @@ namespace Catnap.Find
 
         private void AppendValue(object value)
         {
-            var parameterName = SessionFactory.Current.FormatParameterName(LastParameterNumber.ToString());
+            var parameterName = dbAdapter.FormatParameterName(LastParameterNumber.ToString());
             sql.Append(parameterName);
             parameters.Add(new Parameter(parameterName, ConvertValue(value)));
             parameterNumber++;

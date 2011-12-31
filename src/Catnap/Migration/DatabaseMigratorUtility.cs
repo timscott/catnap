@@ -6,13 +6,7 @@ namespace Catnap.Migration
 {
     public class DatabaseMigratorUtility
     {
-        private readonly IDbAdapter dbAdapter;
         private const string MIGRATIONS_TABLE_NAME = "db_migrations";
-
-        public DatabaseMigratorUtility(IDbAdapter dbAdapter)
-        {
-            this.dbAdapter = dbAdapter;
-        }
 
         public void Migrate(params IDatabaseMigration[] migrations)
         {
@@ -46,8 +40,7 @@ namespace Catnap.Migration
 
         private void CreateMigrationsTableIfNotExists()
         {
-            var existsResult = UnitOfWork.Current.Session.List(
-                dbAdapter.CreateGetTableMetadataCommand(MIGRATIONS_TABLE_NAME));
+            var existsResult = UnitOfWork.Current.Session.GetTableMetaData(MIGRATIONS_TABLE_NAME);
         	if (existsResult.Count() != 0)
         	{
         		return;

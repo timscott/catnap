@@ -22,5 +22,6 @@ namespace Catnap
         void RollbackTransaction();
         object ConvertFromDbType(object value, Type type);
         string ToSql<T>(ICriteria<T> criteria) where T : class, new();
+        IList<IDictionary<string, object>> GetTableMetaData(string tableName);
     }
 }

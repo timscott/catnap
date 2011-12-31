@@ -1,7 +1,6 @@
 using System;
 using Catnap.Database;
 using Catnap.Mapping;
-using Catnap.Mapping.Impl;
 
 namespace Catnap
 {
@@ -42,12 +41,9 @@ namespace Catnap
             get { return dbAdapter; }
         }
 
-        internal static void Initialize(string connectionString, IDbAdapter dbAdapter, Action<IDomainMappable> domainConfig)
+        internal static void SetCurrent(ISessionFactory instance)
         {
-            var domainMap = new DomainMap(dbAdapter);
-            domainConfig(domainMap);
-            domainMap.Done();
-            current = new SessionFactory(connectionString, dbAdapter, domainMap);
+            current = instance;
         }
 
         public ISession New()

@@ -6,9 +6,15 @@ namespace Catnap
 {
     public class UnitOfWork : IDisposable
     {
+        private static ISessionFactory sessionFactory;
         [ThreadStatic]
         private static UnitOfWork current;
-        
+
+        public static void Initialize(ISessionFactory sessionFactory)
+        {
+            UnitOfWork.sessionFactory = sessionFactory;
+        }
+
         public static UnitOfWork Current
         {
             get
@@ -33,7 +39,7 @@ namespace Catnap
             }
             current = new UnitOfWork
             {
-                Session = SessionFactory.Current.New(), 
+                Session = sessionFactory.New(), 
                 id = Guid.NewGuid()
             };
             Log.Debug("Starting unit of work {0}. Thread: {1}", current.id, Thread.CurrentThread.ManagedThreadId);

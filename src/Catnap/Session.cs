@@ -149,6 +149,11 @@ namespace Catnap
             return criteria.Sql;
         }
 
+        public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
+        {
+            return List(dbAdapter.CreateGetTableMetadataCommand(tableName));
+        }
+
         public void Dispose()
         {
             if (transaction != null)
