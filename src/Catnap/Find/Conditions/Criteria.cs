@@ -172,7 +172,7 @@ namespace Catnap.Find.Conditions
             get { return sql; }
         }
 
-        public ICriteria<T> Done(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        public ICriteria<T> Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
             Done(entityMap, dbAdapter, parameterCount);
             return this;

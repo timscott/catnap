@@ -12,12 +12,12 @@ namespace Catnap.UnitTests
     public class when_creating_an_complex_condition
     {
         static ICriteria<Person> target;
-        static string sql;
+        static ISessionFactory sessionFactory;
 
         Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            Fluently.Configure
+            sessionFactory = Fluently.Configure
                 .Domain(d =>
                     d.Entity<Person>(e =>
                     {
@@ -25,7 +25,7 @@ namespace Catnap.UnitTests
                         e.Property(x => x.FirstName);
                         e.Property(x => x.MemberSince);
                     }))
-                 .Done();
+                 .Build();
             target = Criteria.For<Person>()
                 .Less("Bar", 1000)
                 .GreaterOrEqual("Bar", 300)
@@ -45,7 +45,7 @@ namespace Catnap.UnitTests
                 });
         };
 
-        Because of = () => target.Done(SessionFactory.Current.DomainMap.GetMapFor<Person>(), SessionFactory.Current.DbAdapter);
+        Because of = () => sessionFactory.New().Build(target);
 
         It should_render_correct_sql = () => target.Sql
             .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6)))");

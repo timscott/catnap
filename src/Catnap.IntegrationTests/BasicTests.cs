@@ -22,7 +22,7 @@ namespace Catnap.IntegrationTests
                 .ConnectionString("Data source=:memory:")
                 .DatabaseAdapter(DbAdapter.Sqlite)
                 .Domain(DomainMapping.Get())
-                .Done();
+                .Build();
             UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
             DatabaseMigrator.Execute();
         };

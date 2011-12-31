@@ -44,7 +44,7 @@ namespace Catnap
         public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            criteria.Done(entityMap, dbAdapter);
+            criteria.Build(entityMap, dbAdapter);
             var commandSpec = entityMap.GetListCommand(criteria.Parameters, criteria.Sql);
             return List<T>(commandSpec);
         }
@@ -142,16 +142,20 @@ namespace Catnap
             return dbAdapter.ConvertFromDbType(value, type);
         }
 
-        public string ToSql<T>(ICriteria<T> criteria) where T : class, new()
+        public void Build<T>(ICriteria<T> criteria) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            criteria.Done(entityMap, dbAdapter);
-            return criteria.Sql;
+            criteria.Build(entityMap, dbAdapter);
         }
 
         public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
         {
             return List(dbAdapter.CreateGetTableMetadataCommand(tableName));
+        }
+
+        public string FormatParameterName(string name)
+        {
+            return dbAdapter.FormatParameterName(name);
         }
 
         public void Dispose()

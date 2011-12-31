@@ -21,7 +21,8 @@ namespace Catnap
         object ExecuteScalar(DbCommandSpec commandSpec);
         void RollbackTransaction();
         object ConvertFromDbType(object value, Type type);
-        string ToSql<T>(ICriteria<T> criteria) where T : class, new();
         IList<IDictionary<string, object>> GetTableMetaData(string tableName);
+        string FormatParameterName(string name);
+        void Build<T>(ICriteria<T> criteria) where T : class, new();
     }
 }

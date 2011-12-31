@@ -10,7 +10,7 @@ namespace Catnap.Find.Conditions
     {
         IEnumerable<Parameter> Parameters { get; }
         string Sql { get; }
-        ICriteria<T> Done(IEntityMap<T> entityMap, IDbAdapter dbAdapter);
+        ICriteria<T> Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter);
         ICriteria<T> Equal(string columnName, object value);
         ICriteria<T> Equal(Expression<Func<T, object>> property, object value);
         ICriteria<T> NotEqual(string columnName, object value);

@@ -9,6 +9,6 @@ namespace Catnap
         IConfigurator Domain(Action<IDomainMappable> config);
         IConfigurator ConnectionString(string connectionString);
         IConfigurator DatabaseAdapter(IDbAdapter adapter);
-        void Done();
+        ISessionFactory Build();
     }
 }

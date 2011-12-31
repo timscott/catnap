@@ -11,13 +11,15 @@ namespace Catnap.UnitTests
 {
     public class behaves_like_unit_test_requiring_domain_context
     {
+        protected static ISessionFactory sessionFactory;
+
         Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            Fluently.Configure
+            sessionFactory = Fluently.Configure
                 .Domain(DomainMapping.Get())
                 .DatabaseAdapter(new NullDbAdapter("@"))
-                .Done();
+                .Build();
         };
     }
 
@@ -36,8 +38,8 @@ namespace Catnap.UnitTests
                 .Where(x => x.Active == isActiveLocalScope.Value)
                 .Where(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
                 .Where(x => x.FirstName == "Tim")
-                .Where(x => x.LastName == "Scott")
-                .Done(SessionFactory.Current.DomainMap.GetMapFor<Person>(), SessionFactory.Current.DbAdapter);
+                .Where(x => x.LastName == "Scott");
+            sessionFactory.New().Build(criteria);
         };
 
         It should_have_correct_command_text = () => criteria.Sql.Should()

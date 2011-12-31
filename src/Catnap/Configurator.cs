@@ -8,7 +8,7 @@ namespace Catnap
     public class Configurator : IConfigurator
     {
         private string connString;
-        private IDbAdapter dbAdapter = new NullDbAdapter();
+        private IDbAdapter dbAdapter;
         private Action<IDomainMappable> domainConfig;
 
         public IConfigurator Domain(Action<IDomainMappable> config)
@@ -29,14 +29,18 @@ namespace Catnap
             return this;
         }
 
-        public void Done()
+        public ISessionFactory Build()
         {
+            if (dbAdapter == null)
+            {
+                dbAdapter = new NullDbAdapter();
+            }
             var domainMap = new DomainMap(dbAdapter);
             domainConfig(domainMap);
             domainMap.Done();
             var sessionFactory = new SessionFactory(connString, dbAdapter, domainMap);
             UnitOfWork.Initialize(sessionFactory);
-            SessionFactory.SetCurrent(sessionFactory);
+            return sessionFactory;
         }
     }
 }
