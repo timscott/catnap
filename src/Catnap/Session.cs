@@ -150,7 +150,8 @@ namespace Catnap
 
         public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
         {
-            return List(dbAdapter.CreateGetTableMetadataCommand(tableName));
+            var getTableMetadataCommand = dbAdapter.CreateGetTableMetadataCommand(tableName);
+            return List(getTableMetadataCommand);
         }
 
         public string FormatParameterName(string name)

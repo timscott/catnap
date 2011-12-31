@@ -16,17 +16,17 @@ namespace Catnap
             this.innerRepository = innerRepository;
         }
 
-        public IEnumerable<T> List()
+        public IList<T> List()
         {
             return innerRepository.List<T>();
         }
 
-        public IEnumerable<T> List(ICriteria<T> criteria)
+        public IList<T> List(ICriteria<T> criteria)
         {
             return innerRepository.List(criteria);
         }
 
-        public virtual IEnumerable<T> List(Expression<Func<T, bool>> predicate)
+        public virtual IList<T> List(Expression<Func<T, bool>> predicate)
         {
             return innerRepository.List(predicate);
         }
@@ -64,18 +64,18 @@ namespace Catnap
             UnitOfWork.Current.Session.Delete<T>(id);
         }
 
-        public IEnumerable<T> List<T>() where T : class, new()
+        public IList<T> List<T>() where T : class, new()
         {
             return UnitOfWork.Current.Session.List<T>();
         }
 
-        public IEnumerable<T> List<T>(Expression<Func<T, bool>> predicate) where T : class, new()
+        public IList<T> List<T>(Expression<Func<T, bool>> predicate) where T : class, new()
         {
             var criteria = Criteria.For<T>().Where(predicate);
             return UnitOfWork.Current.Session.List(criteria);
         }
 
-        public IEnumerable<T> List<T>(ICriteria<T> criteria) where T : class, new()
+        public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
         {
             return UnitOfWork.Current.Session.List(criteria);
         }
