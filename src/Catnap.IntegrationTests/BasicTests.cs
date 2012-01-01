@@ -13,8 +13,6 @@ namespace Catnap.IntegrationTests
 {
     public abstract class behaves_like_integration_test
     {
-        Cleanup after_each = () => UnitOfWork.Current.Dispose();
-
         Establish context = () =>
         {
             Log.Level = LogLevel.Debug;
@@ -26,6 +24,8 @@ namespace Catnap.IntegrationTests
             UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
             DatabaseMigrator.Execute(UnitOfWork.Current.Session);
         };
+
+        Cleanup after_each = () => UnitOfWork.Current.Dispose();
     }
 
     public abstract class behaves_like_person_test_ints : behaves_like_integration_test

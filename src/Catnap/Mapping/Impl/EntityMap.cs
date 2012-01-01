@@ -49,8 +49,14 @@ namespace Catnap.Mapping.Impl
 
         public string GetColumnNameForProperty(MemberExpression memberExpression)
         {
-            var map = propertyMaps.Where(x => x is IPropertyMapWithColumn<T> &&  x.PropertyInfo == memberExpression.Member)
+            var map = propertyMaps.Where(x => 
+                x is IPropertyMapWithColumn<T> && 
+                x.PropertyInfo == memberExpression.Member)
                 .Cast<IPropertyMapWithColumn<T>>().FirstOrDefault();
+            if (map == null)
+            {
+                throw new InvalidOperationException(string.Format("Property '{0}' is not mapped.", memberExpression.Member.Name));
+            }
             return map.GetColumnName();
         }
 
