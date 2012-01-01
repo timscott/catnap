@@ -4,11 +4,9 @@ namespace Catnap.IntegrationTests.Migrations
 {
     public static class DatabaseMigrator
     {
-        private static readonly DatabaseMigratorUtility migratorUtility = new DatabaseMigratorUtility();
-
-        public static void Execute()
+        public static void Execute(ISession session)
         {
-            migratorUtility.Migrate
+            new DatabaseMigratorUtility(session).Migrate
             (
                 new CreateSchema()
             );

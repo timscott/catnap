@@ -24,7 +24,7 @@ namespace Catnap.IntegrationTests
                 .Domain(DomainMapping.Get())
                 .Build();
             UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
-            DatabaseMigrator.Execute();
+            DatabaseMigrator.Execute(UnitOfWork.Current.Session);
         };
     }
 
