@@ -67,6 +67,7 @@
     <Compile Include="Fluently.cs" />
     <Compile Include="IConfigurator.cs" />
     <Compile Include="ISessionFactory.cs" />
+    <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Logging\Impl\ConsoleLogger.cs" />
     <Compile Include="Logging\Impl\FileLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />

@@ -4,7 +4,7 @@ using Catnap.Logging;
 
 namespace Catnap
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private static ISessionFactory sessionFactory;
         [ThreadStatic]
