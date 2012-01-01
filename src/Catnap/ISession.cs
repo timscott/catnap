@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Catnap.Citeria.Conditions;
 using Catnap.Database;
-using Catnap.Find.Conditions;
 
 namespace Catnap
 {

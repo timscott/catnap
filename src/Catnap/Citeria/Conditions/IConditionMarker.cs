@@ -1,4 +1,4 @@
-namespace Catnap.Find.Conditions
+namespace Catnap.Citeria.Conditions
 {
     public interface IConditionMarker
     {

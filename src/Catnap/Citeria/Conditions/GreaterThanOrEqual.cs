@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Catnap.Find.Conditions
+namespace Catnap.Citeria.Conditions
 {
     public class GreaterThanOrEqual : LeftRightCondition
     {

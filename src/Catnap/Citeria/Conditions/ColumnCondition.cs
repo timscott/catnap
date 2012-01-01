@@ -1,6 +1,6 @@
 using Catnap.Database;
 
-namespace Catnap.Find.Conditions
+namespace Catnap.Citeria.Conditions
 {
     public abstract class ColumnCondition : IConditionMarker
     {

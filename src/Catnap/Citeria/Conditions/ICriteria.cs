@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using Catnap.Database;
 using Catnap.Mapping;
 
-namespace Catnap.Find.Conditions
+namespace Catnap.Citeria.Conditions
 {
     public interface ICriteria<T> where T : class, new()
     {

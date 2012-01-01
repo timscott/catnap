@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Catnap.Find
+namespace Catnap.Citeria
 {
     public class PredicateBuilder<T>
     {

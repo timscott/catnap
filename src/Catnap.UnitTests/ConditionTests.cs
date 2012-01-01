@@ -1,5 +1,5 @@
 using System;
-using Catnap.Find.Conditions;
+using Catnap.Citeria.Conditions;
 using Catnap.Logging;
 using Catnap.Mapping;
 using Catnap.Tests.Core.Models;

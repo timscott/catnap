@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Catnap.Find;
-using Catnap.Find.Conditions;
+using Catnap.Citeria.Conditions;
 
 namespace Catnap.Mapping.Impl
 {

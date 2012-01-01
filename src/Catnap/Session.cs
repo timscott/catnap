@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Catnap.Citeria.Conditions;
 using Catnap.Database;
-using Catnap.Find.Conditions;
 using Catnap.Logging;
 using Catnap.Mapping;
 

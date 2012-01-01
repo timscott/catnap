@@ -6,7 +6,7 @@ using System.Text;
 using Catnap.Database;
 using Catnap.Mapping;
 
-namespace Catnap.Find
+namespace Catnap.Citeria
 {
     public class CriteriaPredicateBuilder<T> where T : class, new()
     {

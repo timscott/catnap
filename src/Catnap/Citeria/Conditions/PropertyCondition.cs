@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Catnap.Database;
 using Catnap.Mapping;
 
-namespace Catnap.Find.Conditions
+namespace Catnap.Citeria.Conditions
 {
     public abstract class PropertyCondition<T> : IConditionMarker where T : class, new()
     {
