@@ -85,7 +85,7 @@
     <Compile Include="Mapping\Impl\AccessStrategy.cs" />
     <Compile Include="Mapping\Conventions\BelongsToColumnNameConvention.cs" />
     <Compile Include="Mapping\Impl\BelongsToPropertyMap.cs" />
-    <Compile Include="Impl\Entity.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
     <Compile Include="Mapping\Impl\DomainMap.cs" />
     <Compile Include="Mapping\IDomainMap.cs" />
@@ -116,11 +116,11 @@
     <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
     <Compile Include="Database\Sqlite\SqliteTypeConverter.cs" />
-    <Compile Include="Impl\Repository.cs" />
-    <Compile Include="Impl\Session.cs" />
-    <Compile Include="Impl\SessionFactory.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SessionFactory.cs" />
     <Compile Include="Citeria\CriteriaPredicateBuilder.cs" />
-    <Compile Include="Impl\UnitOfWork.cs" />
+    <Compile Include="UnitOfWork.cs" />
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>
   <ItemGroup />

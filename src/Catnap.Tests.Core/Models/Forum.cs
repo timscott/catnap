@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Catnap.Impl;
 
 namespace Catnap.Tests.Core.Models
 {

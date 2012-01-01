@@ -1,6 +1,5 @@
 using System;
 using Catnap.Database;
-using Catnap.Impl;
 using Catnap.Mapping;
 using Catnap.Mapping.Impl;
 

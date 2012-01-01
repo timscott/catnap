@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Catnap.Configuration;
 using Catnap.Database;
-using Catnap.Impl;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Repositories;
 using Catnap.Logging;

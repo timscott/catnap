@@ -1,6 +1,6 @@
 using System;
 
-namespace Catnap.Impl
+namespace Catnap
 {
     [Obsolete]
     public class Entity
