@@ -2,7 +2,7 @@ using System;
 using Catnap.Database;
 using Catnap.Mapping;
 
-namespace Catnap
+namespace Catnap.Configuration
 {
     public interface IConfigurator
     {

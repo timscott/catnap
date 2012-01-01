@@ -1,3 +1,4 @@
+using Catnap.Impl;
 using Catnap.Tests.Core.Models;
 
 namespace Catnap.IntegrationTests.Repositories

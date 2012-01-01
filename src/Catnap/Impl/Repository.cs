@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Catnap.Citeria.Conditions;
 
-namespace Catnap
+namespace Catnap.Impl
 {
     public abstract class Repository<T> : IRepository<T> where T : class, new() 
     {

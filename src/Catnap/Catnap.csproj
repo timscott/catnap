@@ -44,14 +44,14 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configurator.cs" />
+    <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Database\NullDbAdapter.cs" />
     <Compile Include="Database\Sqlite\BaseSqliteAdapter.cs" />
     <Compile Include="Database\DbCommandSpec.cs" />
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\IDbTypeConverter.cs" />
     <Compile Include="Database\Parameter.cs" />
-    <Compile Include="DbAdapter.cs" />
+    <Compile Include="Database\DbAdapter.cs" />
     <Compile Include="Citeria\Conditions\ColumnCondition.cs" />
     <Compile Include="Citeria\Conditions\Criteria.cs" />
     <Compile Include="Citeria\Conditions\Equal.cs" />
@@ -64,8 +64,8 @@
     <Compile Include="Citeria\Conditions\LessThanOrEqual.cs" />
     <Compile Include="Citeria\Conditions\NotEqual.cs" />
     <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
-    <Compile Include="Fluently.cs" />
-    <Compile Include="IConfigurator.cs" />
+    <Compile Include="Configuration\Fluently.cs" />
+    <Compile Include="Configuration\IConfigurator.cs" />
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Logging\Impl\ConsoleLogger.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="Mapping\Impl\AccessStrategy.cs" />
     <Compile Include="Mapping\Conventions\BelongsToColumnNameConvention.cs" />
     <Compile Include="Mapping\Impl\BelongsToPropertyMap.cs" />
-    <Compile Include="Entity.cs" />
+    <Compile Include="Impl\Entity.cs" />
     <Compile Include="EntityEqualityComaparer.cs" />
     <Compile Include="Mapping\Impl\DomainMap.cs" />
     <Compile Include="Mapping\IDomainMap.cs" />
@@ -116,11 +116,11 @@
     <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
     <Compile Include="Database\Sqlite\SqliteTypeConverter.cs" />
-    <Compile Include="Repository.cs" />
-    <Compile Include="Session.cs" />
-    <Compile Include="SessionFactory.cs" />
+    <Compile Include="Impl\Repository.cs" />
+    <Compile Include="Impl\Session.cs" />
+    <Compile Include="Impl\SessionFactory.cs" />
     <Compile Include="Citeria\CriteriaPredicateBuilder.cs" />
-    <Compile Include="UnitOfWork.cs" />
+    <Compile Include="Impl\UnitOfWork.cs" />
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>
   <ItemGroup />

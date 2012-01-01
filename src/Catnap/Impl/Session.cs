@@ -7,7 +7,7 @@ using Catnap.Database;
 using Catnap.Logging;
 using Catnap.Mapping;
 
-namespace Catnap
+namespace Catnap.Impl
 {
     public class Session : ISession
     {

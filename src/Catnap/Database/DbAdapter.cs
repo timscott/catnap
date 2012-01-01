@@ -1,7 +1,6 @@
-using Catnap.Database;
 using Catnap.Database.Sqlite;
 
-namespace Catnap
+namespace Catnap.Database
 {
     public static class DbAdapter
     {

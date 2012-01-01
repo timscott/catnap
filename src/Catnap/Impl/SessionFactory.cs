@@ -1,7 +1,7 @@
 using Catnap.Database;
 using Catnap.Mapping;
 
-namespace Catnap
+namespace Catnap.Impl
 {
     public class SessionFactory : ISessionFactory
     {

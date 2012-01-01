@@ -1,4 +1,5 @@
 using System;
+using Catnap.Impl;
 
 namespace Catnap.Tests.Core.Models
 {

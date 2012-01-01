@@ -1,5 +1,6 @@
 ﻿using System;
 using Catnap.Citeria.Conditions;
+using Catnap.Configuration;
 using Catnap.Database;
 using Catnap.Logging;
 using Catnap.Tests.Core;

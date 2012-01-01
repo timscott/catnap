@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Database;
+using Catnap.Impl;
 using Catnap.Migration;
 
 namespace Catnap.IntegrationTests.Migrations

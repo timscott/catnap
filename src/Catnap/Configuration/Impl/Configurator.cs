@@ -1,9 +1,10 @@
 using System;
 using Catnap.Database;
+using Catnap.Impl;
 using Catnap.Mapping;
 using Catnap.Mapping.Impl;
 
-namespace Catnap
+namespace Catnap.Configuration.Impl
 {
     public class Configurator : IConfigurator
     {

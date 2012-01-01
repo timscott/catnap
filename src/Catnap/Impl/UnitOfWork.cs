@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using Catnap.Logging;
 
-namespace Catnap
+namespace Catnap.Impl
 {
     public class UnitOfWork : IUnitOfWork
     {

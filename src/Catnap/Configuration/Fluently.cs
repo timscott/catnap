@@ -1,4 +1,6 @@
-namespace Catnap
+using Catnap.Configuration.Impl;
+
+namespace Catnap.Configuration
 {
     public static class Fluently
     {
