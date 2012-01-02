@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq.Expressions;
 using Catnap.Database;
+using Catnap.Mapping.Impl;
 
 namespace Catnap.Mapping
 {
@@ -13,15 +15,15 @@ namespace Catnap.Mapping
         object GetId(object entity);
         void SetId(object entity, object id, ISession session);
         bool IsTransient(object entity);
-        DbCommandSpec GetListCommand(IEnumerable<Parameter> parameters, string whereSql);
-        DbCommandSpec GetListAllCommand();
-        DbCommandSpec GetGetCommand(object id);
-        DbCommandSpec GetDeleteCommand(object id);
-        DbCommandSpec GetInsertCommand(object entity);
-        DbCommandSpec GetInsertCommand(object entity, string parentIdColumnName, object parentId);
-        DbCommandSpec GetUpdateCommand(object entity);
-        DbCommandSpec GetUpdateCommand(object entity, string parentIdColumnName, object parentId);
-        DbCommandSpec GetSaveCommand(object entity, string parentIdColumnName, object parentId);
+        IDbCommand GetListCommand(IEnumerable<Parameter> parameters, string whereSql, IDbCommandFactory commandFactory);
+        IDbCommand GetListAllCommand(IDbCommandFactory commandFactory);
+        IDbCommand GetGetCommand(object id, IDbCommandFactory commandFactory);
+        IDbCommand GetDeleteCommand(object id, IDbCommandFactory commandFactory);
+        IDbCommand GetInsertCommand(object entity, IDbCommandFactory commandFactory);
+        IDbCommand GetInsertCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory);
+        IDbCommand GetUpdateCommand(object entity, IDbCommandFactory commandFactory);
+        IDbCommand GetUpdateCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory);
+        IDbCommand GetSaveCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory);
         string GetColumnNameForProperty(MemberExpression memberExpression);
         void Done(IDomainMap map, IDbAdapter dbAdapter);
     }

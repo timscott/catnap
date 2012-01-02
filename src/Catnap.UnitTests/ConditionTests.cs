@@ -12,7 +12,8 @@ namespace Catnap.UnitTests
 {
     public class when_creating_an_complex_condition
     {
-        static ICriteria<Person> target;
+        static ICriteria<Person> criteria;
+        static IDbCommandSpec target;
         static ISessionFactory sessionFactory;
 
         Establish context = () =>
@@ -28,7 +29,7 @@ namespace Catnap.UnitTests
                         e.Property(x => x.MemberSince);
                     }))
                  .Build();
-            target = Criteria.For<Person>()
+            criteria = Criteria.For<Person>()
                 .Less("Bar", 1000)
                 .GreaterOrEqual("Bar", 300)
                 .Or(or =>
@@ -48,9 +49,9 @@ namespace Catnap.UnitTests
                 });
         };
 
-        Because of = () => sessionFactory.New().Build(target);
+        Because of = () => target = sessionFactory.New().ToDbCommandSpec(criteria);
 
-        It should_render_correct_sql = () => target.Sql
+        It should_render_correct_sql = () => target.CommandText
             .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6) and ((LastName = @7) or (LastName = @8))))");
 
         It should_contain_expected_parameters = () =>

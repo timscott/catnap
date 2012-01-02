@@ -47,7 +47,6 @@
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Database\NullDbAdapter.cs" />
     <Compile Include="Database\Sqlite\BaseSqliteAdapter.cs" />
-    <Compile Include="Database\DbCommandSpec.cs" />
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\IDbTypeConverter.cs" />
     <Compile Include="Database\Parameter.cs" />
@@ -66,6 +65,10 @@
     <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
     <Compile Include="Configuration\Fluently.cs" />
     <Compile Include="Configuration\IConfigurator.cs" />
+    <Compile Include="DbCommandFactory.cs" />
+    <Compile Include="DbCommandSpec.cs" />
+    <Compile Include="IDbCommandFactory.cs" />
+    <Compile Include="IDbCommandSpec.cs" />
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Logging\Impl\ConsoleLogger.cs" />

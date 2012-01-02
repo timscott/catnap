@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Citeria.Conditions;
-using Catnap.Database;
 using Catnap.Tests.Core.Models;
 
 namespace Catnap.IntegrationTests.Repositories

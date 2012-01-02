@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.Data;
+using Catnap.Database;
 
-namespace Catnap.Database
+namespace Catnap
 {
-    public class DbCommandSpec
+    public class DbCommandSpec : IDbCommandSpec
     {
         private readonly List<Parameter> parameters = new List<Parameter>();
 
@@ -32,18 +32,6 @@ namespace Catnap.Database
         {
             parameters.AddRange(parms);
             return this;
-        }
-
-        public IDbCommand CreateCommand(IDbAdapter dbAdapter, IDbConnection connection)
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = CommandText;
-            foreach (var parameter in Parameters)
-            {
-                var p = parameter.CreateDbParameter(command, dbAdapter);
-                command.Parameters.Add(p);
-            }
-            return command;
         }
     }
 }

@@ -6,6 +6,7 @@ using Catnap.Citeria.Conditions;
 using Catnap.Database;
 using Catnap.Logging;
 using Catnap.Mapping;
+using Catnap.Mapping.Impl;
 
 namespace Catnap
 {
@@ -15,12 +16,14 @@ namespace Catnap
         private readonly IDomainMap domainMap;
         private readonly IDbAdapter dbAdapter;
         private IDbTransaction transaction;
+        private readonly IDbCommandFactory commandFactory;
 
         public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter)
         {
             this.domainMap = domainMap;
             this.dbAdapter = dbAdapter;
             connection = dbAdapter.CreateConnection(connectionString);
+            commandFactory = new DbCommandFactory(dbAdapter, connection);
         }
 
         public void Open()
@@ -29,13 +32,13 @@ namespace Catnap
             transaction = connection.BeginTransaction();
         }
 
-        public IList<IDictionary<string, object>> List(DbCommandSpec commandSpec)
+        public IList<IDictionary<string, object>> List(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            var command = commandFactory.Create(commandSpec.Parameters, commandSpec.CommandText);
             return Try(() => ExecuteQuery(command)).ToList();
         }
 
-        public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, new()
+        public IList<T> List<T>(IDbCommandSpec commandSpec) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
             return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
@@ -44,22 +47,23 @@ namespace Catnap
         public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            criteria.Build(entityMap, dbAdapter);
-            var commandSpec = entityMap.GetListCommand(criteria.Parameters, criteria.Sql);
-            return List<T>(commandSpec);
+            var predicateSpec = criteria.Build(entityMap, dbAdapter);
+            var command = entityMap.GetListCommand(predicateSpec.Parameters, predicateSpec.CommandText, commandFactory);
+            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
         public IList<T> List<T>() where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            var commandSpec = entityMap.GetListAllCommand();
-            return List<T>(commandSpec);
+            var command = entityMap.GetListAllCommand(commandFactory);
+            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
         public T Get<T>(object id) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            return List(entityMap.GetGetCommand(id)).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
+            var command = entityMap.GetGetCommand(id, commandFactory);
+            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
         }
 
         public void SaveOrUpdate<T>(T entity) where T : class, new()
@@ -71,12 +75,11 @@ namespace Catnap
         {
             var entityMap = domainMap.GetMapFor<T>();
             var idMap = entityMap.PropertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
-            var commandSpec = entityMap.GetSaveCommand(entity, parentIdColumnName, parentId);
-            ExecuteNonQuery(commandSpec);
+            var command = entityMap.GetSaveCommand(entity, parentIdColumnName, parentId, commandFactory);
+            Try(command.ExecuteNonQuery);
             if (entityMap.IsTransient(entity) && idMap.Insert == false)
             {
-                var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName);
-                var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
+                var getIdCommand = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName, commandFactory);
                 var result = getIdCommand.ExecuteScalar();
                 entityMap.SetId(entity, result, this);
             }
@@ -95,13 +98,13 @@ namespace Catnap
         public void Delete<T>(object id) where T : class, new()
         {
             var map = domainMap.GetMapFor<T>();
-            var deleteCommand = map.GetDeleteCommand(id);
-            ExecuteNonQuery(deleteCommand);
+            var deleteCommand = map.GetDeleteCommand(id, commandFactory);
+            Try(deleteCommand.ExecuteNonQuery);
         }
 
-        public void ExecuteNonQuery(DbCommandSpec commandSpec)
+        public void ExecuteNonQuery(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            var command = commandFactory.Create(commandSpec);
             Try(command.ExecuteNonQuery);
         }
 
@@ -119,15 +122,15 @@ namespace Catnap
             }
         }
 
-        public object ExecuteScalar(DbCommandSpec commandSpec)
+        public object ExecuteScalar(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            var command = commandFactory.Create(commandSpec);
             return Try(command.ExecuteScalar);
         }
 
-        public T ExecuteScalar<T>(DbCommandSpec commandSpec)
+    public T ExecuteScalar<T>(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            var command = commandFactory.Create(commandSpec);
             var result = Try(command.ExecuteScalar);
             return (T)result;
         }
@@ -142,16 +145,16 @@ namespace Catnap
             return dbAdapter.ConvertFromDbType(value, type);
         }
 
-        public void Build<T>(ICriteria<T> criteria) where T : class, new()
+        public IDbCommandSpec ToDbCommandSpec<T>(ICriteria<T> criteria) where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            criteria.Build(entityMap, dbAdapter);
+            return criteria.Build(entityMap, dbAdapter);
         }
 
         public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
         {
-            var getTableMetadataCommand = dbAdapter.CreateGetTableMetadataCommand(tableName);
-            return List(getTableMetadataCommand);
+            var getTableMetadataCommand = dbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
+            return Try(() => ExecuteQuery(getTableMetadataCommand)).ToList();
         }
 
         public string FormatParameterName(string name)

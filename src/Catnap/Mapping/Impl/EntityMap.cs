@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Database;
@@ -164,60 +165,55 @@ namespace Catnap.Mapping.Impl
             get { return string.Format("select * from {0}", TableName); }
         }
 
-        public DbCommandSpec GetListCommand(IEnumerable<Parameter> parameters, string whereSql)
+        public IDbCommand GetListCommand(IEnumerable<Parameter> parameters, string whereSql, IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec()
-                .SetCommandText(BaseSelectSql + " where " + whereSql)
-                .AddParameters(parameters.ToArray());
+            return commandFactory.Create(parameters, BaseSelectSql + " where " + whereSql);
         }
 
-        public DbCommandSpec GetListAllCommand()
+        public IDbCommand GetListAllCommand(IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec()
-                .SetCommandText(BaseSelectSql);
+            return commandFactory.Create(null, BaseSelectSql);
         }
 
-        public DbCommandSpec GetGetCommand(object id)
+        public IDbCommand GetGetCommand(object id, IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec()
-                .SetCommandText(string.Format("{0} where Id = {1}", BaseSelectSql, dbAdapter.FormatParameterName("Id")))
-                .AddParameter("Id", id);
+            var sql = string.Format("{0} where Id = {1}", BaseSelectSql, dbAdapter.FormatParameterName("Id"));
+            var parameters = new[] {new Parameter("Id", id)};
+            return commandFactory.Create(parameters, sql);
         }
 
-        public DbCommandSpec GetDeleteCommand(object id)
+        public IDbCommand GetDeleteCommand(object id, IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec()
-                .SetCommandText(string.Format("delete from {0} where Id = {1}", TableName, dbAdapter.FormatParameterName("Id")))
-                .AddParameter("Id", id);
+            var sql = string.Format("delete from {0} where Id = {1}", TableName, dbAdapter.FormatParameterName("Id"));
+            var parameters = new[] {new Parameter("Id", id)};
+            return commandFactory.Create(parameters, sql);
         }
 
-        public DbCommandSpec GetInsertCommand(object entity)
+        public IDbCommand GetInsertCommand(object entity, IDbCommandFactory commandFactory)
         {
-            return GetInsertCommand(entity, null, null);
+            return GetInsertCommand(entity, null, null, commandFactory);
         }
 
-        public DbCommandSpec GetInsertCommand(object entity, string parentIdColumnName, object parentId)
+        public IDbCommand GetInsertCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory)
         {
-            var command = new DbCommandSpec();
-
             var columnProperties = propertyMaps.Where(x => x is IPropertyMapWithColumn<T>).Cast<IPropertyMapWithColumn<T>>();
             var writableColumns = columnProperties.Where(x => x.Insert).ToList();
             var columnNames = writableColumns.Select(x => x.GetColumnName()).ToList();
             var paramterNames = writableColumns.Select(x => x.GetColumnName()).ToList();
 
+            var parameters = new List<Parameter>();
+
             if (!string.IsNullOrEmpty(parentIdColumnName))
             {
                 columnNames.Add(parentIdColumnName);
                 paramterNames.Add(parentIdColumnName);
-                command.AddParameter(parentIdColumnName, parentId);
+                parameters.Add(new Parameter(parentIdColumnName, parentId));
             }
 
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
                 TableName,
                 string.Join(",", columnNames.ToArray()),
                 string.Join(",", paramterNames.Select(x => dbAdapter.FormatParameterName(x)).ToArray()));
-
-            command.SetCommandText(sql);
 
             foreach (var map in writableColumns)
             {
@@ -227,20 +223,19 @@ namespace Catnap.Mapping.Impl
                 {
                     value = idMap.Generate((T)entity);
                 }
-                command.AddParameter(map.GetColumnName(), value);
+                parameters.Add(new Parameter(map.GetColumnName(), value));
             }
 
-            return command;
+            return commandFactory.Create(parameters, sql);
         }
 
-        public DbCommandSpec GetUpdateCommand(object entity)
+        public IDbCommand GetUpdateCommand(object entity, IDbCommandFactory commandFactory)
         {
-            return GetUpdateCommand(entity, null, null);
+            return GetUpdateCommand(entity, null, null, commandFactory);
         }
 
-        public DbCommandSpec GetUpdateCommand(object entity, string parentIdColumnName, object parentId)
+        public IDbCommand GetUpdateCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory)
         {
-            var command = new DbCommandSpec();
 
             var columnProperties = propertyMaps
                 .Where(x => x is IPropertyMapWithColumn<T>)
@@ -250,33 +245,32 @@ namespace Catnap.Mapping.Impl
                 .Where(x => x.GetColumnName() != "Id")
                 .Select(x => string.Format("{0}={1}", x.GetColumnName(), dbAdapter.FormatParameterName(x.GetColumnName())))
                 .ToList();
+
+            var parameters = new List<Parameter>();
+
             if (!string.IsNullOrEmpty(parentIdColumnName))
             {
                 setPairs.Add(string.Format("{0}={1}", parentIdColumnName, dbAdapter.FormatParameterName(parentIdColumnName)));
-                command.AddParameter(parentIdColumnName, parentId);
+                parameters.Add(new Parameter(parentIdColumnName, parentId));
             }
 
             var sql = string.Format("update {0} set {1} where Id = {2}",
                 TableName,
                 string.Join(",", setPairs.ToArray()),
                 dbAdapter.FormatParameterName("Id"));
-            command.AddParameter("Id", GetId(entity));
+            parameters.Add(new Parameter("Id", GetId(entity)));
 
-            command.SetCommandText(sql);
+            var columnParamters = columnProperties.Select(map => new Parameter(map.GetColumnName(), map.GetValue((T)entity)));
+            parameters.AddRange(columnParamters);
 
-            foreach (var map in columnProperties)
-            {
-                command.AddParameter(map.GetColumnName(), map.GetValue((T)entity));
-            }
-
-            return command;
+            return commandFactory.Create(parameters, sql);
         }
 
-        public DbCommandSpec GetSaveCommand(object entity, string parentIdColumnName, object parentId)
+        public IDbCommand GetSaveCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory)
         {
             return IsTransient(entity) 
-                ? GetInsertCommand(entity, parentIdColumnName, parentId) 
-                : GetUpdateCommand(entity, parentIdColumnName, parentId);
+                ? GetInsertCommand(entity, parentIdColumnName, parentId, commandFactory) 
+                : GetUpdateCommand(entity, parentIdColumnName, parentId, commandFactory);
         }
     }
 }

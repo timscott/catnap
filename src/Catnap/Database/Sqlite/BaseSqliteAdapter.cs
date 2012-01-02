@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
+using Catnap.Mapping.Impl;
 
 namespace Catnap.Database.Sqlite
 {
@@ -36,7 +39,7 @@ namespace Catnap.Database.Sqlite
         {
             if (connectionType == null)
             {
-                throw new InvalidOperationException("You must initialize");
+                throw new InvalidOperationException("Connection type is unknown.");
             }
             return (IDbConnection)Activator.CreateInstance(connectionType, new object[] { connectionString });
         }
@@ -58,22 +61,21 @@ namespace Catnap.Database.Sqlite
                 : PARAMETER_PREFIX + name;
         }
 
-        public DbCommandSpec CreateLastInsertIdCommand(string tableName)
+        public IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec().SetCommandText("SELECT last_insert_rowid()");
+            return commandFactory.Create(null, "SELECT last_insert_rowid()");
         }
 
-        public DbCommandSpec CreateGetTableMetadataCommand()
+        public IDbCommand CreateGetTableMetadataCommand(IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec()
-                .SetCommandText("select * from sqlite_master");
+            return commandFactory.Create(null, "select * from sqlite_master");
         }
 
-        public DbCommandSpec CreateGetTableMetadataCommand(string tableName)
+        public IDbCommand CreateGetTableMetadataCommand(string tableName, IDbCommandFactory commandFactory)
         {
-            return new DbCommandSpec()
-                .SetCommandText("select * from sqlite_master where tbl_name = @tableName")
-                .AddParameter("tableName", tableName);
+            var parameters = new[] { new Parameter("tableName", tableName) };
+            var sql = string.Format("select * from sqlite_master where tbl_name = {0}tableName", PARAMETER_PREFIX);
+            return commandFactory.Create(parameters, sql);
         }
     }
 }

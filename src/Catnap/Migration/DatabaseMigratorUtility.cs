@@ -1,5 +1,4 @@
 using System.Linq;
-using Catnap.Database;
 using Catnap.Logging;
 
 namespace Catnap.Migration

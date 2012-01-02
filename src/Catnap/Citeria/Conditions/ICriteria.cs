@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using Catnap.Database;
 using Catnap.Mapping;
@@ -8,9 +7,7 @@ namespace Catnap.Citeria.Conditions
 {
     public interface ICriteria<T> where T : class, new()
     {
-        IEnumerable<Parameter> Parameters { get; }
-        string Sql { get; }
-        ICriteria<T> Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter);
+        IDbCommandSpec Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter);
         ICriteria<T> Equal(string columnName, object value);
         ICriteria<T> Equal(Expression<Func<T, object>> property, object value);
         ICriteria<T> NotEqual(string columnName, object value);

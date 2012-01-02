@@ -15,7 +15,7 @@ namespace Catnap.Citeria.Conditions
         }
     }
 
-    public class Criteria<T> : ICriteria<T>, IConditionMarker where T : class, new()
+    public class Criteria<T> : ICriteria<T>, IDbCommandSpec, IConditionMarker where T : class, new()
     {
         private readonly string conjunction;
         private readonly List<IConditionMarker> conditions = new List<IConditionMarker>();
@@ -23,7 +23,7 @@ namespace Catnap.Citeria.Conditions
         private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterCount;
         private Parameter parameter;
-        private string sql;
+        private string commandText;
 
         public Criteria() : this("and") { }
 
@@ -167,18 +167,18 @@ namespace Catnap.Citeria.Conditions
             get { return parameters; }
         }
 
-        public string Sql
+        public string CommandText
         {
-            get { return sql; }
+            get { return commandText; }
         }
 
-        public ICriteria<T> Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        public IDbCommandSpec Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            Done(entityMap, dbAdapter, parameterCount);
+            Build(entityMap, dbAdapter, parameterCount);
             return this;
         }
 
-        private void Done(IEntityMap<T> entityMap, IDbAdapter dbAdapter, int currentParameterCount)
+        private void Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter, int currentParameterCount)
         {
             parameterCount = currentParameterCount;
             var conditionSqls = conditions.Select(x => Visit(x, entityMap, dbAdapter)).ToList();
@@ -190,7 +190,7 @@ namespace Catnap.Citeria.Conditions
                 conditionSqls.Add(builder.Sql);
                 parameters.AddRange(builder.Parameters);
             }
-            sql = string.Format("({0})",
+            commandText = string.Format("({0})",
                 string.Join(string.Format(" {0} ", conjunction.Trim()), conditionSqls.ToArray()));
         }
 
@@ -213,10 +213,10 @@ namespace Catnap.Citeria.Conditions
 
         private string Visit(Criteria<T> condition, IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            condition.Done(entityMap, dbAdapter, parameterCount);
+            condition.Build(entityMap, dbAdapter, parameterCount);
             parameterCount = condition.parameterCount;
             parameters.AddRange(condition.parameters);
-            return condition.sql;
+            return condition.commandText;
         }
 
         private string Visit(ColumnCondition condition, IDbAdapter dbAdapter)

@@ -26,7 +26,7 @@ namespace Catnap.UnitTests
 
     public class when_creating_criteria_from_expression : behaves_like_unit_test_requiring_domain_context
     {
-        static ICriteria<Person> criteria;
+        static IDbCommandSpec spec;
         static bool? isActive = true;
         static DateTime? joinedBy = new DateTime(2008, 1, 1);
 
@@ -35,25 +35,25 @@ namespace Catnap.UnitTests
             var isActiveLocalScope = isActive;
             var joinedByLocalScope = joinedBy;
             var memberBeforeLocalScope = DateTime.Today.AddDays(-10);
-            criteria = Criteria.For<Person>()
+            var criteria = Criteria.For<Person>()
                 .Where(x => x.Active == isActiveLocalScope.Value)
                 .Where(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
                 .Where(x => x.FirstName == "Tim")
                 .Where(x => x.LastName == "Scott");
-            sessionFactory.New().Build(criteria);
+            spec = sessionFactory.New().ToDbCommandSpec(criteria);
         };
 
-        It should_have_correct_command_text = () => criteria.Sql.Should()
+        It should_have_correct_command_text = () => spec.CommandText.Should()
             .Equal("((Active = @0) and ((MemberSince >= @1) and (MemberSince <= @2)) and (FirstName = @3) and (LastName = @4))");
 
         It should_have_correct_parameters = () =>
         {
-            criteria.Parameters.Should().Count.Exactly(5);
-            criteria.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1));
-            criteria.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(joinedBy));
-            criteria.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals(DateTime.Today.AddDays(-10)));
-            criteria.Parameters.Should().Contain.One(x => x.Name == "@3" && x.Value.Equals("Tim"));
-            criteria.Parameters.Should().Contain.One(x => x.Name == "@4" && x.Value.Equals("Scott"));
+            spec.Parameters.Should().Count.Exactly(5);
+            spec.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(joinedBy));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals(DateTime.Today.AddDays(-10)));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@3" && x.Value.Equals("Tim"));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@4" && x.Value.Equals("Scott"));
         };
     }
 }

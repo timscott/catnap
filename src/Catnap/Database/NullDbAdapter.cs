@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using Catnap.Mapping.Impl;
 
 namespace Catnap.Database
 {
@@ -19,17 +20,17 @@ namespace Catnap.Database
             return null;
         }
 
-        public DbCommandSpec CreateLastInsertIdCommand(string tableName)
+        public IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory)
         {
             return null;
         }
 
-        public DbCommandSpec CreateGetTableMetadataCommand()
+        public IDbCommand CreateGetTableMetadataCommand(IDbCommandFactory commandFactory)
         {
             return null;
         }
 
-        public DbCommandSpec CreateGetTableMetadataCommand(string tableName)
+        public IDbCommand CreateGetTableMetadataCommand(string tableName, IDbCommandFactory commandFactory)
         {
             return null;
         }
