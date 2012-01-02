@@ -16,19 +16,19 @@ namespace Catnap
             this.innerRepository = innerRepository;
         }
 
-        public IList<T> List()
+        public IList<T> Find()
         {
-            return innerRepository.List<T>();
+            return innerRepository.Find<T>();
         }
 
-        public IList<T> List(ICriteria<T> criteria)
+        public IList<T> Find(ICriteria<T> criteria)
         {
-            return innerRepository.List(criteria);
+            return innerRepository.Find(criteria);
         }
 
-        public virtual IList<T> List(Expression<Func<T, bool>> predicate)
+        public virtual IList<T> Find(Expression<Func<T, bool>> predicate)
         {
-            return innerRepository.List(predicate);
+            return innerRepository.Find(predicate);
         }
 
         public virtual void Save(T entity)
@@ -64,18 +64,18 @@ namespace Catnap
             UnitOfWork.Current.Session.Delete<T>(id);
         }
 
-        public IList<T> List<T>() where T : class, new()
+        public IList<T> Find<T>() where T : class, new()
         {
             return UnitOfWork.Current.Session.List<T>();
         }
 
-        public IList<T> List<T>(Expression<Func<T, bool>> predicate) where T : class, new()
+        public IList<T> Find<T>(Expression<Func<T, bool>> predicate) where T : class, new()
         {
             var criteria = Criteria.For<T>().Where(predicate);
             return UnitOfWork.Current.Session.List(criteria);
         }
 
-        public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
+        public IList<T> Find<T>(ICriteria<T> criteria) where T : class, new()
         {
             return UnitOfWork.Current.Session.List(criteria);
         }
