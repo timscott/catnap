@@ -15,7 +15,7 @@ namespace Catnap.Citeria.Conditions
         }
     }
 
-    public class Criteria<T> : ICriteria<T>, IDbCommandSpec, IConditionMarker where T : class, new()
+    public class Criteria<T> : ICriteria<T>, IConditionMarker where T : class, new()
     {
         private readonly string conjunction;
         private readonly List<IConditionMarker> conditions = new List<IConditionMarker>();
@@ -162,20 +162,12 @@ namespace Catnap.Citeria.Conditions
             return this;
         }
 
-        public IEnumerable<Parameter> Parameters
-        {
-            get { return parameters; }
-        }
-
-        public string CommandText
-        {
-            get { return commandText; }
-        }
-
         public IDbCommandSpec Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
             Build(entityMap, dbAdapter, parameterCount);
-            return this;
+            return new DbCommandSpec()
+                .SetCommandText(commandText)
+                .AddParameters(parameters.ToArray());
         }
 
         private void Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter, int currentParameterCount)
@@ -196,17 +188,20 @@ namespace Catnap.Citeria.Conditions
 
         private string Visit(IConditionMarker condition, IEntityMap<T> entityMap, IDbAdapter dbAdapter)
         {
-            if (condition is ColumnCondition)
+            var columnCondition = condition as ColumnCondition;
+            if (columnCondition != null)
             {
-                return Visit((ColumnCondition)condition, dbAdapter);
+                return Visit(columnCondition, dbAdapter);
             }
-            if (typeof(PropertyCondition<T>).IsAssignableFrom(condition.GetType()))
+            var propertyCondition = condition as PropertyCondition<T>;
+            if (propertyCondition != null)
             {
-                return Visit((PropertyCondition<T>)condition, entityMap, dbAdapter);
+                return Visit(propertyCondition, entityMap, dbAdapter);
             }
-            if (condition is Criteria<T>)
+            var criteriaCondition = condition as Criteria<T>;
+            if (criteriaCondition != null)
             {
-                return Visit((Criteria<T>)condition, entityMap, dbAdapter);
+                return Visit(criteriaCondition, entityMap, dbAdapter);
             }
             return null;
         }
