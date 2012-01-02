@@ -49,7 +49,7 @@ namespace Catnap.UnitTests
                 });
         };
 
-        Because of = () => target = sessionFactory.New().ToDbCommandSpec(criteria);
+        Because of = () => target = criteria.Build(sessionFactory.New());
 
         It should_render_correct_sql = () => target.CommandText
             .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6) and ((LastName = @7) or (LastName = @8))))");

@@ -162,21 +162,21 @@ namespace Catnap.Citeria.Conditions
             return this;
         }
 
-        public IDbCommandSpec Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        public IDbCommandSpec Build(ISession session)
         {
-            Build(entityMap, dbAdapter, parameterCount);
+            Build(session, parameterCount);
             return new DbCommandSpec()
                 .SetCommandText(commandText)
                 .AddParameters(parameters.ToArray());
         }
 
-        private void Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter, int currentParameterCount)
+        private void Build(ISession session, int currentParameterCount)
         {
             parameterCount = currentParameterCount;
-            var conditionSqls = conditions.Select(x => Visit(x, entityMap, dbAdapter)).ToList();
+            var conditionSqls = conditions.Select(x => Visit(x, session)).ToList();
             foreach (var predicate in predicates)
             {
-                var builder = new CriteriaPredicateBuilder<T>(entityMap, dbAdapter);
+                var builder = new CriteriaPredicateBuilder<T>(session);
                 builder.Build(predicate, parameterCount);
                 parameterCount = builder.LastParameterNumber;
                 conditionSqls.Add(builder.Sql);
@@ -186,50 +186,50 @@ namespace Catnap.Citeria.Conditions
                 string.Join(string.Format(" {0} ", conjunction.Trim()), conditionSqls.ToArray()));
         }
 
-        private string Visit(IConditionMarker condition, IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        private string Visit(IConditionMarker condition, ISession session)
         {
             var columnCondition = condition as ColumnCondition;
             if (columnCondition != null)
             {
-                return Visit(columnCondition, dbAdapter);
+                return Visit(columnCondition, session);
             }
             var propertyCondition = condition as PropertyCondition<T>;
             if (propertyCondition != null)
             {
-                return Visit(propertyCondition, entityMap, dbAdapter);
+                return Visit(propertyCondition, session);
             }
             var criteriaCondition = condition as Criteria<T>;
             if (criteriaCondition != null)
             {
-                return Visit(criteriaCondition, entityMap, dbAdapter);
+                return Visit(criteriaCondition, session);
             }
             return null;
         }
 
-        private string Visit(Criteria<T> condition, IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        private string Visit(Criteria<T> condition, ISession session)
         {
-            condition.Build(entityMap, dbAdapter, parameterCount);
+            condition.Build(session, parameterCount);
             parameterCount = condition.parameterCount;
             parameters.AddRange(condition.parameters);
             return condition.commandText;
         }
 
-        private string Visit(ColumnCondition condition, IDbAdapter dbAdapter)
+        private string Visit(ColumnCondition condition, ISession session)
         {
-            var parameterName = dbAdapter.FormatParameterName(parameterCount.ToString());
+            var parameterName = session.FormatParameterName(parameterCount.ToString());
             parameterCount++;
             parameter = condition.ToParameter(parameterName);
             parameters.Add(parameter);
             return condition.ToSql(parameterName);
         }
 
-        private string Visit(PropertyCondition<T> condition, IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        private string Visit(PropertyCondition<T> condition, ISession session)
         {
-            var parameterName = dbAdapter.FormatParameterName(parameterCount.ToString());
+            var parameterName = session.FormatParameterName(parameterCount.ToString());
             parameterCount++;
             parameter = condition.ToParameter(parameterName);
             parameters.Add(parameter);
-            return condition.ToSql(entityMap, parameterName);
+            return condition.ToSql(session.GetEntityMapFor<T>(), parameterName);
         }
     }
 }

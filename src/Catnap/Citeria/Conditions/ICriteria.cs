@@ -1,13 +1,10 @@
 using System;
 using System.Linq.Expressions;
-using Catnap.Database;
-using Catnap.Mapping;
 
 namespace Catnap.Citeria.Conditions
 {
     public interface ICriteria<T> where T : class, new()
     {
-        IDbCommandSpec Build(IEntityMap<T> entityMap, IDbAdapter dbAdapter);
         ICriteria<T> Equal(string columnName, object value);
         ICriteria<T> Equal(Expression<Func<T, object>> property, object value);
         ICriteria<T> NotEqual(string columnName, object value);
@@ -25,5 +22,6 @@ namespace Catnap.Citeria.Conditions
         ICriteria<T> Where(Expression<Func<T, bool>> predicate);
         ICriteria<T> Where(Expression<Func<T, object>> property, string @operator, object value);
         ICriteria<T> Where(string columnName, string @operator, object value);
+        IDbCommandSpec Build(ISession session);
     }
 }

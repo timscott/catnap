@@ -10,16 +10,16 @@ namespace Catnap.Citeria
 {
     public class CriteriaPredicateBuilder<T> where T : class, new()
     {
+        private readonly ISession session;
         private readonly IEntityMap<T> entityMap;
-        private readonly IDbAdapter dbAdapter;
         private List<Parameter> parameters;
         private StringBuilder sql;
         private int parameterNumber;
 
-        public CriteriaPredicateBuilder(IEntityMap<T> entityMap, IDbAdapter dbAdapter)
+        public CriteriaPredicateBuilder(ISession session)
         {
-            this.entityMap = entityMap;
-            this.dbAdapter = dbAdapter;
+            this.session = session;
+            entityMap = session.GetEntityMapFor<T>();
             sql = new StringBuilder();
         }
 
@@ -184,7 +184,7 @@ namespace Catnap.Citeria
 
         private void AppendValue(object value)
         {
-            var parameterName = dbAdapter.FormatParameterName(LastParameterNumber.ToString());
+            var parameterName = session.FormatParameterName(LastParameterNumber.ToString());
             sql.Append(parameterName);
             parameters.Add(new Parameter(parameterName, ConvertValue(value)));
             parameterNumber++;
