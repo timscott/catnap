@@ -23,7 +23,7 @@ namespace Catnap.IntegrationTests
                 .DatabaseAdapter(DbAdapter.Sqlite)
                 .Domain(DomainMapping.Get())
                 .Build();
-            UnitOfWork.Start(); //NOTE: Normally unit-of work-would be more fine grained; however the in-memory database is created blank with each connection
+            UnitOfWork.Start(); //NOTE: Normally unit-of-work would be more fine grained; however the in-memory database is re-created with each connection.
             DatabaseMigrator.Execute(UnitOfWork.Current.Session);
         };
 

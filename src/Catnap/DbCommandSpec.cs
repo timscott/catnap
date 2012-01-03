@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Catnap.Database;
 
 namespace Catnap
@@ -28,9 +31,28 @@ namespace Catnap
             return this;
         }
 
+        public DbCommandSpec AddParameter(Func<string, object> parm)
+        {
+            parameters.Add(new Parameter(parm.Method.GetParameters().First().Name, parm(null)));
+            return this;
+        }
+
         public DbCommandSpec AddParameters(params Parameter[] parms)
         {
             parameters.AddRange(parms);
+            return this;
+        }
+
+        public DbCommandSpec AddParameters(params Func<string, object>[] parms)
+        {
+            parameters.AddRange(parms.Select(x => new Parameter(x.Method.GetParameters().First().Name, x(null))));
+            return this;
+        }
+
+        public DbCommandSpec AddParameters(object parms)
+        {
+            var props = parms.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            parameters.AddRange(props.Select(x => new Parameter(x.Name, x.GetValue(parms, null))));
             return this;
         }
     }
