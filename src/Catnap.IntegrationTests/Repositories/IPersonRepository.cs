@@ -16,5 +16,7 @@ namespace Catnap.IntegrationTests.Repositories
         IEnumerable<Person> FindByFirstName(string firstName);
         IEnumerable<Person> GetPesonsWhoHavePosted();
         long GetTotalPostCount(int personId);
+        IEnumerable<Person> FindWhereFirstNameNull();
+        IEnumerable<Person> FindWhereFirstNameNotNull();
     }
 }

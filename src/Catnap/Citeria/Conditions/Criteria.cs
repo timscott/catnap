@@ -83,6 +83,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Where(string columnName, string @operator, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new LeftRightCondition(columnName, @operator, value);
             conditions.Add(condition);
             return this;
@@ -90,6 +91,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Equal(string columnName, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new Equal(columnName, value);
             conditions.Add(condition);
             return this;
@@ -105,6 +107,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> NotEqual(string columnName, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new NotEqual(columnName, value);
             conditions.Add(condition);
             return this;
@@ -120,6 +123,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Greater(string columnName, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new GreaterThan(columnName, value);
             conditions.Add(condition);
             return this;
@@ -135,6 +139,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Less(string columnName, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new LessThan(columnName, value);
             conditions.Add(condition);
             return this;
@@ -150,6 +155,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> GreaterOrEqual(string columnName, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new GreaterThanOrEqual(columnName, value);
             conditions.Add(condition);
             return this;
@@ -165,6 +171,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> LessOrEqual(string columnName, object value)
         {
+            columnName.GuardArgumentNull("columnName");
             var condition = new LessThanOrEqual(columnName, value);
             conditions.Add(condition);
             return this;
@@ -174,6 +181,38 @@ namespace Catnap.Citeria.Conditions
         {
             property.GuardArgumentNull("property");
             var condition = new LessThanOrEqual<T>(property, value);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> Null(string columnName)
+        {
+            columnName.GuardArgumentNull("columnName");
+            var condition = new IsNull(columnName);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> Null(Expression<Func<T, object>> property)
+        {
+            property.GuardArgumentNull("property");
+            var condition = new IsNull<T>(property);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> NotNull(string columnName)
+        {
+            columnName.GuardArgumentNull("columnName");
+            var condition = new IsNotNull(columnName);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> NotNull(Expression<Func<T, object>> property)
+        {
+            property.GuardArgumentNull("property");
+            var condition = new IsNotNull<T>(property);
             conditions.Add(condition);
             return this;
         }
@@ -204,10 +243,20 @@ namespace Catnap.Citeria.Conditions
 
         private string Visit(IConditionMarker condition, ISession session)
         {
+            var columnValueCondition = condition as ColumnValueCondition;
+            if (columnValueCondition != null)
+            {
+                return Visit(columnValueCondition, session);
+            }
+            var propertyValueCondition = condition as PropertyValueCondition<T>;
+            if (propertyValueCondition != null)
+            {
+                return Visit(propertyValueCondition, session);
+            }
             var columnCondition = condition as ColumnCondition;
             if (columnCondition != null)
             {
-                return Visit(columnCondition, session);
+                return Visit(columnCondition);
             }
             var propertyCondition = condition as PropertyCondition<T>;
             if (propertyCondition != null)
@@ -230,7 +279,7 @@ namespace Catnap.Citeria.Conditions
             return condition.commandText;
         }
 
-        private string Visit(ColumnCondition condition, ISession session)
+        private string Visit(ColumnValueCondition condition, ISession session)
         {
             var parameterName = session.FormatParameterName(parameterCount.ToString());
             parameterCount++;
@@ -239,13 +288,24 @@ namespace Catnap.Citeria.Conditions
             return condition.ToSql(parameterName);
         }
 
-        private string Visit(PropertyCondition<T> condition, ISession session)
+        private string Visit(PropertyValueCondition<T> condition, ISession session)
         {
             var parameterName = session.FormatParameterName(parameterCount.ToString());
             parameterCount++;
             parameter = condition.ToParameter(parameterName);
             parameters.Add(parameter);
             return condition.ToSql(session.GetEntityMapFor<T>(), parameterName);
+        }
+
+
+        private string Visit(ColumnCondition condition)
+        {
+            return condition.ToSql();
+        }
+
+        private string Visit(PropertyCondition<T> condition, ISession session)
+        {
+            return condition.ToSql(session.GetEntityMapFor<T>());
         }
     }
 }

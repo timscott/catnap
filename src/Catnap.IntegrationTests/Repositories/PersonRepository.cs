@@ -39,6 +39,18 @@ namespace Catnap.IntegrationTests.Repositories
             return Find(criteria).ToList();
         }
 
+        public IEnumerable<Person> FindWhereFirstNameNull()
+        {
+            var criteria = Criteria.For<Person>().Null(x => x.FirstName);
+            return Find(criteria).ToList();
+        }
+
+        public IEnumerable<Person> FindWhereFirstNameNotNull()
+        {
+            var criteria = Criteria.For<Person>().NotNull("FirstName");
+            return Find(criteria).ToList();
+        }
+
         public IEnumerable<Person> GetPesonsWhoHavePosted()
         {
             var command = new DbCommandSpec()

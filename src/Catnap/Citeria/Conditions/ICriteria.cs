@@ -17,6 +17,10 @@ namespace Catnap.Citeria.Conditions
         ICriteria<T> GreaterOrEqual(Expression<Func<T, object>> property, object value);
         ICriteria<T> LessOrEqual(string columnName, object value);
         ICriteria<T> LessOrEqual(Expression<Func<T, object>> property, object value);
+        ICriteria<T> Null(string columnName);
+        ICriteria<T> Null(Expression<Func<T, object>> property);
+        ICriteria<T> NotNull(string columnName);
+        ICriteria<T> NotNull(Expression<Func<T, object>> property);
         ICriteria<T> Or(Action<ICriteria<T>> criteria);
         ICriteria<T> And(Action<ICriteria<T>> criteria);
         ICriteria<T> Where(Expression<Func<T, bool>> predicate);

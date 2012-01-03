@@ -283,4 +283,25 @@ namespace Catnap.IntegrationTests
         Because of = () => postCount = ContainerGuid.PersonRepository.GetTotalPostCount(person.Id);
         It should_return_post_count = () => postCount.Should().Equal(expected);
     }
+    
+    public class when_getting_person_with_null_first_name : behaves_like_integration_test
+    {
+        static Person person;
+        static Person actualPerson;
+
+        Establish context = () =>
+        {
+            person = new Person { LastName = "Smith" };
+            Container.PersonRepository.Save(person);
+        };
+
+        Because of = () => actualPerson = Container.PersonRepository.FindWhereFirstNameNull().FirstOrDefault();
+        It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
+
+    public class when_getting_person_with_not_null_first_name : behaves_like_person_test_ints
+    {
+        Because of = () => actualPerson = Container.PersonRepository.FindWhereFirstNameNotNull().FirstOrDefault();
+        It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
 }
