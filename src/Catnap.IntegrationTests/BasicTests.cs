@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Adapters;
-using Catnap.Adapters.Sqlite;
 using Catnap.Common.Logging;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.IntegrationTests.Models;
@@ -19,7 +18,7 @@ namespace Catnap.IntegrationTests
 
         static void initialize_app()
         {
-            Log.Level = LogLevel.Debug;
+            Log.Level = LogLevel.Off;
             SessionFactory.Initialize("Data source=:memory:", new SqliteAdapter());
             Domain.Configure
             (
