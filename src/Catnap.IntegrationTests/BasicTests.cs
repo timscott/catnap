@@ -17,7 +17,7 @@ namespace Catnap.IntegrationTests
     {
         Establish context = () =>
         {
-            Log.Level = LogLevel.Debug;
+            Log.Level = LogLevel.Off;
             Fluently.Configure
                 .ConnectionString("Data source=:memory:")
                 .DatabaseAdapter(DbAdapter.Sqlite)
