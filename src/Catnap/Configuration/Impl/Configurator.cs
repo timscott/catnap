@@ -2,6 +2,7 @@ using System;
 using Catnap.Database;
 using Catnap.Mapping;
 using Catnap.Mapping.Impl;
+using Catnap.Extensions;
 
 namespace Catnap.Configuration.Impl
 {
@@ -35,8 +36,15 @@ namespace Catnap.Configuration.Impl
             {
                 dbAdapter = new NullDbAdapter();
             }
+            if (dbAdapter == null)
+            {
+                throw new ApplicationException("You must specify a DbAdapter before building the confiuration.");
+            }
             var domainMap = new DomainMap(dbAdapter);
-            domainConfig(domainMap);
+            if (domainConfig != null)
+            {
+                domainConfig(domainMap);
+            }
             domainMap.Done();
             return new SessionFactory(connString, dbAdapter, domainMap);
         }

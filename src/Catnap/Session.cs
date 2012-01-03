@@ -4,9 +4,9 @@ using System.Data;
 using System.Linq;
 using Catnap.Citeria.Conditions;
 using Catnap.Database;
+using Catnap.Extensions;
 using Catnap.Logging;
 using Catnap.Mapping;
-using Catnap.Mapping.Impl;
 
 namespace Catnap
 {
@@ -15,8 +15,8 @@ namespace Catnap
         private readonly IDbConnection connection;
         private readonly IDomainMap domainMap;
         private readonly IDbAdapter dbAdapter;
-        private IDbTransaction transaction;
         private readonly IDbCommandFactory commandFactory;
+        private IDbTransaction transaction;
 
         public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter)
         {
@@ -34,18 +34,21 @@ namespace Catnap
 
         public IList<IDictionary<string, object>> List(IDbCommandSpec commandSpec)
         {
+            commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec.Parameters, commandSpec.CommandText);
             return Try(() => ExecuteQuery(command)).ToList();
         }
 
         public IList<T> List<T>(IDbCommandSpec commandSpec) where T : class, new()
         {
+            commandSpec.GuardArgumentNull("commandSpec");
             var entityMap = domainMap.GetMapFor<T>();
             return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
         public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
         {
+            criteria.GuardArgumentNull("criteria");
             var entityMap = domainMap.GetMapFor<T>();
             var predicateSpec = criteria.Build(this);
             var command = entityMap.GetListCommand(predicateSpec.Parameters, predicateSpec.CommandText, commandFactory);
@@ -61,6 +64,7 @@ namespace Catnap
 
         public T Get<T>(object id) where T : class, new()
         {
+            id.GuardArgumentNull("id");
             var entityMap = domainMap.GetMapFor<T>();
             var command = entityMap.GetGetCommand(id, commandFactory);
             return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
@@ -73,6 +77,7 @@ namespace Catnap
 
         public void SaveOrUpdate<T>(T entity, string parentIdColumnName, object parentId) where T : class, new()
         {
+            entity.GuardArgumentNull("entity");
             var entityMap = domainMap.GetMapFor<T>();
             var idMap = entityMap.PropertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
             var command = entityMap.GetSaveCommand(entity, parentIdColumnName, parentId, commandFactory);
@@ -97,6 +102,7 @@ namespace Catnap
 
         public void Delete<T>(object id) where T : class, new()
         {
+            id.GuardArgumentNull("id");
             var map = domainMap.GetMapFor<T>();
             var deleteCommand = map.GetDeleteCommand(id, commandFactory);
             Try(deleteCommand.ExecuteNonQuery);
@@ -104,12 +110,14 @@ namespace Catnap
 
         public void ExecuteNonQuery(IDbCommandSpec commandSpec)
         {
+            commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             Try(command.ExecuteNonQuery);
         }
 
         public IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
         {
+            command.GuardArgumentNull("command");
             var reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -124,12 +132,14 @@ namespace Catnap
 
         public object ExecuteScalar(IDbCommandSpec commandSpec)
         {
+            commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             return Try(command.ExecuteScalar);
         }
 
-    public T ExecuteScalar<T>(IDbCommandSpec commandSpec)
+        public T ExecuteScalar<T>(IDbCommandSpec commandSpec)
         {
+            commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             var result = Try(command.ExecuteScalar);
             return (T)result;
@@ -152,6 +162,7 @@ namespace Catnap
 
         public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
         {
+            tableName.GuardArgumentNull("tableName");
             var getTableMetadataCommand = dbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
             return Try(() => ExecuteQuery(getTableMetadataCommand)).ToList();
         }

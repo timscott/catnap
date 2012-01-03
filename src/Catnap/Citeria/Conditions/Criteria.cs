@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Database;
-using Catnap.Mapping;
+using Catnap.Extensions;
 
 namespace Catnap.Citeria.Conditions
 {
@@ -46,26 +46,36 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> And(Action<ICriteria<T>> criteria)
         {
-            var condition = new Criteria<T>(criteria, "and");
-            conditions.Add(condition);
+            if (criteria != null)
+            {
+                var condition = new Criteria<T>(criteria, "and");
+                conditions.Add(condition);
+            }
             return this;
         }
 
         public ICriteria<T> Or(Action<ICriteria<T>> criteria)
         {
-            var condition = new Criteria<T>(criteria, "or");
-            conditions.Add(condition);
+            if (criteria != null)
+            {
+                var condition = new Criteria<T>(criteria, "or");
+                conditions.Add(condition);
+            }
             return this;
         }
 
         public ICriteria<T> Where(Expression<Func<T, bool>> predicate)
         {
-            predicates.Add(predicate);
+            if (predicate != null)
+            {
+                predicates.Add(predicate);
+            }
             return this;
         }
 
         public ICriteria<T> Where(Expression<Func<T, object>> property, string @operator, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new LeftRightCondition<T>(property, @operator, value);
             conditions.Add(condition);
             return this;
@@ -87,6 +97,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Equal(Expression<Func<T, object>> property, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new Equal<T>(property, value);
             conditions.Add(condition);
             return this;
@@ -101,6 +112,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> NotEqual(Expression<Func<T, object>> property, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new NotEqual<T>(property, value);
             conditions.Add(condition);
             return this;
@@ -115,6 +127,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Greater(Expression<Func<T, object>> property, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new GreaterThan<T>(property, value);
             conditions.Add(condition);
             return this;
@@ -129,6 +142,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> Less(Expression<Func<T, object>> property, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new LessThan<T>(property, value);
             conditions.Add(condition);
             return this;
@@ -143,6 +157,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> GreaterOrEqual(Expression<Func<T, object>> property, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new GreaterThanOrEqual<T>(property, value);
             conditions.Add(condition);
             return this;
@@ -157,6 +172,7 @@ namespace Catnap.Citeria.Conditions
 
         public ICriteria<T> LessOrEqual(Expression<Func<T, object>> property, object value)
         {
+            property.GuardArgumentNull("property");
             var condition = new LessThanOrEqual<T>(property, value);
             conditions.Add(condition);
             return this;

@@ -10,6 +10,7 @@ using Catnap.Tests.Core;
 using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
+using Catnap.Extensions;
 
 namespace Catnap.IntegrationTests
 {

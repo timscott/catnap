@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Catnap.Database;
+using Catnap.Extensions;
 using Catnap.Mapping.Conventions;
 using Catnap.Mapping.Conventions.Impl;
 
@@ -14,6 +15,7 @@ namespace Catnap.Mapping.Impl
 
         public DomainMap(IDbAdapter dbAdapter)
         {
+            dbAdapter.GuardArgumentNull("dbAdapter");
             this.dbAdapter = dbAdapter;
         }
 
@@ -56,12 +58,12 @@ namespace Catnap.Mapping.Impl
 
         public IEntityMap<T> GetMapFor<T>() where T : class, new()
         {
-            return (IEntityMap<T>)entityMaps.Where(x => x.Key == typeof(T)).First().Value;
+            return (IEntityMap<T>)entityMaps.First(x => x.Key == typeof(T)).Value;
         }
 
         public IEntityMap GetMapFor(Type type)
         {
-            return entityMaps.Where(x => x.Key == type).First().Value; 
+            return entityMaps.First(x => x.Key == type).Value; 
         }
 
         public void Done()
