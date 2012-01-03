@@ -5,6 +5,7 @@ using Catnap.Citeria.Conditions;
 
 namespace Catnap
 {
+    [Obsolete("Use the generic repository instead")]
     public abstract class Repository<T> : IRepository<T> where T : class, new() 
     {
         protected readonly IRepository innerRepository;

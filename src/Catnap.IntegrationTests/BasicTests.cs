@@ -18,11 +18,12 @@ namespace Catnap.IntegrationTests
         Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            Fluently.Configure
+            var sessionFactory = Fluently.Configure
                 .ConnectionString("Data source=:memory:")
                 .DatabaseAdapter(DbAdapter.Sqlite)
                 .Domain(DomainMapping.Get())
                 .Build();
+			UnitOfWork.Initialize(sessionFactory);
             UnitOfWork.Start(); //NOTE: Normally unit-of-work would be more fine grained; however the in-memory database is re-created with each connection.
             DatabaseMigrator.Execute(UnitOfWork.Current.Session);
         };

@@ -38,9 +38,7 @@ namespace Catnap.Configuration.Impl
             var domainMap = new DomainMap(dbAdapter);
             domainConfig(domainMap);
             domainMap.Done();
-            var sessionFactory = new SessionFactory(connString, dbAdapter, domainMap);
-            UnitOfWork.Initialize(sessionFactory);
-            return sessionFactory;
+            return new SessionFactory(connString, dbAdapter, domainMap);
         }
     }
 }
