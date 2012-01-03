@@ -47,6 +47,9 @@
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Database\NullDbAdapter.cs" />
     <Compile Include="Database\Sqlite\BaseSqliteAdapter.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\IDbTypeConverter.cs" />
     <Compile Include="Database\Parameter.cs" />
@@ -115,7 +118,6 @@
     <Compile Include="LazyList.cs" />
     <Compile Include="Mapping\Impl\ListPropertyMap.cs" />
     <Compile Include="Citeria\PredicateBuilder.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
     <Compile Include="Database\Sqlite\SqliteTypeConverter.cs" />
@@ -126,7 +128,9 @@
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
