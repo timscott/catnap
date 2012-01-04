@@ -1,8 +1,11 @@
+using System;
+
 namespace Catnap.Mapping.Conventions
 {
     public interface IIdMappingConventionMappable
     {
-        IIdMappingConventionMappable Column(string name);
+        IIdMappingConventionMappable Column(Func<IEntityMapDescriptor, string> columnNameSpec);
         IIdMappingConventionMappable Access(IAccessStrategyFactory access);
+        IIdMappingConventionMappable Generator(IIdValueGenerator generator);
     }
 }

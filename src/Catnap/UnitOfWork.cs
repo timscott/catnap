@@ -31,7 +31,7 @@ namespace Catnap
 
         public ISession Session { get; private set; }
 
-        public static UnitOfWork Start()
+        public static IUnitOfWork Start()
         {
             if (current != null)
             {

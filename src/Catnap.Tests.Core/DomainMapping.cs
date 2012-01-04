@@ -10,9 +10,9 @@ namespace Catnap.Tests.Core
         {
             return d =>
             {
-                //d.IdConvention().Access(Access.Property);
-                //d.ListParentIdColumnNameConvention(x => x.ParentType.Name + "Id");
-                d.BelongsToColumnNameConvention(x => x.PropertyName + "Id");
+                //d.IdConvention().Column(x => x.EntityType.Name + "Id").Access(Access.Property).Generator(Generator.GuidComb);
+                //d.ListParentIdColumnNameConvention(x => x.ParentType.Name + "_id");
+                //d.BelongsToColumnNameConvention(x => x.PropertyName + "_id");
 
                 d.Entity<PersonGuid>(e => {
                     e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb);

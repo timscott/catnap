@@ -1,14 +1,10 @@
-using System;
-
 namespace Catnap.Mapping
 {
-    public interface IListPropertyMap
+    public interface IListPropertyMap : IListPropertyMapDescriptor
     {
         bool GetIsLazy();
         bool GetWillCascadeSaves();
         bool GetWillCascadeDeletes();
-        Type ItemType { get; }
-        Type ParentType { get; }
         void Done(IDomainMap domainMap, IEntityMap parentMap, IEntityMap listItemMap);
     }
 

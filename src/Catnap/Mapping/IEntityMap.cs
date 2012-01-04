@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using Catnap.Database;
-using Catnap.Mapping.Impl;
 
 namespace Catnap.Mapping
 {
-    public interface IEntityMap
+    public interface IEntityMap : IEntityMapDescriptor
     {
         string BaseSelectSql { get; }
-        string TableName { get; }
-        Type EntityType { get; }
         object GetId(object entity);
         void SetId(object entity, object id, ISession session);
         bool IsTransient(object entity);

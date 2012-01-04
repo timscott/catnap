@@ -40,18 +40,18 @@ namespace Catnap.Mapping.Impl
             return IdMappingConvention;
         }
 
-        public IIdMappingConventionMappable IdConvention(string propertyName)
+        public IIdMappingConventionMappable IdConvention(Func<IEntityMapDescriptor, string> propertyNameSpec)
         {
-            IdMappingConvention = new IdMappingConvention(propertyName);
+            IdMappingConvention = new IdMappingConvention(propertyNameSpec);
             return IdMappingConvention;
         }
 
-        public void BelongsToColumnNameConvention(Func<IBelongsToPropertyMap, string> convention)
+        public void BelongsToColumnNameConvention(Func<IBelongsToPropertyMapDescriptor, string> convention)
         {
             BelongsToColumnNameMappingConvention = new BelongsToColumnNameConvention(convention);
         }
 
-        public void ListParentIdColumnNameConvention(Func<IListPropertyMap, string> convention)
+        public void ListParentIdColumnNameConvention(Func<IListPropertyMapDescriptor, string> convention)
         {
             ListParentIdColumnNameMappingConvention = new ListParentIdColumnNameConvention(convention);
         }

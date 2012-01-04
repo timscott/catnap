@@ -86,12 +86,15 @@
     <Compile Include="Mapping\IAccessStrategy.cs" />
     <Compile Include="Mapping\IAccessStrategyFactory.cs" />
     <Compile Include="Mapping\IBelongsToPropertyMap.cs" />
+    <Compile Include="Mapping\IBelongsToPropertyMapDescriptor.cs" />
     <Compile Include="Mapping\IDomainMappable.cs" />
+    <Compile Include="Mapping\IEntityMapDescriptor.cs" />
     <Compile Include="Mapping\IEntityMappable.cs" />
     <Compile Include="Mapping\Conventions\IIdMappingConventionable.cs" />
     <Compile Include="Mapping\IIdPropertyMap.cs" />
     <Compile Include="Mapping\IIdValueGenerator.cs" />
     <Compile Include="Mapping\Access.cs" />
+    <Compile Include="Mapping\IListPropertyMapDescriptor.cs" />
     <Compile Include="Mapping\Impl\AccessStrategy.cs" />
     <Compile Include="Mapping\Conventions\BelongsToColumnNameConvention.cs" />
     <Compile Include="Mapping\Impl\BelongsToPropertyMap.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="Mapping\Conventions\ListParentIdColumnNameConvention.cs" />
     <Compile Include="Mapping\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Mapping\Impl\PropertyWithColumnMap.cs" />
+    <Compile Include="Mapping\IPropertyMapDescriptor.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />

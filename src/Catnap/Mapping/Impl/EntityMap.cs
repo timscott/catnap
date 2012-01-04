@@ -125,7 +125,7 @@ namespace Catnap.Mapping.Impl
             var idProperties = propertyMaps.Where(x => x is IIdPropertyMap<T>).ToList();
             if (idProperties.Any() == false)
             {
-                var idMap = domainMap.IdMappingConvention.GetMap<T>();
+                var idMap = domainMap.IdMappingConvention.GetMap<T>(this);
                 Map(idMap);
             } 
             else if (idProperties.Count() > 1)

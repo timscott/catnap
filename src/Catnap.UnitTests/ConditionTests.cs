@@ -10,7 +10,7 @@ using It=Machine.Specifications.It;
 
 namespace Catnap.UnitTests
 {
-    public class when_creating_an_complex_condition
+    public class when_creating_a_complex_condition
     {
         static ICriteria<Person> criteria;
         static IDbCommandSpec target;

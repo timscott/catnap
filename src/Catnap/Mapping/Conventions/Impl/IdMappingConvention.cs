@@ -1,23 +1,25 @@
+using System;
 using Catnap.Mapping.Impl;
 
 namespace Catnap.Mapping.Conventions.Impl
 {
     public class IdMappingConvention : IIdMappingConventionMappable
     {
+        private readonly Func<IEntityMapDescriptor, string> propertyNameSpec;
+        private Func<IEntityMapDescriptor, string> columnNameSpec;
         private IAccessStrategyFactory access;
-        private string columnName;
-        public readonly string propertyName;
+        private IIdValueGenerator generator;
 
-        public IdMappingConvention() : this("Id") { }
+        public IdMappingConvention() : this(x => "Id") { }
 
-        public IdMappingConvention(string propertyName)
+        public IdMappingConvention(Func<IEntityMapDescriptor, string> propertyNameSpec)
         {
-            this.propertyName = propertyName;
+            this.propertyNameSpec = propertyNameSpec;
         }
 
-        public IIdMappingConventionMappable Column(string name)
+        public IIdMappingConventionMappable Column(Func<IEntityMapDescriptor, string> columnNameSpec)
         {
-            columnName = name;
+            this.columnNameSpec = columnNameSpec;
             return this;
         }
 
@@ -27,9 +29,19 @@ namespace Catnap.Mapping.Conventions.Impl
             return this;
         }
 
-        public IdPropertyMap<T, object> GetMap<T>() where T : class, new()
+        public IIdMappingConventionMappable Generator(IIdValueGenerator generator)
         {
-            return new IdPropertyMap<T, object>(propertyName).ColumnName(columnName ?? propertyName).Access(access);
+            this.generator = generator;
+            return this;
+        }
+
+        public IdPropertyMap<T, object> GetMap<T>(IEntityMapDescriptor entityMapDescriptor) where T : class, new()
+        {
+            var propertyName = propertyNameSpec(entityMapDescriptor);
+            var columnName = columnNameSpec == null
+                ? propertyName
+                : columnNameSpec(entityMapDescriptor);
+            return new IdPropertyMap<T, object>(propertyName).ColumnName(columnName).Access(access).Generator(generator);
         }
     }
 }

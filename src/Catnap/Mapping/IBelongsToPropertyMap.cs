@@ -1,11 +1,7 @@
-using System;
-
 namespace Catnap.Mapping
 {
-    public interface IBelongsToPropertyMap
+    public interface IBelongsToPropertyMap : IBelongsToPropertyMapDescriptor
     {
         void Done(IEntityMap map);
-        Type PropertyType { get; }
-        string PropertyName { get; }
     }
 }
