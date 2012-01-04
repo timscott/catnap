@@ -177,15 +177,15 @@ namespace Catnap.Mapping.Impl
 
         public IDbCommand GetGetCommand(object id, IDbCommandFactory commandFactory)
         {
-            var sql = string.Format("{0} where Id = {1}", BaseSelectSql, dbAdapter.FormatParameterName("Id"));
-            var parameters = new[] {new Parameter("Id", id)};
+            var sql = string.Format("{0} where {1} = {2}", BaseSelectSql, idColumnName, dbAdapter.FormatParameterName(idColumnName));
+            var parameters = new[] { new Parameter(idColumnName, id) };
             return commandFactory.Create(parameters, sql);
         }
 
         public IDbCommand GetDeleteCommand(object id, IDbCommandFactory commandFactory)
         {
-            var sql = string.Format("delete from {0} where Id = {1}", TableName, dbAdapter.FormatParameterName("Id"));
-            var parameters = new[] {new Parameter("Id", id)};
+            var sql = string.Format("delete from {0} where {1} = {2}", TableName, idColumnName, dbAdapter.FormatParameterName(idColumnName));
+            var parameters = new[] { new Parameter(idColumnName, id) };
             return commandFactory.Create(parameters, sql);
         }
 
@@ -242,7 +242,7 @@ namespace Catnap.Mapping.Impl
                 .Cast<IPropertyMapWithColumn<T>>()
                 .ToList();
             var setPairs = columnProperties
-                .Where(x => x.GetColumnName() != "Id")
+                .Where(x => x.GetColumnName() != idColumnName)
                 .Select(x => string.Format("{0}={1}", x.GetColumnName(), dbAdapter.FormatParameterName(x.GetColumnName())))
                 .ToList();
 
@@ -254,11 +254,12 @@ namespace Catnap.Mapping.Impl
                 parameters.Add(new Parameter(parentIdColumnName, parentId));
             }
 
-            var sql = string.Format("update {0} set {1} where Id = {2}",
+            var sql = string.Format("update {0} set {1} where {2} = {3}",
                 TableName,
                 string.Join(",", setPairs.ToArray()),
+                idColumnName,
                 dbAdapter.FormatParameterName("Id"));
-            parameters.Add(new Parameter("Id", GetId(entity)));
+            parameters.Add(new Parameter(idColumnName, GetId(entity)));
 
             var columnParamters = columnProperties.Select(map => new Parameter(map.GetColumnName(), map.GetValue((T)entity)));
             parameters.AddRange(columnParamters);
