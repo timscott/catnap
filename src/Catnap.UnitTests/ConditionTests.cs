@@ -51,7 +51,7 @@ namespace Catnap.UnitTests
                 .NotNull("FirstName");
         };
 
-        Because of = () => target = criteria.Build(sessionFactory.New());
+        Because of = () => target = criteria.Build(sessionFactory.Create());
 
         It should_render_correct_sql = () => target.CommandText
             .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6) and ((LastName = @7) or (LastName = @8))) and (LastName is NULL) and (FirstName is not NULL))");

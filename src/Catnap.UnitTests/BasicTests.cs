@@ -40,7 +40,7 @@ namespace Catnap.UnitTests
                 .Where(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
                 .Where(x => x.FirstName == "Tim")
                 .Where(x => x.LastName == "Scott");
-            spec = criteria.Build(sessionFactory.New());
+            spec = criteria.Build(sessionFactory.Create());
         };
 
         It should_have_correct_command_text = () => spec.CommandText.Should()

@@ -2,6 +2,6 @@ namespace Catnap
 {
     public interface ISessionFactory
     {
-        ISession New();
+        ISession Create();
     }
 }

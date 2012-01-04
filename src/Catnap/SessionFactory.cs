@@ -16,7 +16,7 @@ namespace Catnap
             this.domainMap = domainMap;
         }
 
-        public ISession New()
+        public ISession Create()
         {
             return new Session(domainMap, connectionString, dbAdapter);
         }

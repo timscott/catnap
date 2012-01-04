@@ -12,13 +12,13 @@ namespace Catnap.Mapping
 
         public class PropertyAccess : IAccessStrategyFactory
         {
-            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+            public IAccessStrategy<TEntity, TProperty> CreateFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
                 where TEntity : class, new()
             {
                 return new PropertyAccessStrategy<TEntity, TProperty>(property);
             }
 
-            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+            public IAccessStrategy<TEntity, TProperty> CreateFor<TEntity, TProperty>(string propertyName)
                 where TEntity : class, new()
             {
                 return new PropertyAccessStrategy<TEntity, TProperty>(propertyName);
@@ -27,13 +27,13 @@ namespace Catnap.Mapping
 
         public class CamelCaseFieldAccess : IAccessStrategyFactory
         {
-            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+            public IAccessStrategy<TEntity, TProperty> CreateFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
                 where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(property);
             }
 
-            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+            public IAccessStrategy<TEntity, TProperty> CreateFor<TEntity, TProperty>(string propertyName)
                 where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(propertyName);
@@ -42,13 +42,13 @@ namespace Catnap.Mapping
 
         public class CamelCaseUnderscoreFieldAccess : IAccessStrategyFactory
         {
-            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+            public IAccessStrategy<TEntity, TProperty> CreateFor<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
                 where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(property);
             }
 
-            public IAccessStrategy<TEntity, TProperty> GetAccessStrategyFor<TEntity, TProperty>(string propertyName)
+            public IAccessStrategy<TEntity, TProperty> CreateFor<TEntity, TProperty>(string propertyName)
                 where TEntity : class, new()
             {
                 return new CamelCaseFieldAccessStrategy<TEntity, TProperty>(propertyName);

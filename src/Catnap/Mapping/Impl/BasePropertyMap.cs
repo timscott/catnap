@@ -70,8 +70,8 @@ namespace Catnap.Mapping.Impl
         {
             access = access ?? DefaultAccess;
             accessStrategy = property == null
-                ? access.GetAccessStrategyFor<TEntity, TProperty>(PropertyName)
-                : access.GetAccessStrategyFor(property);
+                ? access.CreateFor<TEntity, TProperty>(PropertyName)
+                : access.CreateFor(property);
         }
 
         protected virtual IAccessStrategyFactory DefaultAccess
