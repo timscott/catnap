@@ -222,17 +222,17 @@ namespace Catnap.Maps.Impl
         public DbCommandSpec GetGetCommand(object id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("{0} where Id = {1}Id", BaseSelectSql,
+                .SetCommandText(string.Format("{0} where {1} = {2}{1}", BaseSelectSql, idColumnName,
                     SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
-                .AddParameter("Id", id);
+                .AddParameter(idColumnName, id);
         }
 
         public DbCommandSpec GetDeleteCommand(object id)
         {
             return new DbCommandSpec()
-                .SetCommandText(string.Format("delete from {0} where Id = {1}Id", TableName,
+                .SetCommandText(string.Format("delete from {0} where {1} = {2}{1}", TableName, idColumnName,
                     SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
-                .AddParameter("Id", id);
+                .AddParameter(idColumnName, id);
         }
 
         public DbCommandSpec GetInsertCommand(object entity)
@@ -291,7 +291,7 @@ namespace Catnap.Maps.Impl
                 .Cast<IPropertyMapWithColumn<T>>()
                 .ToList();
             var setPairs = columnProperties
-                .Where(x => x.ColumnName != "Id")
+                .Where(x => x.ColumnName != idColumnName)
                 .Select(x => string.Format("{0}={1}{0}", x.ColumnName, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
                 .ToList();
             if (!string.IsNullOrEmpty(ParentColumnName))
@@ -300,11 +300,12 @@ namespace Catnap.Maps.Impl
                 command.AddParameter(ParentColumnName, parentId);
             }
 
-            var sql = string.Format("update {0} set {1} where Id = {2}Id",
+            var sql = string.Format("update {0} set {1} where {2} = {3}{2}",
                 TableName,
                 string.Join(",", setPairs.ToArray()),
+                idColumnName,
                 SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX);
-            command.AddParameter("Id", GetId(entity));
+            command.AddParameter(idColumnName, GetId(entity));
 
             command.SetCommandText(sql);
 
