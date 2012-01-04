@@ -12,5 +12,6 @@ namespace Catnap.Database
         object ConvertToDbType(object value);
         object ConvertFromDbType(object value, Type toType);
         string FormatParameterName(string name);
+        string Quote(string name);
     }
 }

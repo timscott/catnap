@@ -162,7 +162,7 @@ namespace Catnap.Mapping.Impl
 
         public string BaseSelectSql
         {
-            get { return string.Format("select * from {0}", TableName); }
+            get { return string.Format("select * from {0}", dbAdapter.Quote(TableName)); }
         }
 
         public IDbCommand GetListCommand(IEnumerable<Parameter> parameters, string whereSql, IDbCommandFactory commandFactory)
@@ -177,14 +177,20 @@ namespace Catnap.Mapping.Impl
 
         public IDbCommand GetGetCommand(object id, IDbCommandFactory commandFactory)
         {
-            var sql = string.Format("{0} where {1} = {2}", BaseSelectSql, idColumnName, dbAdapter.FormatParameterName(idColumnName));
+            var sql = string.Format("{0} where {1} = {2}", 
+                BaseSelectSql, 
+                dbAdapter.Quote(idColumnName), 
+                dbAdapter.FormatParameterName(idColumnName));
             var parameters = new[] { new Parameter(idColumnName, id) };
             return commandFactory.Create(parameters, sql);
         }
 
         public IDbCommand GetDeleteCommand(object id, IDbCommandFactory commandFactory)
         {
-            var sql = string.Format("delete from {0} where {1} = {2}", TableName, idColumnName, dbAdapter.FormatParameterName(idColumnName));
+            var sql = string.Format("delete from {0} where {1} = {2}", 
+                dbAdapter.Quote(TableName), 
+                dbAdapter.Quote(idColumnName), 
+                dbAdapter.FormatParameterName(idColumnName));
             var parameters = new[] { new Parameter(idColumnName, id) };
             return commandFactory.Create(parameters, sql);
         }
@@ -211,8 +217,8 @@ namespace Catnap.Mapping.Impl
             }
 
             var sql = string.Format("insert into {0} ({1}) values ({2})", 
-                TableName,
-                string.Join(",", columnNames.ToArray()),
+                dbAdapter.Quote(TableName),
+                string.Join(",", columnNames.Select(x => dbAdapter.Quote(x)).ToArray()),
                 string.Join(",", paramterNames.Select(x => dbAdapter.FormatParameterName(x)).ToArray()));
 
             foreach (var map in writableColumns)
@@ -243,21 +249,25 @@ namespace Catnap.Mapping.Impl
                 .ToList();
             var setPairs = columnProperties
                 .Where(x => x.GetColumnName() != idColumnName)
-                .Select(x => string.Format("{0}={1}", x.GetColumnName(), dbAdapter.FormatParameterName(x.GetColumnName())))
+                .Select(x =>
+                {
+                    var columnName = x.GetColumnName();
+                    return string.Format("{0}={1}", dbAdapter.Quote(columnName), dbAdapter.FormatParameterName(columnName));
+                })
                 .ToList();
 
             var parameters = new List<Parameter>();
 
             if (!string.IsNullOrEmpty(parentIdColumnName))
             {
-                setPairs.Add(string.Format("{0}={1}", parentIdColumnName, dbAdapter.FormatParameterName(parentIdColumnName)));
+                setPairs.Add(string.Format("{0}={1}", dbAdapter.Quote(parentIdColumnName), dbAdapter.FormatParameterName(parentIdColumnName)));
                 parameters.Add(new Parameter(parentIdColumnName, parentId));
             }
 
             var sql = string.Format("update {0} set {1} where {2} = {3}",
-                TableName,
+                dbAdapter.Quote(TableName),
                 string.Join(",", setPairs.ToArray()),
-                idColumnName,
+                dbAdapter.Quote(idColumnName),
                 dbAdapter.FormatParameterName("Id"));
             parameters.Add(new Parameter(idColumnName, GetId(entity)));
 

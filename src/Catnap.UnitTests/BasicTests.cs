@@ -19,7 +19,7 @@ namespace Catnap.UnitTests
             Log.Level = LogLevel.Off;
             sessionFactory = Fluently.Configure
                 .Domain(DomainMapping.Get())
-                .DatabaseAdapter(new NullDbAdapter("@"))
+                .DatabaseAdapter(new NullDbAdapter())
                 .Build();
         };
     }

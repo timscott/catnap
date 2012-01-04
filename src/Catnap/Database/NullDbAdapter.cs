@@ -1,20 +1,10 @@
 using System;
 using System.Data;
-using Catnap.Mapping.Impl;
 
 namespace Catnap.Database
 {
-    public class NullDbAdapter : IDbAdapter
+    public class NullDbAdapter : BaseDbAdapter, IDbAdapter
     {
-        private readonly string parameterPrefix;
-
-        public NullDbAdapter() : this("@") { }
-
-        public NullDbAdapter(string parameterPrefix)
-        {
-            this.parameterPrefix = parameterPrefix;
-        }
-
         public IDbConnection CreateConnection(string connectionString)
         {
             return null;
@@ -48,13 +38,6 @@ namespace Catnap.Database
         public string FormatCommandText(string sql)
         {
             return sql;
-        }
-
-        public string FormatParameterName(string name)
-        {
-            return name.StartsWith(parameterPrefix)
-                ? name
-                : parameterPrefix + name;
         }
     }
 }

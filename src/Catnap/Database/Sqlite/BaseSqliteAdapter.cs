@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Reflection;
-using Catnap.Mapping.Impl;
 
 namespace Catnap.Database.Sqlite
 {
-    public abstract class BaseSqliteAdapter : IDbAdapter
+    public abstract class BaseSqliteAdapter : BaseDbAdapter, IDbAdapter
     {
-        private const string PARAMETER_PREFIX = "@";
         private readonly Type connectionType;
         private readonly IDbTypeConverter typeConverter;
 
@@ -54,13 +50,6 @@ namespace Catnap.Database.Sqlite
             return typeConverter.ConvertFromDbType(value, toType);
         }
 
-        public string FormatParameterName(string name)
-        {
-            return name.StartsWith(PARAMETER_PREFIX)
-                ? name 
-                : PARAMETER_PREFIX + name;
-        }
-
         public IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory)
         {
             return commandFactory.Create(null, "SELECT last_insert_rowid()");
@@ -74,7 +63,7 @@ namespace Catnap.Database.Sqlite
         public IDbCommand CreateGetTableMetadataCommand(string tableName, IDbCommandFactory commandFactory)
         {
             var parameters = new[] { new Parameter("tableName", tableName) };
-            var sql = string.Format("select * from sqlite_master where tbl_name = {0}tableName", PARAMETER_PREFIX);
+            var sql = string.Format("select * from sqlite_master where tbl_name = {0}tableName", parameterPrefix);
             return commandFactory.Create(parameters, sql);
         }
     }
