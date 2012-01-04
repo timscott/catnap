@@ -43,7 +43,19 @@ namespace Catnap
             return this;
         }
 
+        public DbCommandSpec AddParameters(IEnumerable<Parameter> parms)
+        {
+            parameters.AddRange(parms);
+            return this;
+        }
+
         public DbCommandSpec AddParameters(params Func<string, object>[] parms)
+        {
+            parameters.AddRange(parms.Select(x => new Parameter(x.Method.GetParameters().First().Name, x(null))));
+            return this;
+        }
+
+        public DbCommandSpec AddParameters(IEnumerable<Func<string, object>> parms)
         {
             parameters.AddRange(parms.Select(x => new Parameter(x.Method.GetParameters().First().Name, x(null))));
             return this;

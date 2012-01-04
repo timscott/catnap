@@ -231,11 +231,10 @@ namespace Catnap.Citeria.Conditions
             var conditionSqls = conditions.Select(x => Visit(x, session)).ToList();
             foreach (var predicate in predicates)
             {
-                var builder = new CriteriaPredicateBuilder<T>(session);
-                builder.Build(predicate, parameterCount);
-                parameterCount = builder.LastParameterNumber;
-                conditionSqls.Add(builder.Sql);
-                parameters.AddRange(builder.Parameters);
+                var commandSpec = new CriteriaPredicateBuilder<T>(session, predicate, parameterCount)
+                    .Build(out parameterCount);
+                conditionSqls.Add(commandSpec.CommandText);
+                parameters.AddRange(commandSpec.Parameters);
             }
             commandText = string.Format("({0})",
                 string.Join(string.Format(" {0} ", conjunction.Trim()), conditionSqls.ToArray()));
@@ -296,8 +295,7 @@ namespace Catnap.Citeria.Conditions
             parameters.Add(parameter);
             return condition.ToSql(session.GetEntityMapFor<T>(), parameterName);
         }
-
-
+        
         private string Visit(ColumnCondition condition)
         {
             return condition.ToSql();

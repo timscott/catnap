@@ -4,51 +4,31 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using Catnap.Database;
-using Catnap.Mapping;
 
 namespace Catnap.Citeria
 {
     public class CriteriaPredicateBuilder<T> where T : class, new()
     {
         private readonly ISession session;
-        private readonly IEntityMap<T> entityMap;
-        private List<Parameter> parameters;
-        private StringBuilder sql;
+        private readonly Expression<Func<T, bool>> predicate;
+        private readonly StringBuilder sql = new StringBuilder();
+        private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterNumber;
 
-        public CriteriaPredicateBuilder(ISession session)
+        public CriteriaPredicateBuilder(ISession session, Expression<Func<T, bool>> predicate, int startingParamterNumber)
         {
             this.session = session;
-            entityMap = session.GetEntityMapFor<T>();
-            sql = new StringBuilder();
-        }
-
-        public string Sql
-        {
-            get { return sql.ToString(); }
-        }
-
-        public IEnumerable<Parameter> Parameters
-        {
-            get { return parameters; }
-        }
-
-        public int LastParameterNumber
-        {
-            get { return parameterNumber; }
-        }
-
-        public void Build(Expression<Func<T, bool>> predicate, int startingParamterNumber)
-        {
-            Reset();
+            this.predicate = predicate;
             parameterNumber = startingParamterNumber;
-            Visit(predicate, false);
         }
 
-        private void Reset()
+        public IDbCommandSpec Build(out int lastParameterNumber)
         {
-            sql = new StringBuilder();
-            parameters = new List<Parameter>();
+            Visit(predicate, false);
+            lastParameterNumber = parameterNumber;
+            return new DbCommandSpec()
+                .AddParameters(parameters)
+                .SetCommandText(sql.ToString());
         }
 
         private void Visit(Expression expression, bool isOnRightSide)
@@ -121,7 +101,7 @@ namespace Catnap.Citeria
             }
             else
             {
-                var columnName = entityMap.GetColumnNameForProperty(expression);
+                var columnName = session.GetEntityMapFor<T>().GetColumnNameForProperty(expression);
                 sql.Append(columnName);
             }
         }
@@ -184,7 +164,7 @@ namespace Catnap.Citeria
 
         private void AppendValue(object value)
         {
-            var parameterName = session.FormatParameterName(LastParameterNumber.ToString());
+            var parameterName = session.FormatParameterName(parameterNumber.ToString());
             sql.Append(parameterName);
             parameters.Add(new Parameter(parameterName, ConvertValue(value)));
             parameterNumber++;
