@@ -4,10 +4,11 @@ using Catnap.Logging;
 
 namespace Catnap.Database.Sqlite
 {
-    public class SqliteTypeConverter : IDbTypeConverter
+    //NOTE: Break this apart using composition.
+    public class SqliteValueConverter : IDbValueConverter
     {
         //NOTE: other conversions needed?
-        public object ConvertToDbType(object value)
+        public object ConvertToDb(object value)
         {
             if (value == null)
             {
@@ -38,7 +39,7 @@ namespace Catnap.Database.Sqlite
         }
 
         //NOTE: other conversions needed?
-        public object ConvertFromDbType(object value, Type toType)
+        public object ConvertFromDb(object value, Type toType)
         {
             Log.Debug("Converting '{0}' to type {1}", value, toType.FullName);
             if (value == null || !toType.IsValueType)
@@ -53,11 +54,15 @@ namespace Catnap.Database.Sqlite
             var underlyingType = GetUnderlyingGenericType(toType);
             if (underlyingType == typeof(Guid))
             {
-                 return new GuidConverter().ConvertFrom(value);
+                return new GuidConverter().ConvertFrom(value);
+            }
+            if (underlyingType == typeof(bool))
+            {
+                return Convert.ToBoolean(value);
             }
             if (underlyingType == typeof(DateTime))
             {
-                var longValue = (long) Convert.ChangeType(value, typeof (long));
+                var longValue = (long)Convert.ChangeType(value, typeof(long));
                 return new DateTime(longValue);
             }
             if (underlyingType == typeof(TimeSpan))
@@ -67,8 +72,8 @@ namespace Catnap.Database.Sqlite
             }
             if (underlyingType.IsEnum)
             {
-                return fromType.IsEnum 
-                    ? value 
+                return fromType.IsEnum
+                    ? value
                     : Enum.ToObject(underlyingType, value);
             }
             return Convert.ChangeType(value, toType);
@@ -81,8 +86,8 @@ namespace Catnap.Database.Sqlite
                 return type;
             }
             var genericType = type.GetGenericTypeDefinition();
-            return genericType.Equals(typeof(Nullable<>)) 
-                ? type.GetGenericArguments()[0] 
+            return genericType.Equals(typeof(Nullable<>))
+                ? type.GetGenericArguments()[0]
                 : type;
         }
     }

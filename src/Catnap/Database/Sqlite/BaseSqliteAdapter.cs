@@ -7,15 +7,15 @@ namespace Catnap.Database.Sqlite
     public abstract class BaseSqliteAdapter : BaseDbAdapter, IDbAdapter
     {
         private readonly Type connectionType;
-        private readonly IDbTypeConverter typeConverter;
+        private readonly IDbValueConverter typeConverter;
 
-        protected BaseSqliteAdapter(IDbTypeConverter typeConverter, Type connectionType)
+        protected BaseSqliteAdapter(IDbValueConverter typeConverter, Type connectionType)
         {
             this.typeConverter = typeConverter;
             this.connectionType = connectionType;
         }
 
-        protected BaseSqliteAdapter(IDbTypeConverter typeConverter, string connectionTypeAssemblyName, string connectionTypeName)
+        protected BaseSqliteAdapter(IDbValueConverter typeConverter, string connectionTypeAssemblyName, string connectionTypeName)
         {
             this.typeConverter = typeConverter;
             connectionType = Type.GetType(string.Format("{0},{1}", connectionTypeName, connectionTypeAssemblyName));
@@ -42,12 +42,12 @@ namespace Catnap.Database.Sqlite
 
         public object ConvertToDbType(object value)
         {
-            return typeConverter.ConvertToDbType(value);
+            return typeConverter.ConvertToDb(value);
         }
 
         public object ConvertFromDbType(object value, Type toType)
         {
-            return typeConverter.ConvertFromDbType(value, toType);
+            return typeConverter.ConvertFromDb(value, toType);
         }
 
         public IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory)

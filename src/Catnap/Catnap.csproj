@@ -56,7 +56,6 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Database\IDbAdapter.cs" />
-    <Compile Include="Database\IDbTypeConverter.cs" />
     <Compile Include="Database\Parameter.cs" />
     <Compile Include="Database\DbAdapter.cs" />
     <Compile Include="Citeria\Conditions\ColumnCondition.cs" />
@@ -73,6 +72,8 @@
     <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
     <Compile Include="Configuration\Fluently.cs" />
     <Compile Include="Configuration\IConfigurator.cs" />
+    <Compile Include="Database\IDbValueConverter.cs" />
+    <Compile Include="Database\Sqlite\SqliteValueConverter.cs" />
     <Compile Include="DbCommandFactory.cs" />
     <Compile Include="DbCommandSpec.cs" />
     <Compile Include="IDbCommandFactory.cs" />
@@ -129,7 +130,6 @@
     <Compile Include="Citeria\PredicateBuilder.cs" />
     <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
-    <Compile Include="Database\Sqlite\SqliteTypeConverter.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionFactory.cs" />
