@@ -64,7 +64,7 @@
     <Compile Include="BasicTests.cs" />
     <Compile Include="ConditionTests.cs" />
     <Compile Include="DbCommandSpecTests.cs" />
-    <Compile Include="SqliteTypeConverterTests.cs" />
+    <Compile Include="SqliteValueConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LogTests.cs" />
   </ItemGroup>
