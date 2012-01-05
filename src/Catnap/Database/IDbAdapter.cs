@@ -9,8 +9,8 @@ namespace Catnap.Database
         IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory);
         IDbCommand CreateGetTableMetadataCommand(IDbCommandFactory commandFactory);
         IDbCommand CreateGetTableMetadataCommand(string tableName, IDbCommandFactory commandFactory);
-        object ConvertToDbType(object value);
-        object ConvertFromDbType(object value, Type toType);
+        object ConvertToDb(object value);
+        object ConvertFromDb(object value, Type toType);
         string FormatParameterName(string name);
         string Quote(string name);
     }

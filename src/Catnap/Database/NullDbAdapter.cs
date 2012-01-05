@@ -25,12 +25,12 @@ namespace Catnap.Database
             return null;
         }
 
-        public object ConvertToDbType(object value)
+        public object ConvertToDb(object value)
         {
             return value == null ? null : value.GetType();
         }
 
-        public object ConvertFromDbType(object value, Type toType)
+        public object ConvertFromDb(object value, Type toType)
         {
             return value == null ? null : value.GetType();
         }

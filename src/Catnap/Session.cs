@@ -152,7 +152,7 @@ namespace Catnap
 
         public object ConvertFromDbType(object value, Type type)
         {
-            return dbAdapter.ConvertFromDbType(value, type);
+            return dbAdapter.ConvertFromDb(value, type);
         }
 
         public IEntityMap<T> GetEntityMapFor<T>() where T : class, new()

@@ -50,6 +50,11 @@
     <Compile Include="Citeria\Conditions\PropertyValueCondition.cs" />
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Database\BaseDbAdapter.cs" />
+    <Compile Include="Database\Types\BooleanIntType.cs" />
+    <Compile Include="Database\Types\DateTimeTicksType.cs" />
+    <Compile Include="Database\Types\DefaultType.cs" />
+    <Compile Include="Database\Types\GuidStringType.cs" />
+    <Compile Include="Database\Types\IType.cs" />
     <Compile Include="Database\NullDbAdapter.cs" />
     <Compile Include="Database\Sqlite\BaseSqliteAdapter.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
@@ -74,8 +79,13 @@
     <Compile Include="Configuration\IConfigurator.cs" />
     <Compile Include="Database\IDbValueConverter.cs" />
     <Compile Include="Database\Sqlite\SqliteValueConverter.cs" />
+    <Compile Include="Database\Types\TimespanTicksType.cs" />
+    <Compile Include="Database\Types\TypeHelper.cs" />
+    <Compile Include="Database\ValueConverter.cs" />
     <Compile Include="DbCommandFactory.cs" />
     <Compile Include="DbCommandSpec.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="IDbCommandFactory.cs" />
     <Compile Include="IDbCommandSpec.cs" />
     <Compile Include="ISessionFactory.cs" />
