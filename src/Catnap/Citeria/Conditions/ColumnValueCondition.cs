@@ -1,28 +1,17 @@
-using Catnap.Database;
-
 namespace Catnap.Citeria.Conditions
 {
-    public abstract class ColumnValueCondition : IConditionMarker
+    public abstract class ColumnValueCondition : ValueCondition
     {
         private readonly string columnName;
-        protected string format;
-        public object value;
 
-        protected ColumnValueCondition(string columnName, string format, object value)
+        protected ColumnValueCondition(string columnName, string format, object value) : base(format, value)
         {
             this.columnName = columnName;
-            this.format = format;
-            this.value = value;
         }
 
-        public Parameter ToParameter(string paramterName)
+        public IDbCommandSpec ToCommandSpec(string parameterName)
         {
-            return new Parameter(paramterName, value);
-        }
-
-        public string ToSql(string parameterName)
-        {
-            return string.Format("({0})", string.Format(format, columnName, parameterName));
+            return ToCommandSpec(columnName, parameterName);
         }
     }
 }

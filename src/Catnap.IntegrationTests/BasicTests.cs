@@ -365,4 +365,24 @@ namespace Catnap.IntegrationTests
         };
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
+
+    public class when_getting_person_with_first_name_in : behaves_like_person_test_ints
+    {
+        Because of = () =>
+        {
+            var criteria = Criteria.For<Person>().In(x => x.FirstName, person.FirstName);
+            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+        };
+        It should_be_the_person = () => actualPerson.Should().Equal(person);
+    }
+
+    public class when_getting_person_with_first_name_not_in : behaves_like_person_test_ints
+    {
+        Because of = () =>
+        {
+            var criteria = Criteria.For<Person>().In("FirstName", "NotAnyonesFirstName");
+            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+        };
+        It should_be_the_person = () => actualPerson.Should().Be.Null();
+    }
 }

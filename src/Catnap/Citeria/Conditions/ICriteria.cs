@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Catnap.Citeria.Conditions
@@ -26,6 +27,10 @@ namespace Catnap.Citeria.Conditions
         ICriteria<T> Where(Expression<Func<T, bool>> predicate);
         ICriteria<T> Where(Expression<Func<T, object>> property, string @operator, object value);
         ICriteria<T> Where(string columnName, string @operator, object value);
+        ICriteria<T> In(string columnName, params object[] values);
+        ICriteria<T> In(Expression<Func<T, object>> property, params object[] values);
+        ICriteria<T> NotIn(string columnName, params object[] values);
+        ICriteria<T> NotIn(Expression<Func<T, object>> property, params object[] values);
         IDbCommandSpec Build(ISession session);
     }
 }

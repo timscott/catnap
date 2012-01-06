@@ -45,9 +45,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Citeria\Conditions\ColumnValueCondition.cs" />
+    <Compile Include="Citeria\Conditions\ColumnValuesCondition.cs" />
+    <Compile Include="Citeria\Conditions\IsIn.cs" />
     <Compile Include="Citeria\Conditions\IsNotNull.cs" />
     <Compile Include="Citeria\Conditions\IsNull.cs" />
     <Compile Include="Citeria\Conditions\PropertyValueCondition.cs" />
+    <Compile Include="Citeria\Conditions\PropertyValuesCondition.cs" />
+    <Compile Include="Citeria\Conditions\ValueCondition.cs" />
+    <Compile Include="Citeria\Conditions\ValuesCondition.cs" />
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Database\BaseDbAdapter.cs" />
     <Compile Include="Database\Types\BooleanIntType.cs" />
@@ -84,6 +89,7 @@
     <Compile Include="Database\ValueConverter.cs" />
     <Compile Include="DbCommandFactory.cs" />
     <Compile Include="DbCommandSpec.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="IDbCommandFactory.cs" />

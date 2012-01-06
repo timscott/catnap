@@ -22,7 +22,6 @@ namespace Catnap.Citeria.Conditions
         private readonly List<Expression<Func<T, bool>>> predicates = new List<Expression<Func<T, bool>>>();
         private readonly List<Parameter> parameters = new List<Parameter>();
         private int parameterCount;
-        private Parameter parameter;
         private string commandText;
 
         public Criteria() : this("and") { }
@@ -217,6 +216,38 @@ namespace Catnap.Citeria.Conditions
             return this;
         }
 
+        public ICriteria<T> In(string columnName, params object[] values)
+        {
+            columnName.GuardArgumentNull("columnName");
+            var condition = new IsIn(columnName, values);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> In(Expression<Func<T, object>> property, params object[] values)
+        {
+            property.GuardArgumentNull("property");
+            var condition = new IsIn<T>(property, values);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> NotIn(string columnName, params object[] values)
+        {
+            columnName.GuardArgumentNull("columnName");
+            var condition = new IsNotIn(columnName, values);
+            conditions.Add(condition);
+            return this;
+        }
+
+        public ICriteria<T> NotIn(Expression<Func<T, object>> property, params object[] values)
+        {
+            property.GuardArgumentNull("property");
+            var condition = new IsNotIn<T>(property, values);
+            conditions.Add(condition);
+            return this;
+        }
+
         public IDbCommandSpec Build(ISession session)
         {
             Build(session, parameterCount);
@@ -252,6 +283,16 @@ namespace Catnap.Citeria.Conditions
             {
                 return Visit(propertyValueCondition, session);
             }
+            var columnValuesCondition = condition as ColumnValuesCondition;
+            if (columnValuesCondition != null)
+            {
+                return Visit(columnValuesCondition, session);
+            }
+            var propertyValuesCondition = condition as PropertyValuesCondition<T>;
+            if (propertyValuesCondition != null)
+            {
+                return Visit(propertyValuesCondition, session);
+            }
             var columnCondition = condition as ColumnCondition;
             if (columnCondition != null)
             {
@@ -282,18 +323,44 @@ namespace Catnap.Citeria.Conditions
         {
             var parameterName = session.FormatParameterName(parameterCount.ToString());
             parameterCount++;
-            parameter = condition.ToParameter(parameterName);
-            parameters.Add(parameter);
-            return condition.ToSql(parameterName);
+            var commandSpec = condition.ToCommandSpec(parameterName);
+            parameters.AddRange(commandSpec.Parameters);
+            return commandSpec.CommandText;
         }
 
         private string Visit(PropertyValueCondition<T> condition, ISession session)
         {
             var parameterName = session.FormatParameterName(parameterCount.ToString());
             parameterCount++;
-            parameter = condition.ToParameter(parameterName);
-            parameters.Add(parameter);
-            return condition.ToSql(session.GetEntityMapFor<T>(), parameterName);
+            var commandSpec = condition.ToCommandSpec(session.GetEntityMapFor<T>(), parameterName);
+            parameters.AddRange(commandSpec.Parameters);
+            return commandSpec.CommandText;
+        }
+
+        private string Visit(ColumnValuesCondition condition, ISession session)
+        {
+            var parameterNames = condition.ValuesCount.Times(i =>
+            {
+                var result = session.FormatParameterName(parameterCount.ToString());
+                parameterCount++;
+                return result;
+            });
+            var commandSpec = condition.ToCommandSpec(parameterNames.ToArray());
+            parameters.AddRange(commandSpec.Parameters);
+            return commandSpec.CommandText;
+        }
+
+        private string Visit(PropertyValuesCondition<T> condition, ISession session)
+        {
+            var parameterNames = condition.ValuesCount.Times(i =>
+            {
+                var result = session.FormatParameterName(parameterCount.ToString());
+                parameterCount++;
+                return result;
+            });
+            var commandSpec = condition.ToCommandSpec(session.GetEntityMapFor<T>(), parameterNames.ToArray());
+            parameters.AddRange(commandSpec.Parameters);
+            return commandSpec.CommandText;
         }
         
         private string Visit(ColumnCondition condition)

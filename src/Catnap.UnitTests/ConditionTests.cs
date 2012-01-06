@@ -48,17 +48,19 @@ namespace Catnap.UnitTests
                     and.Where(x => x.LastName == "Scott" || x.LastName == "Jones");
                 })
                 .Null(x => x.LastName)
-                .NotNull("FirstName");
+                .NotNull("FirstName")
+                .In(x => x.FirstName, "Ed", "Sally")
+                .NotIn("FirstName", "Joe", "Bill");
         };
 
         Because of = () => target = criteria.Build(sessionFactory.Create());
 
         It should_render_correct_sql = () => target.CommandText
-            .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6) and ((LastName = @7) or (LastName = @8))) and (LastName is NULL) and (FirstName is not NULL))");
+            .Should().Equal("((Bar < @0) and (Bar >= @1) and ((FirstName != @2) or ((Foo = @3) and (Baz = @4))) and ((MemberSince <= @5) and (MemberSince > @6) and ((LastName = @7) or (LastName = @8))) and (LastName is NULL) and (FirstName is not NULL) and (FirstName in(@9,@10)) and (FirstName not in(@11,@12)))");
 
         It should_contain_expected_parameters = () =>
         {
-            target.Parameters.Should().Count.Exactly(9);
+            target.Parameters.Should().Count.Exactly(13);
             target.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1000));
             target.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(300));
             target.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals("Tim"));
@@ -68,6 +70,10 @@ namespace Catnap.UnitTests
             target.Parameters.Should().Contain.One(x => x.Name == "@6" && x.Value.Equals(new DateTime(1980, 1, 1)));
             target.Parameters.Should().Contain.One(x => x.Name == "@7" && x.Value.Equals("Scott"));
             target.Parameters.Should().Contain.One(x => x.Name == "@8" && x.Value.Equals("Jones"));
+            target.Parameters.Should().Contain.One(x => x.Name == "@9" && x.Value.Equals("Ed"));
+            target.Parameters.Should().Contain.One(x => x.Name == "@10" && x.Value.Equals("Sally"));
+            target.Parameters.Should().Contain.One(x => x.Name == "@11" && x.Value.Equals("Joe"));
+            target.Parameters.Should().Contain.One(x => x.Name == "@12" && x.Value.Equals("Bill"));
         };
     }
 }
