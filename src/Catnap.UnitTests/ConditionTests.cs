@@ -2,7 +2,7 @@ using Catnap.Common.Logging;
 using Catnap.Find;
 using Catnap.Find.Conditions;
 using Catnap.Maps;
-using Catnap.UnitTests.Models;
+using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
 using It=Machine.Specifications.It;

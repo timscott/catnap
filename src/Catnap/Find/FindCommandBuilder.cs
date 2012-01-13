@@ -6,7 +6,7 @@ using Catnap.Maps;
 
 namespace Catnap.Find
 {
-    public class FindCommandBuilder<T> where T : class, IEntity, new()
+    public class FindCommandBuilder<T> where T : class, new()
     {
         private readonly IDomainMap domainMap;
         private readonly DbCommandPredicate<T> dbCommandPredicate;

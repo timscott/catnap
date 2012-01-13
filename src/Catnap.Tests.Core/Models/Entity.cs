@@ -1,20 +1,24 @@
 using System;
 
-namespace Catnap
+namespace Catnap.Tests.Core.Models
 {
-    [Obsolete]
-    public class Entity
+    public class EntityGuid : Entity<Guid>
+    {
+        public override bool IsTransient
+        {
+            get { return Id == Guid.Empty; }
+        }
+    }
+
+    public abstract class Entity<T>
     {
         private int? cachedHashCode;
 
-        public virtual int Id { get; private set; }
+        public virtual T Id { get; private set; }
 
-        public bool IsTransient
-        {
-            get { return Id == 0; }
-        }
+        public abstract bool IsTransient { get; }
 
-        public bool Equals(Entity x, Entity y)
+        public bool Equals(Entity<T> x, Entity<T> y)
         {
             if (x == null && y == null)
             {
@@ -31,7 +35,7 @@ namespace Catnap
             return x.Id.Equals(y.Id);
         }
 
-        public int GetHashCode(Entity obj)
+        public int GetHashCode(Entity<T> obj)
         {
             return obj.IsTransient
                 ? base.GetHashCode()
@@ -40,7 +44,7 @@ namespace Catnap
 
         public override bool Equals(object obj)
         {
-            return Equals(this, obj as Entity);
+            return Equals(this, obj as Entity<T>);
         }
 
         public override int GetHashCode()
@@ -52,17 +56,17 @@ namespace Catnap
             return cachedHashCode.Value;
         }
 
-        public static bool operator ==(Entity x, Entity y)
+        public static bool operator ==(Entity<T> x, Entity<T> y)
         {
             return object.Equals(x, y);
         }
 
-        public static bool operator !=(Entity x, Entity y)
+        public static bool operator !=(Entity<T> x, Entity<T> y)
         {
             return !(x == y);
         }
 
-        public void SetId(int id)
+        public void SetId(T id)
         {
             Id = id;
         }

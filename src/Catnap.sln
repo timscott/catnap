@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap", "Catnap\Catnap.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.UnitTests", "Catnap.UnitTests\Catnap.UnitTests.csproj", "{FCF48990-7CA3-41FB-B016-62931FEECFAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catnap.Tests.Core", "Catnap.Tests.Core\Catnap.Tests.Core.csproj", "{7EF60A19-A891-419E-9D5A-1E82B209E7F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCF48990-7CA3-41FB-B016-62931FEECFAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF60A19-A891-419E-9D5A-1E82B209E7F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF60A19-A891-419E-9D5A-1E82B209E7F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF60A19-A891-419E-9D5A-1E82B209E7F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF60A19-A891-419E-9D5A-1E82B209E7F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -34,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CE17AB8A-FCF7-4133-AEEB-9A1DB43B87ED} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
 		{FCF48990-7CA3-41FB-B016-62931FEECFAF} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
+		{7EF60A19-A891-419E-9D5A-1E82B209E7F9} = {C0093C27-BCC8-4D0F-B882-C9E8F1286375}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = ..

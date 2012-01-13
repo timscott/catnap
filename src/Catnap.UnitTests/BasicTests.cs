@@ -3,7 +3,8 @@ using Catnap.Common.Logging;
 using Catnap.Database;
 using Catnap.Find;
 using Catnap.Maps;
-using Catnap.UnitTests.Models;
+using Catnap.Tests.Core;
+using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
 
@@ -11,25 +12,10 @@ namespace Catnap.UnitTests
 {
     public class behaves_like_unit_test_requiring_domain_context
     {
-        private Establish context = () =>
+        Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            Domain.Configure
-            (
-                Map.Entity<Person>()
-                    .Property(x => x.FirstName)
-                    .Property(x => x.LastName)
-                    .Property(x => x.Active)
-                    .Property(x => x.MemberSince),
-                Map.Entity<Forum>()
-                    .List(x => x.Posts)
-                    .Property(x => x.Name),
-                Map.Entity<Post>()
-                    .ParentColumn("ForumId")
-                    .Property(x => x.Title)
-                    .Property(x => x.Body)
-                    .BelongsTo(x => x.Poster, "PosterId")
-            );
+            Bootstrapper.ConfigureDomain();
         };
     }
 

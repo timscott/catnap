@@ -4,39 +4,56 @@ using Catnap.Common.Logging;
 
 namespace Catnap.Maps.Impl
 {
-    public class BelongsToPropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>
-        where TEntity : class, IEntity, new()
-        where TProperty : class, IEntity, new()
+    public class BelongsToPropertyMap<TEntity, TProperty> : BasePropertyMap<TEntity, TProperty>, IPropertyMapWithColumn<TEntity>, IBelongsToPropertyMap
+        where TEntity : class, new()
+        where TProperty : class, new()
     {
+        private IEntityMap entityMap;
+
         public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property) : this(property, null) { }
 
-        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property)
+        public BelongsToPropertyMap(Expression<Func<TEntity, TProperty>> property, string columnName) : base(property, Access.Property)
         {
-            Log.Debug("Setting column name for BelongsTo property '{0}'", property);
-            ColumnName = columnName ?? MemberExpression.Member.Name;
+            Log.Debug("Setting column name for property '{0}'", property);
+            ColumnName = columnName ?? accessStrategy.PropertyInfo.Name;
         }
 
         public string ColumnName { get; private set; }
 
-        public object GetColumnValue(IEntity instance)
+        public bool Insert
         {
-            var parent = getter.Invoke(instance, null);
+            get { return true; }
+        }
+
+        public object GetValue(TEntity instance)
+        {
+            var parent = accessStrategy.Getter(instance);
             return parent == null
-                       ? null
-                       : (int?)((IEntity)(parent)).Id;
+                ? null
+                : entityMap.GetId(parent);
         }
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
-            value = value == null
+            var entity = value == null
                 ? default(TProperty)
-                : GetEntity(session, Convert.ToInt32(value));
-            setter.Invoke(instance, new [] { value });
+                : GetEntity(session, value);
+            accessStrategy.Setter(instance, entity);
         }
 
-        public TProperty GetEntity(ISession session, int id)
+        public TProperty GetEntity(ISession session, object id)
         {
             return session.Get<TProperty>(id);
+        }
+
+        public void SetPropertyMap(IEntityMap map)
+        {
+            entityMap = map;
+        }
+
+        public Type PropertyType
+        {
+            get { return typeof(TProperty); }
         }
     }
 }

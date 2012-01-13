@@ -1,5 +1,8 @@
-﻿namespace Catnap
+﻿using System;
+
+namespace Catnap
 {
+    [Obsolete]
     public interface IEntity
     {
         int Id { get; }

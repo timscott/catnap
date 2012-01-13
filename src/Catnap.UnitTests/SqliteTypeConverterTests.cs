@@ -1,5 +1,5 @@
 using System;
-using Catnap.Adapters.Sqlite;
+using Catnap.Adapters;
 using Machine.Specifications;
 using Should.Fluent;
 using It=Machine.Specifications.It;

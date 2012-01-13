@@ -1,9 +1,10 @@
 namespace Catnap.Maps
 {
-    public interface IPropertyMapWithColumn<TEntity> : IPropertyMap<TEntity>
-        where TEntity : class, IEntity, new()
+    public interface IPropertyMapWithColumn<in TEntity> : IPropertyMap<TEntity>
+        where TEntity : class, new()
     {
         string ColumnName { get; }
-        object GetColumnValue(IEntity instance);
+        object GetValue(TEntity instance);
+        bool Insert { get; }
     }
 }

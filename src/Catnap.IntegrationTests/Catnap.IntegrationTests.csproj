@@ -41,25 +41,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
-    <Reference Include="Machine.Specifications.NUnit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\MSpec\Machine.Specifications.NUnit.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\MSpec\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Should.Fluent">
       <HintPath>..\packages\ShouldFluent.1.1.12.0\lib\Should.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition, Version=2009.4.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\ShouldIt\System.ComponentModel.Composition.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -79,9 +67,6 @@
     <Compile Include="BasicTests.cs" />
     <Compile Include="Migrations\CreateSchema.cs" />
     <Compile Include="Migrations\DatabaseMigrator.cs" />
-    <Compile Include="Models\Forum.cs" />
-    <Compile Include="Models\Person.cs" />
-    <Compile Include="Models\Post.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Container.cs" />
     <Compile Include="Repositories\IForumRepository.cs" />
@@ -90,6 +75,10 @@
     <Compile Include="Repositories\PersonRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Catnap.Tests.Core\Catnap.Tests.Core.csproj">
+      <Project>{7EF60A19-A891-419E-9D5A-1E82B209E7F9}</Project>
+      <Name>Catnap.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Catnap\Catnap.csproj">
       <Project>{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}</Project>
       <Name>Catnap</Name>
