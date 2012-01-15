@@ -46,7 +46,7 @@ assemblyinfo :assemblyInfo do |asm|
 	asm.title = PRODUCT_NAME
 	asm.company_name = "Lunaverse Software"
 	asm.product_name = PRODUCT_NAME
-	asm.version = "0.0.0.0"
-	asm.file_version = "0.0.0.0"
-	asm.copyright = "Copyright {c) 2011 Lunaverse Software"
+	asm.version = "0.1.0.0"
+	asm.file_version = "0.1.0.0"
+	asm.copyright = "Copyright (c) 2011 Lunaverse Software"
 end
