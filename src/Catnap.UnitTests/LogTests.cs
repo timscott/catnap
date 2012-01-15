@@ -1,5 +1,5 @@
 using System;
-using Catnap.Common.Logging;
+using Catnap.Logging;
 using Machine.Specifications;
 using Moq;
 using It=Machine.Specifications.It;

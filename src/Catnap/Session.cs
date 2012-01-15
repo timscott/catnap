@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Catnap.Common.Logging;
+using Catnap.Citeria.Conditions;
 using Catnap.Database;
-using Catnap.Maps;
+using Catnap.Extensions;
+using Catnap.Logging;
+using Catnap.Mapping;
 
 namespace Catnap
 {
@@ -13,16 +15,15 @@ namespace Catnap
         private readonly IDbConnection connection;
         private readonly IDomainMap domainMap;
         private readonly IDbAdapter dbAdapter;
+        private readonly IDbCommandFactory commandFactory;
         private IDbTransaction transaction;
-
-        public Session(string connectionString, IDbAdapter dbAdapter) :
-            this(Domain.Map, connectionString, dbAdapter) { }
 
         public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter)
         {
             this.domainMap = domainMap;
             this.dbAdapter = dbAdapter;
             connection = dbAdapter.CreateConnection(connectionString);
+            commandFactory = new DbCommandFactory(dbAdapter, connection);
         }
 
         public void Open()
@@ -31,47 +32,61 @@ namespace Catnap
             transaction = connection.BeginTransaction();
         }
 
-        public IList<IDictionary<string, object>> List(DbCommandSpec commandSpec)
+        public IList<IDictionary<string, object>> List(IDbCommandSpec commandSpec)
         {
-            return ExecuteQuery(commandSpec).ToList();
+            commandSpec.GuardArgumentNull("commandSpec");
+            var command = commandFactory.Create(commandSpec.Parameters, commandSpec.CommandText);
+            return Try(() => ExecuteQuery(command)).ToList();
         }
 
-        public IList<T> List<T>(DbCommandSpec commandSpec) where T : class, new()
+        public IList<T> List<T>(IDbCommandSpec commandSpec) where T : class, new()
         {
+            commandSpec.GuardArgumentNull("commandSpec");
             var entityMap = domainMap.GetMapFor<T>();
             return List(commandSpec).Select(x => entityMap.BuildFrom(x, this)).ToList();
         }
 
-        public T Get<T>(object id) where T : class, new()
+        public IList<T> List<T>(ICriteria<T> criteria) where T : class, new()
+        {
+            criteria.GuardArgumentNull("criteria");
+            var entityMap = domainMap.GetMapFor<T>();
+            var predicateSpec = criteria.Build(this);
+            var command = entityMap.GetListCommand(predicateSpec.Parameters, predicateSpec.CommandText, commandFactory);
+            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
+        }
+
+        public IList<T> List<T>() where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
-            return List(entityMap.GetGetCommand(id)).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
+            var command = entityMap.GetListAllCommand(commandFactory);
+            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
+        }
+
+        public T Get<T>(object id) where T : class, new()
+        {
+            id.GuardArgumentNull("id");
+            var entityMap = domainMap.GetMapFor<T>();
+            var command = entityMap.GetGetCommand(id, commandFactory);
+            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
         }
 
         public void SaveOrUpdate<T>(T entity) where T : class, new()
         {
-            SaveOrUpdate(entity, null);
+            SaveOrUpdate(entity, null, null);
         }
 
-        public void SaveOrUpdate<T>(T entity, object parentId) where T : class, new()
+        public void SaveOrUpdate<T>(T entity, string parentIdColumnName, object parentId) where T : class, new()
         {
+            entity.GuardArgumentNull("entity");
             var entityMap = domainMap.GetMapFor<T>();
             var idMap = entityMap.PropertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
-            if (entityMap.IsTransient(entity))
+            var command = entityMap.GetSaveCommand(entity, parentIdColumnName, parentId, commandFactory);
+            Try(command.ExecuteNonQuery);
+            if (entityMap.IsTransient(entity) && idMap.Insert == false)
             {
-                var commandSpec = entityMap.GetInsertCommand(entity, parentId);
-                ExecuteNonQuery(commandSpec);
-                if (idMap.Insert == false)
-                {
-                    var getIdCommandSpec = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName);
-                    var getIdCommand = getIdCommandSpec.CreateCommand(dbAdapter, connection);
-                    var result = getIdCommand.ExecuteScalar();
-                    entityMap.SetId(entity, result, this);
-                }
-            }
-            else
-            {
-                ExecuteNonQuery(entityMap.GetUpdateCommand(entity, parentId));
+                var getIdCommand = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName, commandFactory);
+                var result = getIdCommand.ExecuteScalar();
+                entityMap.SetId(entity, result, this);
             }
             Cascade(entityMap, entity);
         }
@@ -87,25 +102,22 @@ namespace Catnap
 
         public void Delete<T>(object id) where T : class, new()
         {
+            id.GuardArgumentNull("id");
             var map = domainMap.GetMapFor<T>();
-            var deleteCommand = map.GetDeleteCommand(id);
-            ExecuteNonQuery(deleteCommand);
+            var deleteCommand = map.GetDeleteCommand(id, commandFactory);
+            Try(deleteCommand.ExecuteNonQuery);
         }
 
-        public void ExecuteNonQuery(DbCommandSpec commandSpec)
+        public void ExecuteNonQuery(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            commandSpec.GuardArgumentNull("commandSpec");
+            var command = commandFactory.Create(commandSpec);
             Try(command.ExecuteNonQuery);
-        }
-
-        public IEnumerable<IDictionary<string, object>> ExecuteQuery(DbCommandSpec commandSpec)
-        {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
-            return Try(() => ExecuteQuery(command));
         }
 
         public IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
         {
+            command.GuardArgumentNull("command");
             var reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -118,15 +130,17 @@ namespace Catnap
             }
         }
 
-        public object ExecuteScalar(DbCommandSpec commandSpec)
+        public object ExecuteScalar(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            commandSpec.GuardArgumentNull("commandSpec");
+            var command = commandFactory.Create(commandSpec);
             return Try(command.ExecuteScalar);
         }
 
-        public T ExecuteScalar<T>(DbCommandSpec commandSpec)
+        public T ExecuteScalar<T>(IDbCommandSpec commandSpec)
         {
-            var command = commandSpec.CreateCommand(dbAdapter, connection);
+            commandSpec.GuardArgumentNull("commandSpec");
+            var command = commandFactory.Create(commandSpec);
             var result = Try(command.ExecuteScalar);
             return (T)result;
         }
@@ -138,7 +152,24 @@ namespace Catnap
 
         public object ConvertFromDbType(object value, Type type)
         {
-            return dbAdapter.ConvertFromDbType(value, type);
+            return dbAdapter.ConvertFromDb(value, type);
+        }
+
+        public IEntityMap<T> GetEntityMapFor<T>() where T : class, new()
+        {
+            return domainMap.GetMapFor<T>();
+        }
+
+        public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
+        {
+            tableName.GuardArgumentNull("tableName");
+            var getTableMetadataCommand = dbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
+            return Try(() => ExecuteQuery(getTableMetadataCommand)).ToList();
+        }
+
+        public string FormatParameterName(string name)
+        {
+            return dbAdapter.FormatParameterName(name);
         }
 
         public void Dispose()

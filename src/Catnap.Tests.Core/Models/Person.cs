@@ -10,7 +10,7 @@ namespace Catnap.Tests.Core.Models
         public DateTime MemberSince { get; set; }
     }
 
-    public class Person : Entity
+    public class Person : EntityInt
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -1,8 +1,8 @@
 ﻿using System;
-using Catnap.Common.Logging;
+using Catnap.Citeria.Conditions;
+using Catnap.Configuration;
 using Catnap.Database;
-using Catnap.Find;
-using Catnap.Maps;
+using Catnap.Logging;
 using Catnap.Tests.Core;
 using Catnap.Tests.Core.Models;
 using Machine.Specifications;
@@ -12,16 +12,21 @@ namespace Catnap.UnitTests
 {
     public class behaves_like_unit_test_requiring_domain_context
     {
+        protected static ISessionFactory sessionFactory;
+
         Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            Bootstrapper.ConfigureDomain();
+            sessionFactory = Fluently.Configure
+                .Domain(DomainMapping.Get())
+                .DatabaseAdapter(new NullDbAdapter())
+                .Build();
         };
     }
 
-    public class when_creating_sql_command_from_expression : behaves_like_unit_test_requiring_domain_context
+    public class when_creating_criteria_from_expression : behaves_like_unit_test_requiring_domain_context
     {
-        static DbCommandSpec commandSpec;
+        static IDbCommandSpec spec;
         static bool? isActive = true;
         static DateTime? joinedBy = new DateTime(2008, 1, 1);
 
@@ -30,25 +35,25 @@ namespace Catnap.UnitTests
             var isActiveLocalScope = isActive;
             var joinedByLocalScope = joinedBy;
             var memberBeforeLocalScope = DateTime.Today.AddDays(-10);
-            commandSpec = new FindCommandBuilder<Person>()
-                .AddCondition(x => x.Active == isActiveLocalScope.Value)
-                .AddCondition(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
-                .AddCondition(x => x.FirstName == "Tim")
-                .AddCondition(x => x.LastName == "Scott")
-                .Build();
+            var criteria = Criteria.For<Person>()
+                .Where(x => x.Active == isActiveLocalScope.Value)
+                .Where(x => x.MemberSince >= joinedByLocalScope && x.MemberSince <= memberBeforeLocalScope)
+                .Where(x => x.FirstName == "Tim")
+                .Where(x => x.LastName == "Scott");
+            spec = criteria.Build(sessionFactory.Create());
         };
 
-        It should_have_correct_command_text = () => commandSpec.CommandText.Should()
-            .Equal("select * from Person where (Active = @0) and ((MemberSince >= @1) and (MemberSince <= @2)) and (FirstName = @3) and (LastName = @4)");
+        It should_have_correct_command_text = () => spec.CommandText.Should()
+            .Equal("((Active = @0) and ((MemberSince >= @1) and (MemberSince <= @2)) and (FirstName = @3) and (LastName = @4))");
 
         It should_have_correct_parameters = () =>
         {
-            commandSpec.Parameters.Should().Count.Exactly(5);
-            commandSpec.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1));
-            commandSpec.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(joinedBy));
-            commandSpec.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals(DateTime.Today.AddDays(-10)));
-            commandSpec.Parameters.Should().Contain.One(x => x.Name == "@3" && x.Value.Equals("Tim"));
-            commandSpec.Parameters.Should().Contain.One(x => x.Name == "@4" && x.Value.Equals("Scott"));
+            spec.Parameters.Should().Count.Exactly(5);
+            spec.Parameters.Should().Contain.One(x => x.Name == "@0" && x.Value.Equals(1));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@1" && x.Value.Equals(joinedBy));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@2" && x.Value.Equals(DateTime.Today.AddDays(-10)));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@3" && x.Value.Equals("Tim"));
+            spec.Parameters.Should().Contain.One(x => x.Name == "@4" && x.Value.Equals("Scott"));
         };
     }
 }

@@ -1,23 +1,24 @@
 using Catnap.Database;
+using Catnap.Mapping;
 
 namespace Catnap
 {
-    public static class SessionFactory
+    public class SessionFactory : ISessionFactory
     {
-        public const string DEFAULT_SQL_PARAMETER_PREFIX = "@";
-        
-        public static void Initialize(string connectionString, IDbAdapter dbAdapter)
+        private readonly IDbAdapter dbAdapter;
+        private readonly string connectionString;
+        private readonly IDomainMap domainMap;
+
+        public SessionFactory(string connectionString, IDbAdapter dbAdapter, IDomainMap domainMap)
         {
-            ConnectionString = connectionString;
-            DbAdapter = dbAdapter;
+            this.connectionString = connectionString;
+            this.dbAdapter = dbAdapter;
+            this.domainMap = domainMap;
         }
 
-        public static string ConnectionString { get; private set; }
-        public static IDbAdapter DbAdapter { get; private set; }
-
-        public static Session New()
+        public ISession Create()
         {
-            return new Session(ConnectionString, DbAdapter);
+            return new Session(domainMap, connectionString, dbAdapter);
         }
     }
 }

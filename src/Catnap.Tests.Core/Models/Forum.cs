@@ -16,7 +16,7 @@ namespace Catnap.Tests.Core.Models
         }
     }
 
-    public class Forum : Entity
+    public class Forum : EntityInt
     {
         private IEnumerable<Post> posts = new List<Post>();
 

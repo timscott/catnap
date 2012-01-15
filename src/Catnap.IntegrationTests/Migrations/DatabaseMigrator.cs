@@ -1,15 +1,12 @@
-using Catnap.Adapters;
 using Catnap.Migration;
 
 namespace Catnap.IntegrationTests.Migrations
 {
     public static class DatabaseMigrator
     {
-        private static readonly DatabaseMigratorUtility migratorUtility = new DatabaseMigratorUtility(new SqliteAdapter());
-
-        public static void Execute()
+        public static void Execute(ISession session)
         {
-            migratorUtility.Migrate
+            new DatabaseMigratorUtility(session).Migrate
             (
                 new CreateSchema()
             );

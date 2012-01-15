@@ -68,11 +68,6 @@
     <Compile Include="Migrations\CreateSchema.cs" />
     <Compile Include="Migrations\DatabaseMigrator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\Container.cs" />
-    <Compile Include="Repositories\IForumRepository.cs" />
-    <Compile Include="Repositories\ForumRepository.cs" />
-    <Compile Include="Repositories\IPersonRepository.cs" />
-    <Compile Include="Repositories\PersonRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catnap.Tests.Core\Catnap.Tests.Core.csproj">

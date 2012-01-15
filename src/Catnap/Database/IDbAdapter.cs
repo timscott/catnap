@@ -6,12 +6,12 @@ namespace Catnap.Database
     public interface IDbAdapter
     {
         IDbConnection CreateConnection(string connectionString);
-        DbCommandSpec CreateLastInsertIdCommand(string tableName);
-        DbCommandSpec CreateGetTableMetadataCommand();
-        DbCommandSpec CreateGetTableMetadataCommand(string tableName);
-        object ConvertToDbType(object value);
-        object ConvertFromDbType(object value, Type toType);
-        string FormatCommandText(string sql);
+        IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory);
+        IDbCommand CreateGetTableMetadataCommand(IDbCommandFactory commandFactory);
+        IDbCommand CreateGetTableMetadataCommand(string tableName, IDbCommandFactory commandFactory);
+        object ConvertToDb(object value);
+        object ConvertFromDb(object value, Type toType);
         string FormatParameterName(string name);
+        string Quote(string name);
     }
 }

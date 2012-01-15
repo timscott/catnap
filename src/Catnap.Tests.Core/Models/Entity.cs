@@ -10,6 +10,14 @@ namespace Catnap.Tests.Core.Models
         }
     }
 
+    public class EntityInt : Entity<int>
+    {
+        public override bool IsTransient
+        {
+            get { return Id == 0; }
+        }
+    }
+
     public abstract class Entity<T>
     {
         private int? cachedHashCode;

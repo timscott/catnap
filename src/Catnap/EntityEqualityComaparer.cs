@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Catnap.Maps;
+using Catnap.Mapping;
 
 namespace Catnap
 {

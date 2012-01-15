@@ -1,6 +1,7 @@
 using System;
+using Catnap.Logging.Impl;
 
-namespace Catnap.Common.Logging
+namespace Catnap.Logging
 {
     public static class Log
     {

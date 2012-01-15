@@ -17,7 +17,7 @@ namespace Catnap.Database
         {
             var result = command.CreateParameter();
             result.ParameterName = dbAdapter.FormatParameterName(Name);
-            result.Value = dbAdapter.ConvertToDbType(Value);
+            result.Value = dbAdapter.ConvertToDb(Value);
             return result;
         }
     }

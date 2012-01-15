@@ -10,7 +10,7 @@ namespace Catnap.Tests.Core.Models
         public DateTime? DatePosted { get; set; }
     }
 
-    public class Post : Entity
+    public class Post : EntityInt
     {
         public string Title { get; set; }
         public string Body { get; set; }

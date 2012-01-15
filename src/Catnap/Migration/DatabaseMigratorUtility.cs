@@ -1,17 +1,16 @@
 using System.Linq;
-using Catnap.Common.Logging;
-using Catnap.Database;
+using Catnap.Logging;
 
 namespace Catnap.Migration
 {
     public class DatabaseMigratorUtility
     {
-        private readonly IDbAdapter dbAdapter;
+        private readonly ISession session;
         private const string MIGRATIONS_TABLE_NAME = "db_migrations";
 
-        public DatabaseMigratorUtility(IDbAdapter dbAdapter)
+        public DatabaseMigratorUtility(ISession session)
         {
-            this.dbAdapter = dbAdapter;
+            this.session = session;
         }
 
         public void Migrate(params IDatabaseMigration[] migrations)
@@ -28,33 +27,32 @@ namespace Catnap.Migration
         private void RecordMigration(IDatabaseMigration migration)
         {
             var migrationsTableExistsCommand = new DbCommandSpec()
-                .SetCommandText(string.Format("insert into {0} (Name) values ({1}name)", MIGRATIONS_TABLE_NAME,
-                    SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .SetCommandText(string.Format("insert into {0} (Name) values ({1})", MIGRATIONS_TABLE_NAME,
+                    session.FormatParameterName("name")))
                 .AddParameter("name", migration.Name);
-            UnitOfWork.Current.Session.ExecuteNonQuery(migrationsTableExistsCommand);
+            session.ExecuteNonQuery(migrationsTableExistsCommand);
         }
 
         private bool PreviouslyRun(IDatabaseMigration migration)
         {
             var command = new DbCommandSpec()
-                .SetCommandText(string.Format("select count(*) from {0} where Name = {1}name",
-                    MIGRATIONS_TABLE_NAME, SessionFactory.DEFAULT_SQL_PARAMETER_PREFIX))
+                .SetCommandText(string.Format("select count(*) from {0} where Name = {1}",
+                    MIGRATIONS_TABLE_NAME, session.FormatParameterName("name")))
                 .AddParameter("name", migration.Name);
-            var result = (long)UnitOfWork.Current.Session.ExecuteScalar(command);
+            var result = (long)session.ExecuteScalar(command);
             return result > 0;
         }
 
         private void CreateMigrationsTableIfNotExists()
         {
-            var existsResult = UnitOfWork.Current.Session.ExecuteQuery(
-                dbAdapter.CreateGetTableMetadataCommand(MIGRATIONS_TABLE_NAME));
+            var existsResult = session.GetTableMetaData(MIGRATIONS_TABLE_NAME);
         	if (existsResult.Count() != 0)
         	{
         		return;
         	}
         	var createMigrationsTable = new DbCommandSpec()
         		.SetCommandText(string.Format("create table {0} (Name varchar(200))", MIGRATIONS_TABLE_NAME));
-        	UnitOfWork.Current.Session.ExecuteNonQuery(createMigrationsTable);
+            session.ExecuteNonQuery(createMigrationsTable);
         	Log.Debug("Migrations table created");
         }
     }
