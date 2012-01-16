@@ -2,7 +2,6 @@ using System;
 using Catnap.Database;
 using Catnap.Mapping;
 using Catnap.Mapping.Impl;
-using Catnap.Extensions;
 
 namespace Catnap.Configuration.Impl
 {
@@ -11,6 +10,7 @@ namespace Catnap.Configuration.Impl
         private string connString;
         private IDbAdapter dbAdapter;
         private Action<IDomainMappable> domainConfig;
+        private Func<ISessionCache> sessionCacheProvider;
 
         public IConfigurator Domain(Action<IDomainMappable> config)
         {
@@ -30,15 +30,17 @@ namespace Catnap.Configuration.Impl
             return this;
         }
 
+        public IConfigurator SessionCache(Func<ISessionCache> cacheProvider)
+        {
+            sessionCacheProvider = cacheProvider;
+            return this;
+        }
+
         public ISessionFactory Build()
         {
             if (dbAdapter == null)
             {
                 dbAdapter = new NullDbAdapter();
-            }
-            if (dbAdapter == null)
-            {
-                throw new ApplicationException("You must specify a DbAdapter before building the confiuration.");
             }
             var domainMap = new DomainMap(dbAdapter);
             if (domainConfig != null)
@@ -46,7 +48,11 @@ namespace Catnap.Configuration.Impl
                 domainConfig(domainMap);
             }
             domainMap.Done();
-            return new SessionFactory(connString, dbAdapter, domainMap);
+            if (sessionCacheProvider == null)
+            {
+                sessionCacheProvider = () => new SessionCache();
+            }
+            return new SessionFactory(connString, dbAdapter, domainMap, sessionCacheProvider);
         }
     }
 }

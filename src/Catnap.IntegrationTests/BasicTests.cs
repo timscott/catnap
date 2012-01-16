@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Catnap.Citeria.Conditions;
-using Catnap.Configuration;
-using Catnap.Database;
 using Catnap.IntegrationTests.Migrations;
 using Catnap.Logging;
 using Catnap.Tests.Core;
@@ -15,20 +13,39 @@ namespace Catnap.IntegrationTests
 {
     public abstract class behaves_like_integration_test
     {
+        protected static ISessionFactory sessionFactory;
+
         Establish context = () =>
         {
             Log.Level = LogLevel.Off;
-            var sessionFactory = Fluently.Configure
-                .ConnectionString("Data source=:memory:")
+            const string dbFileName = "db.sqlite";
+            File.Delete(dbFileName);
+            sessionFactory = Fluently.Configure
+                .ConnectionString("Data source=" + dbFileName)
                 .DatabaseAdapter(DbAdapter.Sqlite)
                 .Domain(DomainMapping.Get())
                 .Build();
 			UnitOfWork.Initialize(sessionFactory);
-            UnitOfWork.Start(); //NOTE: Normally unit-of-work would be more fine grained; however the in-memory database is re-created with each connection.
-            DatabaseMigrator.Execute(UnitOfWork.Current.Session);
+            InSession(DatabaseMigrator.Execute);
         };
 
-        Cleanup after_each = () => UnitOfWork.Current.Dispose();
+        public static void InSession(Action<ISession> action)
+        {
+            using (var s = sessionFactory.Create())
+            {
+                s.Open();
+                action(s);
+            }
+        }
+
+        public static T InSession<T>(Func<ISession, T> func)
+        {
+            using (var s = sessionFactory.Create())
+            {
+                s.Open();
+                return func(s);
+            }
+        }
     }
 
     public abstract class behaves_like_person_test_ints : behaves_like_integration_test
@@ -46,12 +63,12 @@ namespace Catnap.IntegrationTests
 
         protected static void save_person(Person person)
         {
-            UnitOfWork.Current.Session.SaveOrUpdate(person);
+            InSession(s => s.SaveOrUpdate(person));
         }
 
         protected static Person get_person(int id)
         {
-            return UnitOfWork.Current.Session.Get<Person>(id);
+            return InSession(s => s.Get<Person>(id));
         }
     }
 
@@ -70,12 +87,12 @@ namespace Catnap.IntegrationTests
 
         protected static void save_person(PersonGuid person)
         {
-            UnitOfWork.Current.Session.SaveOrUpdate(person);
+            InSession(s => s.SaveOrUpdate(person));
         }
 
         protected static PersonGuid get_person(Guid id)
         {
-            return UnitOfWork.Current.Session.Get<PersonGuid>(id);
+            return InSession(s => s.Get<PersonGuid>(id));
         }
     }
 
@@ -119,7 +136,7 @@ namespace Catnap.IntegrationTests
 
     public class when_deleting_person_ints: behaves_like_person_test_ints
     {
-        Because of = () => UnitOfWork.Current.Session.Delete<Person>(person.Id);
+        Because of = () => InSession(s => s.Delete<Person>(person.Id));
         It person_should_be_deleted = () =>
         {
             actualPerson = get_person(person.Id);
@@ -129,7 +146,7 @@ namespace Catnap.IntegrationTests
 
     public class when_deleting_person_guids : behaves_like_person_test_guids
     {
-        Because of = () => UnitOfWork.Current.Session.Delete<PersonGuid>(person.Id);
+        Because of = () => InSession(s => s.Delete<PersonGuid>(person.Id));
         It person_should_be_deleted = () =>
         {
             actualPerson = get_person(person.Id);
@@ -164,7 +181,7 @@ namespace Catnap.IntegrationTests
         Because of = () =>
         {
             var criteria = Criteria.For<Person>().Equal(x => x.FirstName, person.FirstName);
-            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+            actualPerson = InSession(s => s.List(criteria).FirstOrDefault());
         };
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
@@ -175,7 +192,7 @@ namespace Catnap.IntegrationTests
         {
             var criteria = Criteria.For<PersonGuid>()
                 .Equal(x => x.FirstName, person.FirstName);
-            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+            actualPerson = InSession(s => s.List(criteria).FirstOrDefault());
         };
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
@@ -203,12 +220,12 @@ namespace Catnap.IntegrationTests
                 TimeOfDayLastUpdated = new TimeSpan(10, 9, 8, 7, 6),
                 Posts = new List<Post> {post}
             };
-            UnitOfWork.Current.Session.SaveOrUpdate(forum);
+            InSession(s => s.SaveOrUpdate(forum));
         };
 
-        protected static void get_forum()
+        protected static void get_forum(ISession session)
         {
-            actualForum = UnitOfWork.Current.Session.Get<Forum>(forum.Id);
+            actualForum = session.Get<Forum>(forum.Id);
         }
     }
 
@@ -235,31 +252,52 @@ namespace Catnap.IntegrationTests
                 TimeOfDayLastUpdated = new TimeSpan(10, 9, 8, 7, 6),
                 Posts = new List<PostGuid> {post}
             };
-            UnitOfWork.Current.Session.SaveOrUpdate(forum);
+            InSession(s => s.SaveOrUpdate(forum));
         };
 
-        protected static void get_forum()
+        protected static void get_forum(ISession session)
         {
-            actualForum = UnitOfWork.Current.Session.Get<ForumGuid>(forum.Id);
+            actualForum = session.Get<ForumGuid>(forum.Id);
         }
     }
 
     public class when_getting_forum_ints : behaves_like_post_test_ints
     {
-        Because of = get_forum;
+        static ISession session;
+
+        Establish context = () =>
+        {
+            session = sessionFactory.Create();
+            session.Open();
+        };
+        
+        Because of = () => get_forum(session);
+        
         It should_be_the_forum = () => actualForum.Should().Equal(forum);
         It forum_should_contain_the_post = () => actualForum.Posts.First().Should().Equal(post);
         It poster_should_be_the_person = () => actualForum.Posts.First().Poster.Should().Equal(person);
         It forum_last_updated_should_be_same = () => actualForum.TimeOfDayLastUpdated.Should().Equal(forum.TimeOfDayLastUpdated);
+        
+        Cleanup after_all = () => session.Dispose();
     }
 
     public class when_getting_forum_guids : behaves_like_post_test_guids
     {
-        Because of = get_forum;
+        static ISession session;
+
+        Establish context = () =>
+        {
+            session = sessionFactory.Create();
+            session.Open();
+        };
+
+        Because of = () => get_forum(session);
         It should_be_the_forum = () => actualForum.Should().Equal(forum);
         It forum_should_contain_the_post = () => actualForum.Posts.First().Should().Equal(post);
         It poster_should_be_the_person = () => actualForum.Posts.First().Poster.Should().Equal(person);
         It forum_last_updated_should_be_same = () => actualForum.TimeOfDayLastUpdated.Should().Equal(forum.TimeOfDayLastUpdated);
+
+        Cleanup after_all = () => session.Dispose();
     }
 
     public class when_getting_persons_who_have_posted_ints : behaves_like_post_test_ints
@@ -276,7 +314,7 @@ namespace Catnap.IntegrationTests
         {
             var command = new DbCommandSpec()
                 .SetCommandText("select p.* from Person p inner join Post on Post.PosterId = p.Id");
-            personsWhoHavePosted = UnitOfWork.Current.Session.List<Person>(command);
+            personsWhoHavePosted = InSession(s => s.List<Person>(command));
         };
         It should_return_only_person_who_have_posted = () =>
         {
@@ -298,7 +336,7 @@ namespace Catnap.IntegrationTests
         {
             var command = new DbCommandSpec()
                 .SetCommandText("select p.* from PersonGuid p inner join PostGuid on PostGuid.PosterId = p.Id");
-            personsWhoHavePosted = UnitOfWork.Current.Session.List<PersonGuid>(command);
+            personsWhoHavePosted = InSession(s => s.List<PersonGuid>(command));
         };
         It should_return_only_person_who_have_posted = () =>
         {
@@ -317,7 +355,7 @@ namespace Catnap.IntegrationTests
             var commandSpec = new DbCommandSpec()
                 .SetCommandText("select count(*) from Post p where p.PosterId = @personId")
                 .AddParameter("@personId", person.Id);
-            postCount = UnitOfWork.Current.Session.ExecuteScalar<long>(commandSpec);
+            postCount = InSession(s => s.ExecuteScalar<long>(commandSpec));
         };
         It should_return_post_count = () => postCount.Should().Equal(expected);
     }
@@ -332,7 +370,7 @@ namespace Catnap.IntegrationTests
             var command = new DbCommandSpec()
                 .SetCommandText("select count(*) from PostGuid p where p.PosterId = @personId")
                 .AddParameter("@personId", person.Id);
-            postCount = UnitOfWork.Current.Session.ExecuteScalar<long>(command);
+            postCount = InSession(s => s.ExecuteScalar<long>(command));
         };
         It should_return_post_count = () => postCount.Should().Equal(expected);
     }
@@ -345,13 +383,13 @@ namespace Catnap.IntegrationTests
         Establish context = () =>
         {
             person = new Person { LastName = "Smith" };
-            UnitOfWork.Current.Session.SaveOrUpdate(person);
+            InSession(s => s.SaveOrUpdate(person));
         };
 
         Because of = () =>
         {
             var criteria = Criteria.For<Person>().Null(x => x.FirstName);
-            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+            actualPerson = InSession(s => s.List(criteria).FirstOrDefault());
         };
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
@@ -361,7 +399,7 @@ namespace Catnap.IntegrationTests
         Because of = () =>
         {
             var criteria = Criteria.For<Person>().NotNull("FirstName");
-            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+            actualPerson = InSession(s => s.List(criteria).FirstOrDefault());
         };
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
@@ -371,7 +409,7 @@ namespace Catnap.IntegrationTests
         Because of = () =>
         {
             var criteria = Criteria.For<Person>().In(x => x.FirstName, person.FirstName);
-            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+            actualPerson = InSession(s => s.List(criteria).FirstOrDefault());
         };
         It should_be_the_person = () => actualPerson.Should().Equal(person);
     }
@@ -381,8 +419,45 @@ namespace Catnap.IntegrationTests
         Because of = () =>
         {
             var criteria = Criteria.For<Person>().In("FirstName", "NotAnyonesFirstName");
-            actualPerson = UnitOfWork.Current.Session.List(criteria).FirstOrDefault();
+            actualPerson = InSession(s => s.List(criteria).FirstOrDefault());
         };
         It should_be_the_person = () => actualPerson.Should().Be.Null();
+    }
+
+    public class when_getting_an_entity_saved_in_the_same_session : behaves_like_integration_test
+    {
+        static ISession session;
+        static Person person;
+        static Person actualPerson;
+
+        Establish context = () =>
+        {
+            person = new Person {FirstName = "Tim", LastName = "Scott"};
+            session = sessionFactory.Create();
+            session.Open();
+            session.SaveOrUpdate(person);
+        };
+
+        Because of = () => actualPerson = session.Get<Person>(person.Id);
+
+        It should_be_the_same_instance = () => actualPerson.Should().Be.SameAs(person);
+
+        Cleanup after_all = () => session.Dispose();
+    }
+
+    public class when_getting_an_entity_saved_in_the_a_different_session : behaves_like_integration_test
+    {
+        static Person person;
+        static Person actualPerson;
+
+        Establish context = () =>
+        {
+            person = new Person { FirstName = "Tim", LastName = "Scott" };
+            InSession(s => s.SaveOrUpdate(person));
+        };
+
+        Because of = () => actualPerson = InSession(s => s.Get<Person>(person.Id));
+
+        It should_not_be_the_same_instance = () => actualPerson.Should().Not.Be.SameAs(person);
     }
 }

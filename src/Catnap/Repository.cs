@@ -25,8 +25,7 @@ namespace Catnap
 
         public virtual IList<T> Find(Expression<Func<T, bool>> predicate)
         {
-            var criteria = Criteria.For<T>().Where(predicate);
-            return Session.List(criteria);
+            return Session.List(predicate);
         }
 
         public virtual void Save(T entity)

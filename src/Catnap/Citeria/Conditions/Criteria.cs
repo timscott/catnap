@@ -7,14 +7,6 @@ using Catnap.Extensions;
 
 namespace Catnap.Citeria.Conditions
 {
-    public static class Criteria
-    {
-        public static ICriteria<T> For<T>() where T : class, new()
-        {
-            return new Criteria<T>();
-        }
-    }
-
     public class Criteria<T> : ICriteria<T>, IConditionMarker where T : class, new()
     {
         private readonly string conjunction;
@@ -37,8 +29,7 @@ namespace Catnap.Citeria.Conditions
             criteria(this);
         }
 
-        internal Criteria(IEnumerable<IConditionMarker> conditions)
-            : this("and")
+        internal Criteria(IEnumerable<IConditionMarker> conditions) : this("and")
         {
             this.conditions.AddRange(conditions);
         }

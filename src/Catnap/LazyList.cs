@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Catnap.Exceptions;
 
 namespace Catnap
 {
@@ -25,7 +26,14 @@ namespace Catnap
                     {
                         if (innerList == null)
                         {
-                            innerList = loader();
+                            try
+                            {
+                                innerList = loader();
+                            }
+                            catch (SessionDisposedException)
+                            {
+                                throw new LazyLoadException();
+                            }
                         }
                     }
                 }

@@ -54,6 +54,7 @@
     <Compile Include="Citeria\Conditions\ValueCondition.cs" />
     <Compile Include="Citeria\Conditions\ValuesCondition.cs" />
     <Compile Include="Configuration\Impl\Configurator.cs" />
+    <Compile Include="Criteria.cs" />
     <Compile Include="Database\BaseDbAdapter.cs" />
     <Compile Include="Database\Types\BooleanIntType.cs" />
     <Compile Include="Database\Types\DateTimeTicksType.cs" />
@@ -67,7 +68,7 @@
     </Compile>
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\Parameter.cs" />
-    <Compile Include="Database\DbAdapter.cs" />
+    <Compile Include="DbAdapter.cs" />
     <Compile Include="Citeria\Conditions\ColumnCondition.cs" />
     <Compile Include="Citeria\Conditions\Criteria.cs" />
     <Compile Include="Citeria\Conditions\Equal.cs" />
@@ -80,7 +81,10 @@
     <Compile Include="Citeria\Conditions\LessThanOrEqual.cs" />
     <Compile Include="Citeria\Conditions\NotEqual.cs" />
     <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
-    <Compile Include="Configuration\Fluently.cs" />
+    <Compile Include="EntitySessionKey.cs" />
+    <Compile Include="Exceptions\LazyLoadException.cs" />
+    <Compile Include="Exceptions\SessionDisposedException.cs" />
+    <Compile Include="Fluently.cs" />
     <Compile Include="Configuration\IConfigurator.cs" />
     <Compile Include="Database\IDbValueConverter.cs" />
     <Compile Include="Database\Sqlite\SqliteValueConverter.cs" />
@@ -94,6 +98,7 @@
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="IDbCommandFactory.cs" />
     <Compile Include="IDbCommandSpec.cs" />
+    <Compile Include="ISessionCache.cs" />
     <Compile Include="ISessionFactory.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Logging\Impl\ConsoleLogger.cs" />
@@ -130,6 +135,7 @@
     <Compile Include="Mapping\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Mapping\Impl\PropertyWithColumnMap.cs" />
     <Compile Include="Mapping\IPropertyMapDescriptor.cs" />
+    <Compile Include="Migration\BaseMigration.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
@@ -148,8 +154,10 @@
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Session.cs" />
+    <Compile Include="SessionCache.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="Citeria\CriteriaPredicateBuilder.cs" />
+    <Compile Include="ThreadSafeCache.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>

@@ -19,7 +19,7 @@ namespace Catnap.Migration
             foreach (var migration in migrations.Where(migration => !PreviouslyRun(migration)))
             {
                 Log.Debug("Running migration '{0}'", migration.Name);
-                migration.Action();
+                migration.Action(session);
                 RecordMigration(migration);
             }
         }

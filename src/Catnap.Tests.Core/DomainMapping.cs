@@ -24,7 +24,7 @@ namespace Catnap.Tests.Core
                 d.Entity<ForumGuid>(e => {
                     e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb);
                     e.List(x => x.Posts).ParentIdColumn("ForumId");
-                    e.Property(x => x.Name);
+                    e.Property(x => x.Name); 
                     e.Property(x => x.TimeOfDayLastUpdated);
                 });
                 d.Entity<PostGuid>(e => {

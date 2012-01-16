@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using Catnap.Citeria.Conditions;
 using Catnap.Database;
+using Catnap.Exceptions;
 using Catnap.Extensions;
 using Catnap.Logging;
 using Catnap.Mapping;
@@ -16,12 +18,15 @@ namespace Catnap
         private readonly IDomainMap domainMap;
         private readonly IDbAdapter dbAdapter;
         private readonly IDbCommandFactory commandFactory;
+        private readonly ISessionCache sessionCache;
         private IDbTransaction transaction;
+        private bool wasDisposed;
 
-        public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter)
+        public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter, ISessionCache sessionCache)
         {
             this.domainMap = domainMap;
             this.dbAdapter = dbAdapter;
+            this.sessionCache = sessionCache;
             connection = dbAdapter.CreateConnection(connectionString);
             commandFactory = new DbCommandFactory(dbAdapter, connection);
         }
@@ -52,22 +57,39 @@ namespace Catnap
             var entityMap = domainMap.GetMapFor<T>();
             var predicateSpec = criteria.Build(this);
             var command = entityMap.GetListCommand(predicateSpec.Parameters, predicateSpec.CommandText, commandFactory);
-            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
+            var results = ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
+            StoreAll(entityMap, results);
+            return results;
+        }
+
+        public IList<T> List<T>(Expression<Func<T, bool>> predicate) where T : class, new()
+        {
+            var criteria = Criteria.For<T>().Where(predicate);
+            return List(criteria);
         }
 
         public IList<T> List<T>() where T : class, new()
         {
             var entityMap = domainMap.GetMapFor<T>();
             var command = entityMap.GetListAllCommand(commandFactory);
-            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
+            var results = ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
+            StoreAll(entityMap, results);
+            return results;
         }
 
         public T Get<T>(object id) where T : class, new()
         {
             id.GuardArgumentNull("id");
+            var cached = sessionCache.Retrieve<T>(id);
+            if (cached != null)
+            {
+                return cached;
+            }
             var entityMap = domainMap.GetMapFor<T>();
             var command = entityMap.GetGetCommand(id, commandFactory);
-            return ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
+            var result = ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
+            sessionCache.Store(id, result);
+            return result;
         }
 
         public void SaveOrUpdate<T>(T entity) where T : class, new()
@@ -88,6 +110,7 @@ namespace Catnap
                 var result = getIdCommand.ExecuteScalar();
                 entityMap.SetId(entity, result, this);
             }
+            sessionCache.Store(entityMap.GetId(entity), entity);
             Cascade(entityMap, entity);
         }
 
@@ -106,10 +129,12 @@ namespace Catnap
             var map = domainMap.GetMapFor<T>();
             var deleteCommand = map.GetDeleteCommand(id, commandFactory);
             Try(deleteCommand.ExecuteNonQuery);
+            sessionCache.Store<T>(id, null);
         }
 
         public void ExecuteNonQuery(IDbCommandSpec commandSpec)
         {
+            GuardNotDisposed();
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             Try(command.ExecuteNonQuery);
@@ -117,6 +142,7 @@ namespace Catnap
 
         public IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
         {
+            GuardNotDisposed();
             command.GuardArgumentNull("command");
             var reader = command.ExecuteReader();
             while (reader.Read())
@@ -132,6 +158,7 @@ namespace Catnap
 
         public object ExecuteScalar(IDbCommandSpec commandSpec)
         {
+            GuardNotDisposed();
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             return Try(command.ExecuteScalar);
@@ -139,6 +166,7 @@ namespace Catnap
 
         public T ExecuteScalar<T>(IDbCommandSpec commandSpec)
         {
+            GuardNotDisposed();
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             var result = Try(command.ExecuteScalar);
@@ -183,6 +211,7 @@ namespace Catnap
                 connection.Close();
                 connection.Dispose();
             }
+            wasDisposed = true;
         }
 
         private T Try<T>(Func<T> func)
@@ -196,6 +225,19 @@ namespace Catnap
                 RollbackTransaction();
                 Log.Error(ex);
                 throw;
+            }
+        }
+
+        private void StoreAll<T>(IEntityMap entityMap, List<T> results) where T : class, new()
+        {
+            results.ForEach(x => sessionCache.Store(entityMap.GetId(x), x));
+        }
+
+        private void GuardNotDisposed()
+        {
+            if (wasDisposed)
+            {
+                throw new SessionDisposedException();
             }
         }
     }
