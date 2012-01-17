@@ -119,6 +119,7 @@
     <Compile Include="Mapping\IIdValueGenerator.cs" />
     <Compile Include="Mapping\Access.cs" />
     <Compile Include="Mapping\IListPropertyMapDescriptor.cs" />
+    <Compile Include="Mapping\IListPropertyMappable.cs" />
     <Compile Include="Mapping\Impl\AccessStrategy.cs" />
     <Compile Include="Mapping\Conventions\BelongsToColumnNameConvention.cs" />
     <Compile Include="Mapping\Impl\BelongsToPropertyMap.cs" />
