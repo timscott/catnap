@@ -3,12 +3,10 @@ using System.Linq.Expressions;
 
 namespace Catnap.Mapping.Impl
 {
-    public abstract class PropertyWithColumnMap<TEntity, TProperty, TConcrete> : BasePropertyMap<TEntity, TProperty, TConcrete>, IPropertyMapWithColumn<TEntity>
+    public abstract class PropertyWithColumnMap<TEntity, TProperty, TConcrete> : BasePropertyMap<TEntity, TProperty, TConcrete>, IPropertyMapWithColumn<TEntity>, IPropertyWithColumnMappable<TEntity, TProperty, TConcrete>
         where TEntity : class, new()
         where TConcrete : PropertyWithColumnMap<TEntity, TProperty, TConcrete>
     {
-        protected string columnName;
-
         protected PropertyWithColumnMap(string propertyName) : base(propertyName) { }
 
         protected PropertyWithColumnMap(Expression<Func<TEntity, TProperty>> property) : base(property) { }
@@ -18,26 +16,23 @@ namespace Catnap.Mapping.Impl
             return accessStrategy.Getter(instance);
         }
 
+        public string ColumnName { get; protected set; }
+
         public virtual bool Insert
         {
             get { return true; }
         }
 
-        public TConcrete ColumnName(string value)
+        public TConcrete Column(string value)
         {
-            columnName = value;
+            ColumnName = value;
             return (TConcrete)this;
-        }
-
-        public string GetColumnName()
-        {
-            return columnName;
         }
 
         public override void Done(IDomainMap domainMap)
         {
             base.Done(domainMap);
-            columnName = columnName ?? GetDeafultColumnName(domainMap);
+            ColumnName = ColumnName ?? GetDeafultColumnName(domainMap);
         }
 
         protected virtual string GetDeafultColumnName(IDomainMap domainMap)

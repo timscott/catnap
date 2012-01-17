@@ -115,6 +115,7 @@
     <Compile Include="Mapping\IEntityMappable.cs" />
     <Compile Include="Mapping\Conventions\IIdMappingConventionable.cs" />
     <Compile Include="Mapping\IIdPropertyMap.cs" />
+    <Compile Include="Mapping\IIdPropertyMappable.cs" />
     <Compile Include="Mapping\IIdValueGenerator.cs" />
     <Compile Include="Mapping\Access.cs" />
     <Compile Include="Mapping\IListPropertyMapDescriptor.cs" />
@@ -135,6 +136,8 @@
     <Compile Include="Mapping\Impl\PropertyAccessStrategy.cs" />
     <Compile Include="Mapping\Impl\PropertyWithColumnMap.cs" />
     <Compile Include="Mapping\IPropertyMapDescriptor.cs" />
+    <Compile Include="Mapping\IPropertyMappable.cs" />
+    <Compile Include="Mapping\IPropertyMapWithColumnMappable.cs" />
     <Compile Include="Migration\BaseMigration.cs" />
     <Compile Include="Migration\IDatabaseMigration.cs" />
     <Compile Include="Migration\DatabaseMigratorUtility.cs" />

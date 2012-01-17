@@ -41,7 +41,7 @@ namespace Catnap.Mapping.Conventions.Impl
             var columnName = columnNameSpec == null
                 ? propertyName
                 : columnNameSpec(entityMapDescriptor);
-            return new IdPropertyMap<T, object>(propertyName).ColumnName(columnName).Access(access).Generator(generator);
+            return new IdPropertyMap<T, object>(propertyName).Column(columnName).Access(access).Generator(generator);
         }
     }
 }

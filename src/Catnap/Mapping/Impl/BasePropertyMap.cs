@@ -6,7 +6,7 @@ using Catnap.Logging;
 
 namespace Catnap.Mapping.Impl
 {
-    public abstract class BasePropertyMap<TEntity, TProperty, TConcrete> : IPropertyMap<TEntity> 
+    public abstract class BasePropertyMap<TEntity, TProperty, TConcrete> : IPropertyMap<TEntity>, IPropertyMappable<TEntity, TProperty, TConcrete>
         where TEntity : class, new()
         where TConcrete : BasePropertyMap<TEntity, TProperty, TConcrete>
     {

@@ -3,8 +3,7 @@ using System.Linq.Expressions;
 
 namespace Catnap.Mapping.Impl
 {
-    public class IdPropertyMap<TEntity, TProperty> : PropertyWithColumnMap<TEntity, TProperty, IdPropertyMap<TEntity, TProperty>>, IIdPropertyMap<TEntity>
-        where TEntity : class, new()
+    public class IdPropertyMap<TEntity, TProperty> : PropertyWithColumnMap<TEntity, TProperty, IdPropertyMap<TEntity, TProperty>>, IIdPropertyMap<TEntity>, IIdPropertyMappable<TEntity, TProperty, IdPropertyMap<TEntity, TProperty>> where TEntity : class, new()
     {
         private IIdValueGenerator generator;
 

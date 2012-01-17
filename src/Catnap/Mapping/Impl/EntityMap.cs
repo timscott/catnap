@@ -60,7 +60,7 @@ namespace Catnap.Mapping.Impl
             {
                 throw new InvalidOperationException(string.Format("Property '{0}' is not mapped.", memberExpression.Member.Name));
             }
-            return map.GetColumnName();
+            return map.ColumnName;
         }
 
         public string GetColumnNameForProperty(Expression<Func<T, object>> property)
@@ -74,21 +74,21 @@ namespace Catnap.Mapping.Impl
             return this;
         }
 
-        public IdPropertyMap<T, TProperty> Id<TProperty>(Expression<Func<T, TProperty>> property)
+        public IIdPropertyMappable<T, TProperty, IdPropertyMap<T, TProperty>> Id<TProperty>(Expression<Func<T, TProperty>> property)
         {
             var map = new IdPropertyMap<T, TProperty>(property);
             propertyMaps.Add(map);
             return map;
         }
 
-        public ValuePropertyMap<T, TProperty> Property<TProperty>(Expression<Func<T, TProperty>> property)
+        public IPropertyWithColumnMappable<T, TProperty, ValuePropertyMap<T, TProperty>> Property<TProperty>(Expression<Func<T, TProperty>> property)
         {
             var map = new ValuePropertyMap<T, TProperty>(property);
             propertyMaps.Add(map);
             return map;
         }
 
-        public ListPropertyMap<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
+        public IListPropertyMappable<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property)
             where TListMember : class, new()
         {
             var map = new ListPropertyMap<T, TListMember>(property);
@@ -96,7 +96,7 @@ namespace Catnap.Mapping.Impl
             return map;
         }
 
-        public BelongsToPropertyMap<T, TProperty> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
+        public IPropertyMappable<T, TProperty, BelongsToPropertyMap<T, TProperty>> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
             where TProperty : class, new()
         {
             var map = new BelongsToPropertyMap<T, TProperty>(property);
@@ -139,7 +139,7 @@ namespace Catnap.Mapping.Impl
                 map.Done(domainMap);
             }
             idProperty = propertyMaps.Where(x => x is IIdPropertyMap<T>).Cast<IIdPropertyMap<T>>().Single();
-            idColumnName = idProperty.GetColumnName();
+            idColumnName = idProperty.ColumnName;
             transientIdValue = Activator.CreateInstance(idProperty.PropertyInfo.PropertyType);
         }
 
@@ -152,7 +152,7 @@ namespace Catnap.Mapping.Impl
             {
                 if (map is IPropertyMapWithColumn<T>)
                 {
-                    map.SetValue(instance, record[((IPropertyMapWithColumn<T>)map).GetColumnName()], session);
+                    map.SetValue(instance, record[((IPropertyMapWithColumn<T>)map).ColumnName], session);
                 }
                 else if (map is IListPropertyMap<T>)
                 {
@@ -206,8 +206,8 @@ namespace Catnap.Mapping.Impl
         {
             var columnProperties = propertyMaps.Where(x => x is IPropertyMapWithColumn<T>).Cast<IPropertyMapWithColumn<T>>();
             var writableColumns = columnProperties.Where(x => x.Insert).ToList();
-            var columnNames = writableColumns.Select(x => x.GetColumnName()).ToList();
-            var paramterNames = writableColumns.Select(x => x.GetColumnName()).ToList();
+            var columnNames = writableColumns.Select(x => x.ColumnName).ToList();
+            var paramterNames = writableColumns.Select(x => x.ColumnName).ToList();
 
             var parameters = new List<Parameter>();
 
@@ -231,7 +231,7 @@ namespace Catnap.Mapping.Impl
                 {
                     value = idMap.Generate((T)entity);
                 }
-                parameters.Add(new Parameter(map.GetColumnName(), value));
+                parameters.Add(new Parameter(map.ColumnName, value));
             }
 
             return commandFactory.Create(parameters, sql);
@@ -249,10 +249,10 @@ namespace Catnap.Mapping.Impl
                 .Cast<IPropertyMapWithColumn<T>>()
                 .ToList();
             var setPairs = columnProperties
-                .Where(x => x.GetColumnName() != idColumnName)
+                .Where(x => x.ColumnName != idColumnName)
                 .Select(x =>
                 {
-                    var columnName = x.GetColumnName();
+                    var columnName = x.ColumnName;
                     return string.Format("{0}={1}", dbAdapter.Quote(columnName), dbAdapter.FormatParameterName(columnName));
                 })
                 .ToList();
@@ -272,7 +272,7 @@ namespace Catnap.Mapping.Impl
                 dbAdapter.FormatParameterName("Id"));
             parameters.Add(new Parameter(idColumnName, GetId(entity)));
 
-            var columnParamters = columnProperties.Select(map => new Parameter(map.GetColumnName(), map.GetValue((T)entity)));
+            var columnParamters = columnProperties.Select(map => new Parameter(map.ColumnName, map.GetValue((T)entity)));
             parameters.AddRange(columnParamters);
 
             return commandFactory.Create(parameters, sql);

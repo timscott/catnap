@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Catnap.Mapping.Impl
 {
-    public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>, ListPropertyMap<TEntity, TListMember>>, IListPropertyMap<TEntity>
+    public class ListPropertyMap<TEntity, TListMember> : BasePropertyMap<TEntity, IEnumerable<TListMember>, ListPropertyMap<TEntity, TListMember>>, IListPropertyMap<TEntity>, IListPropertyMappable<TEntity, TListMember> 
         where TEntity : class, new()
         where TListMember : class, new()
     {
@@ -13,6 +13,9 @@ namespace Catnap.Mapping.Impl
         private IEntityMap<TListMember> listItemMap;
         private IEntityMap parentMap;
         private string parentIdColumnName;
+        private bool willCascadeSaves;
+        private bool willCascadeDeletes;
+        private bool isLazy;
 
         public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property)
             : base(property)
@@ -22,33 +25,35 @@ namespace Catnap.Mapping.Impl
             CascadeDeletes(true);
         }
 
-        public ListPropertyMap<TEntity, TListMember> Lazy(bool value)
+        public IListPropertyMappable<TEntity, TListMember> Lazy(bool value)
         {
-            IsLazy = value;
+            isLazy = value;
             return this;
         }
 
-        public ListPropertyMap<TEntity, TListMember> CascadeSaves(bool value)
+        public IListPropertyMappable<TEntity, TListMember> CascadeSaves(bool value)
         {
-            WillCascadeSaves = value;
+            willCascadeSaves = value;
             return this;
         }
 
-        public ListPropertyMap<TEntity, TListMember> CascadeDeletes(bool value)
+        public IListPropertyMappable<TEntity, TListMember> CascadeDeletes(bool value)
         {
-            WillCascadeDeletes = value;
+            willCascadeDeletes = value;
             return this;
         }
 
-        public ListPropertyMap<TEntity, TListMember> Filter(Expression<Func<TListMember, bool>> value)
+        public IListPropertyMappable<TEntity, TListMember> Filter(Expression<Func<TListMember, bool>> value)
         {
             filter = value;
             return this;
         }
 
-        public bool WillCascadeSaves { get; private set; }
-        public bool WillCascadeDeletes { get; private set; }
-        public bool IsLazy { get; private set; }
+        public IListPropertyMappable<TEntity, TListMember> ParentIdColumn(string columnName)
+        {
+            parentIdColumnName = columnName;
+            return this;
+        }
 
         public void Cascade(ISession session, TEntity parent)
         {
@@ -79,7 +84,7 @@ namespace Catnap.Mapping.Impl
 
         private void CascadeSaves(ISession session, TEntity parent, IEnumerable<TListMember> list)
         {
-            if (!WillCascadeSaves)
+            if (!willCascadeSaves)
             {
                 return;
             }
@@ -91,7 +96,7 @@ namespace Catnap.Mapping.Impl
 
         private void CascadeDeletes(ISession session, IEnumerable<TListMember> itemsToDelete)
         {
-            if (!WillCascadeDeletes)
+            if (!willCascadeDeletes)
             {
                 return;
             }
@@ -113,20 +118,16 @@ namespace Catnap.Mapping.Impl
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
-            if (IsLazy)
+            if (isLazy)
             {
                 var proxy = new LazyList<TListMember>(() => Load(session, instance));
                 accessStrategy.Setter(instance, proxy);
             }
             else
             {
-                base.InnerSetValue(instance, Load(session, instance), session);
+                var list = Load(session, instance);
+                base.InnerSetValue(instance, list, session);
             }
-        }
-
-        public void ParentIdColumn(string columnName)
-        {
-            parentIdColumnName = columnName;
         }
 
         protected string GetDeafultParentIdColumnColumnName(IDomainMap domainMap)
