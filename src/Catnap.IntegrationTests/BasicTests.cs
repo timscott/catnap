@@ -486,4 +486,19 @@ namespace Catnap.IntegrationTests
 
         It should_be_the_same_instance = () => actualPerson2.Should().Be.SameAs(actualPerson);
     }
+
+    public class when_getting_an_entity_saved_twice_in_the_same_session : behaves_like_person_test_ints
+    {
+        static Person actualPerson2;
+
+        Because of = () => InSession(s =>
+        {
+            actualPerson = s.Get<Person>(person.Id);
+            actualPerson.LastName = "NewLastName";
+            s.SaveOrUpdate(actualPerson);
+            actualPerson2 = s.Get<Person>(person.Id);
+        });
+
+        It should_get_lastest_updates = () => actualPerson2.LastName.Should().Equal("NewLastName");
+    }
 }
