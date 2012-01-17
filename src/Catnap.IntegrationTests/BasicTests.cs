@@ -460,4 +460,30 @@ namespace Catnap.IntegrationTests
 
         It should_not_be_the_same_instance = () => actualPerson.Should().Not.Be.SameAs(person);
     }
+
+    public class when_getting_an_entity_previously_fetched_in_the_same_session : behaves_like_person_test_ints
+    {
+        static IEnumerable<Person> actualPersons;
+
+        Because of = () => InSession(s =>
+        {
+            actualPersons = s.List(Criteria.For<Person>().Equal(x => x.Id, person.Id));
+            actualPerson = s.Get<Person>(person.Id);
+        });
+
+        It should_be_the_same_instance = () => actualPersons.First().Should().Be.SameAs(actualPerson);
+    }
+
+    public class when_getting_an_entity_previously_got_in_the_same_session : behaves_like_person_test_ints
+    {
+        static Person actualPerson2;
+
+        Because of = () => InSession(s =>
+        {
+            actualPerson2 = s.Get<Person>(person.Id);
+            actualPerson = s.Get<Person>(person.Id);
+        });
+
+        It should_be_the_same_instance = () => actualPerson2.Should().Be.SameAs(actualPerson);
+    }
 }

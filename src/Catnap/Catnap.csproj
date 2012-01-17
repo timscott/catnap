@@ -157,7 +157,6 @@
     <Compile Include="SessionCache.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="Citeria\CriteriaPredicateBuilder.cs" />
-    <Compile Include="ThreadSafeCache.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>

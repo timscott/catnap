@@ -52,8 +52,10 @@ namespace Catnap.Mapping.Impl
         {
             var map = propertyMaps.Where(x => 
                 x is IPropertyMapWithColumn<T> && 
-                x.PropertyInfo == memberExpression.Member)
-                .Cast<IPropertyMapWithColumn<T>>().FirstOrDefault();
+                x.PropertyInfo.Module == memberExpression.Member.Module &&
+                x.PropertyInfo.MetadataToken == memberExpression.Member.MetadataToken)
+                .Cast<IPropertyMapWithColumn<T>>()
+                .SingleOrDefault();
             if (map == null)
             {
                 throw new InvalidOperationException(string.Format("Property '{0}' is not mapped.", memberExpression.Member.Name));
@@ -242,7 +244,6 @@ namespace Catnap.Mapping.Impl
 
         public IDbCommand GetUpdateCommand(object entity, string parentIdColumnName, object parentId, IDbCommandFactory commandFactory)
         {
-
             var columnProperties = propertyMaps
                 .Where(x => x is IPropertyMapWithColumn<T>)
                 .Cast<IPropertyMapWithColumn<T>>()
