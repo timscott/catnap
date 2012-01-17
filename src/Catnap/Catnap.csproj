@@ -152,6 +152,7 @@
     <Compile Include="Citeria\PredicateBuilder.cs" />
     <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
+    <Compile Include="NullSessionCache.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionCache.cs" />

@@ -2,9 +2,9 @@ namespace Catnap.Mapping
 {
     public interface IListPropertyMap : IListPropertyMapDescriptor
     {
-        bool GetIsLazy();
-        bool GetWillCascadeSaves();
-        bool GetWillCascadeDeletes();
+        bool IsLazy { get; }
+        bool WillCascadeSaves { get; }
+        bool WillCascadeDeletes { get; }
         void Done(IDomainMap domainMap, IEntityMap parentMap, IEntityMap listItemMap);
     }
 

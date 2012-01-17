@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Catnap.Citeria.Conditions;
 
 namespace Catnap.Mapping.Impl
 {
@@ -13,9 +12,6 @@ namespace Catnap.Mapping.Impl
         private Expression<Func<TListMember, bool>> filter;
         private IEntityMap<TListMember> listItemMap;
         private IEntityMap parentMap;
-        private bool isLazy;
-        private bool willCascadeSaves;
-        private bool willCascadeDeletes;
         private string parentIdColumnName;
 
         public ListPropertyMap(Expression<Func<TEntity, IEnumerable<TListMember>>> property)
@@ -28,19 +24,19 @@ namespace Catnap.Mapping.Impl
 
         public ListPropertyMap<TEntity, TListMember> Lazy(bool value)
         {
-            isLazy = value;
+            IsLazy = value;
             return this;
         }
 
         public ListPropertyMap<TEntity, TListMember> CascadeSaves(bool value)
         {
-            willCascadeSaves = value;
+            WillCascadeSaves = value;
             return this;
         }
 
         public ListPropertyMap<TEntity, TListMember> CascadeDeletes(bool value)
         {
-            willCascadeDeletes = value;
+            WillCascadeDeletes = value;
             return this;
         }
 
@@ -50,20 +46,9 @@ namespace Catnap.Mapping.Impl
             return this;
         }
 
-        public bool GetIsLazy()
-        {
-            return isLazy;
-        }
-
-        public bool GetWillCascadeSaves()
-        {
-            return willCascadeSaves;
-        }
-
-        public bool GetWillCascadeDeletes()
-        {
-            return willCascadeDeletes;
-        }
+        public bool WillCascadeSaves { get; private set; }
+        public bool WillCascadeDeletes { get; private set; }
+        public bool IsLazy { get; private set; }
 
         public void Cascade(ISession session, TEntity parent)
         {
@@ -94,7 +79,7 @@ namespace Catnap.Mapping.Impl
 
         private void CascadeSaves(ISession session, TEntity parent, IEnumerable<TListMember> list)
         {
-            if (!GetWillCascadeSaves())
+            if (!WillCascadeSaves)
             {
                 return;
             }
@@ -106,7 +91,7 @@ namespace Catnap.Mapping.Impl
 
         private void CascadeDeletes(ISession session, IEnumerable<TListMember> itemsToDelete)
         {
-            if (!GetWillCascadeDeletes())
+            if (!WillCascadeDeletes)
             {
                 return;
             }
@@ -118,18 +103,17 @@ namespace Catnap.Mapping.Impl
 
         public IList<TListMember> Load(ISession session, TEntity parent)
         {
-            var criteria = Criteria.For<TListMember>()
-                .Where(parentIdColumnName, "=", parentMap.GetId(parent));
+            var criteria = Criteria.For<TListMember>().Equal(parentIdColumnName, parentMap.GetId(parent));
             if (filter != null)
             {
-                criteria.Where(filter);
+                criteria = criteria.Where(filter);
             }
             return session.List(criteria);
         }
 
         protected override void InnerSetValue(TEntity instance, object value, ISession session)
         {
-            if (GetIsLazy())
+            if (IsLazy)
             {
                 var proxy = new LazyList<TListMember>(() => Load(session, instance));
                 accessStrategy.Setter(instance, proxy);
