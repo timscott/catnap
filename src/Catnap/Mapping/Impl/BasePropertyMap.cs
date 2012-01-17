@@ -41,9 +41,10 @@ namespace Catnap.Mapping.Impl
             {
                 value = null;
             }
+            object convertedValue;
             try
             {
-                value = session.ConvertFromDbType(value, accessStrategy.PropertyInfo.PropertyType);
+                convertedValue = session.ConvertFromDbType(value, accessStrategy.PropertyInfo.PropertyType);
             }
             catch (Exception ex)
             {
@@ -52,12 +53,12 @@ namespace Catnap.Mapping.Impl
             }
             try
             {
-                InnerSetValue(instance, value, session);
+                InnerSetValue(instance, convertedValue, session);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException(string.Format("Failed to assign the value to property '{0}'. Value is of type {1}",
-                    accessStrategy.PropertyInfo.Name, value == null ? "unknown" : value.GetType().Name), ex);
+                    accessStrategy.PropertyInfo.Name, convertedValue == null ? "unknown" : convertedValue.GetType().Name), ex);
             }
         }
 
