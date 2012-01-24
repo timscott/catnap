@@ -2,9 +2,9 @@ using Catnap.Migration;
 
 namespace Catnap.IntegrationTests.Migrations
 {
-    public class CreateSchema : BaseMigration
+    public class CreateSchema_Sqlite : BaseMigration
     {
-        public CreateSchema() : base(
+        public CreateSchema_Sqlite() : base(
             @"CREATE TABLE Forum (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name VARCHAR, TimeOfDayLastUpdated NUMERIC)",
             @"CREATE TABLE Post (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Title VARCHAR, Body VARCHAR, DatePosted INTEGER, PosterId INTEGER, ForumId INTEGER NOT NULL)",
             @"CREATE TABLE Person (Id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FirstName VARCHAR, LastName VARCHAR, Active INTEGER, MemberSince INTEGER)",

@@ -6,6 +6,6 @@ namespace Catnap.Database.Sqlite
     {
         public SqliteAdapter(Type connectionType) : base(connectionType) { }
 
-        public SqliteAdapter() :  base("System.Data.SQLite", "System.Data.SQLite.SQLiteConnection") { }
+        public SqliteAdapter() :  base("System.Data.SQLite") { }
     }
 }

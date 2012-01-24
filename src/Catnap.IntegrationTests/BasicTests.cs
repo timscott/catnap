@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Catnap.IntegrationTests.Migrations;
-using Catnap.Logging;
-using Catnap.Tests.Core;
 using Catnap.Tests.Core.Models;
 using Machine.Specifications;
 using Should.Fluent;
@@ -17,19 +13,11 @@ namespace Catnap.IntegrationTests
 
         Establish context = () =>
         {
-            Log.Level = LogLevel.Off;
-            const string dbFileName = "db.sqlite";
-            File.Delete(dbFileName);
-            sessionFactory = Fluently.Configure
-                .ConnectionString("Data source=" + dbFileName)
-                .DatabaseAdapter(DbAdapter.Sqlite)
-                .Domain(DomainMapping.Get())
-                .Build();
-			UnitOfWork.Initialize(sessionFactory);
-            InSession(DatabaseMigrator.Execute);
+            sessionFactory = Bootstrapper.BootstrapSqlite();
+            //sessionFactory = Bootstrapper.BootstrapSqlServerCe();
         };
 
-        public static void InSession(Action<ISession> action)
+        protected static void InSession(Action<ISession> action)
         {
             using (var s = sessionFactory.Create())
             {
@@ -38,7 +26,7 @@ namespace Catnap.IntegrationTests
             }
         }
 
-        public static T InSession<T>(Func<ISession, T> func)
+        protected static T InSession<T>(Func<ISession, T> func)
         {
             using (var s = sessionFactory.Create())
             {
@@ -355,7 +343,7 @@ namespace Catnap.IntegrationTests
             var commandSpec = new DbCommandSpec()
                 .SetCommandText("select count(*) from Post p where p.PosterId = @personId")
                 .AddParameter("@personId", person.Id);
-            postCount = InSession(s => s.ExecuteScalar<long>(commandSpec));
+            postCount = InSession(s => Convert.ToInt64(s.ExecuteScalar(commandSpec)));
         };
         It should_return_post_count = () => postCount.Should().Equal(expected);
     }
@@ -370,7 +358,7 @@ namespace Catnap.IntegrationTests
             var command = new DbCommandSpec()
                 .SetCommandText("select count(*) from PostGuid p where p.PosterId = @personId")
                 .AddParameter("@personId", person.Id);
-            postCount = InSession(s => s.ExecuteScalar<long>(command));
+            postCount = InSession(s => Convert.ToInt64(s.ExecuteScalar(command)));
         };
         It should_return_post_count = () => postCount.Should().Equal(expected);
     }

@@ -16,7 +16,7 @@ namespace Catnap
             this.connection = connection;
         }
 
-        public IDbCommand Create(IEnumerable<Parameter> parameters, string sql)
+        public virtual IDbCommand Create(IEnumerable<Parameter> parameters, string sql)
         {
             var command = connection.CreateCommand();
             command.CommandText = sql;
@@ -31,7 +31,7 @@ namespace Catnap
             return command;
         }
 
-        public IDbCommand Create(IDbCommandSpec commandSpec)
+        public virtual IDbCommand Create(IDbCommandSpec commandSpec)
         {
             return Create(commandSpec.Parameters, commandSpec.CommandText);
         }

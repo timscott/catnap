@@ -7,11 +7,11 @@ namespace Catnap.Database
     {
         IDbConnection CreateConnection(string connectionString);
         IDbCommand CreateLastInsertIdCommand(string tableName, IDbCommandFactory commandFactory);
-        IDbCommand CreateGetTableMetadataCommand(IDbCommandFactory commandFactory);
         IDbCommand CreateGetTableMetadataCommand(string tableName, IDbCommandFactory commandFactory);
         object ConvertToDb(object value);
         object ConvertFromDb(object value, Type toType);
         string FormatParameterName(string name);
         string Quote(string name);
+        string GetGeneralStringType();
     }
 }

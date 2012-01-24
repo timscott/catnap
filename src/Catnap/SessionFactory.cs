@@ -21,7 +21,9 @@ namespace Catnap
 
         public ISession Create()
         {
-            return new Session(domainMap, connectionString, dbAdapter, sessionCacheProvider());
+            var connection = dbAdapter.CreateConnection(connectionString);
+            var commandFactory = new DbCommandFactory(dbAdapter, connection);
+            return new Session(domainMap, connection, commandFactory, dbAdapter, sessionCacheProvider());
         }
     }
 }

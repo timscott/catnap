@@ -54,6 +54,9 @@
     <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
       <HintPath>..\packages\System.Data.SQLite.1.0.66.1\lib\System.Data.SQLite.DLL</HintPath>
     </Reference>
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -65,8 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicTests.cs" />
-    <Compile Include="Migrations\CreateSchema.cs" />
-    <Compile Include="Migrations\DatabaseMigrator.cs" />
+    <Compile Include="BootstrapperHelper.cs" />
+    <Compile Include="Migrations\CreateSchema_SqlServerCe.cs" />
+    <Compile Include="Migrations\CreateSchema_Sqlite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

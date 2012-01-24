@@ -16,20 +16,21 @@ namespace Catnap
     {
         private readonly IDbConnection connection;
         private readonly IDomainMap domainMap;
-        private readonly IDbAdapter dbAdapter;
         private readonly IDbCommandFactory commandFactory;
         private readonly ISessionCache sessionCache;
         private IDbTransaction transaction;
         private bool wasDisposed;
 
-        public Session(IDomainMap domainMap, string connectionString, IDbAdapter dbAdapter, ISessionCache sessionCache)
+        public Session(IDomainMap domainMap, IDbConnection connection, IDbCommandFactory commandFactory, IDbAdapter dbAdapter, ISessionCache sessionCache)
         {
             this.domainMap = domainMap;
-            this.dbAdapter = dbAdapter;
+            this.commandFactory = commandFactory;
+            DbAdapter = dbAdapter;
             this.sessionCache = sessionCache;
-            connection = dbAdapter.CreateConnection(connectionString);
-            commandFactory = new DbCommandFactory(dbAdapter, connection);
+            this.connection = connection;
         }
+
+        public IDbAdapter DbAdapter { get; private set; }
 
         public void Open()
         {
@@ -106,7 +107,7 @@ namespace Catnap
             Try(command.ExecuteNonQuery);
             if (entityMap.IsTransient(entity) && idMap.Insert == false)
             {
-                var getIdCommand = dbAdapter.CreateLastInsertIdCommand(entityMap.TableName, commandFactory);
+                var getIdCommand = DbAdapter.CreateLastInsertIdCommand(entityMap.TableName, commandFactory);
                 var result = getIdCommand.ExecuteScalar();
                 entityMap.SetId(entity, result, this);
             }
@@ -173,31 +174,21 @@ namespace Catnap
             return (T)result;
         }
 
-        public void RollbackTransaction()
+        public bool TableExists(string tableName)
         {
-            transaction.Rollback();
+            var getTableMetadataCommand = DbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
+            var result = ExecuteQuery(getTableMetadataCommand).ToList();
+            return result.Count > 0;
         }
 
         public object ConvertFromDbType(object value, Type type)
         {
-            return dbAdapter.ConvertFromDb(value, type);
+            return DbAdapter.ConvertFromDb(value, type);
         }
 
         public IEntityMap<T> GetEntityMapFor<T>() where T : class, new()
         {
             return domainMap.GetMapFor<T>();
-        }
-
-        public IList<IDictionary<string, object>> GetTableMetaData(string tableName)
-        {
-            tableName.GuardArgumentNull("tableName");
-            var getTableMetadataCommand = dbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
-            return Try(() => ExecuteQuery(getTableMetadataCommand)).ToList();
-        }
-
-        public string FormatParameterName(string name)
-        {
-            return dbAdapter.FormatParameterName(name);
         }
 
         public void Dispose()
@@ -222,7 +213,8 @@ namespace Catnap
             }
             catch (Exception ex)
             {
-                RollbackTransaction();
+                transaction.Rollback();
+                transaction = null;
                 Log.Error(ex);
                 throw;
             }

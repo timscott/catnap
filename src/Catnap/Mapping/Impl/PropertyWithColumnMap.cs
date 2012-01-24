@@ -13,7 +13,8 @@ namespace Catnap.Mapping.Impl
 
         public virtual object GetValue(TEntity instance)
         {
-            return accessStrategy.Getter(instance);
+            var result = accessStrategy.Getter(instance);
+            return result != null ? result : (object)DBNull.Value;
         }
 
         public string ColumnName { get; protected set; }

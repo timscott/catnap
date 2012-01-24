@@ -312,7 +312,7 @@ namespace Catnap.Citeria.Conditions
 
         private string Visit(ColumnValueCondition condition, ISession session)
         {
-            var parameterName = session.FormatParameterName(parameterCount.ToString());
+            var parameterName = session.DbAdapter.FormatParameterName(parameterCount.ToString());
             parameterCount++;
             var commandSpec = condition.ToCommandSpec(parameterName);
             parameters.AddRange(commandSpec.Parameters);
@@ -321,7 +321,7 @@ namespace Catnap.Citeria.Conditions
 
         private string Visit(PropertyValueCondition<T> condition, ISession session)
         {
-            var parameterName = session.FormatParameterName(parameterCount.ToString());
+            var parameterName = session.DbAdapter.FormatParameterName(parameterCount.ToString());
             parameterCount++;
             var commandSpec = condition.ToCommandSpec(session.GetEntityMapFor<T>(), parameterName);
             parameters.AddRange(commandSpec.Parameters);
@@ -332,7 +332,7 @@ namespace Catnap.Citeria.Conditions
         {
             var parameterNames = condition.ValuesCount.Times(i =>
             {
-                var result = session.FormatParameterName(parameterCount.ToString());
+                var result = session.DbAdapter.FormatParameterName(parameterCount.ToString());
                 parameterCount++;
                 return result;
             });
@@ -345,7 +345,7 @@ namespace Catnap.Citeria.Conditions
         {
             var parameterNames = condition.ValuesCount.Times(i =>
             {
-                var result = session.FormatParameterName(parameterCount.ToString());
+                var result = session.DbAdapter.FormatParameterName(parameterCount.ToString());
                 parameterCount++;
                 return result;
             });

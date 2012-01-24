@@ -56,6 +56,8 @@
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Criteria.cs" />
     <Compile Include="Database\BaseDbAdapter.cs" />
+    <Compile Include="Database\SqlServerCe\SqlServerCeAdapter.cs" />
+    <Compile Include="Database\SqlServerCe\SqlServerCeValueConverter.cs" />
     <Compile Include="Database\Types\BooleanIntType.cs" />
     <Compile Include="Database\Types\DateTimeTicksType.cs" />
     <Compile Include="Database\Types\DefaultType.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Citeria\Conditions\LessThanOrEqual.cs" />
     <Compile Include="Citeria\Conditions\NotEqual.cs" />
     <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
+    <Compile Include="DbCommandFactory.cs" />
     <Compile Include="EntitySessionKey.cs" />
     <Compile Include="Exceptions\LazyLoadException.cs" />
     <Compile Include="Exceptions\SessionDisposedException.cs" />
@@ -91,7 +94,6 @@
     <Compile Include="Database\Types\TimespanTicksType.cs" />
     <Compile Include="Database\Types\TypeHelper.cs" />
     <Compile Include="Database\ValueConverter.cs" />
-    <Compile Include="DbCommandFactory.cs" />
     <Compile Include="DbCommandSpec.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />

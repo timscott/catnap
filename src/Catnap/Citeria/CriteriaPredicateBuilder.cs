@@ -164,7 +164,7 @@ namespace Catnap.Citeria
 
         private void AppendValue(object value)
         {
-            var parameterName = session.FormatParameterName(parameterNumber.ToString());
+            var parameterName = session.DbAdapter.FormatParameterName(parameterNumber.ToString());
             sql.Append(parameterName);
             parameters.Add(new Parameter(parameterName, ConvertValue(value)));
             parameterNumber++;

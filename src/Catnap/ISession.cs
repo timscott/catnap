@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq.Expressions;
 using Catnap.Citeria.Conditions;
+using Catnap.Database;
 using Catnap.Mapping;
 
 namespace Catnap
@@ -18,13 +20,13 @@ namespace Catnap
         void SaveOrUpdate<T>(T entity) where T : class, new();
         void SaveOrUpdate<T>(T entity, string parentIdColumnName, object parentId) where T : class, new();
         void Delete<T>(object id) where T : class, new();
+        IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command);
         void ExecuteNonQuery(IDbCommandSpec commandSpec);
         T ExecuteScalar<T>(IDbCommandSpec commandSpec);
         object ExecuteScalar(IDbCommandSpec commandSpec);
-        void RollbackTransaction();
         object ConvertFromDbType(object value, Type type);
-        IList<IDictionary<string, object>> GetTableMetaData(string tableName);
-        string FormatParameterName(string name);
         IEntityMap<T> GetEntityMapFor<T>() where T : class, new();
+        IDbAdapter DbAdapter { get; }
+        bool TableExists(string tableName);
     }
 }
