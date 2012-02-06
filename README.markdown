@@ -12,5 +12,3 @@ We actively seek contributors to make Catnap better and more robust while remain
 For a list of features and some code samples read the [Introduction](https://github.com/timscott/catnap/wiki/Introduction) in the [Wiki](https://github.com/timscott/catnap/wiki/Introduction).
 
 Discuss Catnap [here](http://groups.google.com/group/catnap-orm-discuss).
-
-:)
