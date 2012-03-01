@@ -156,6 +156,7 @@ namespace Catnap
                     }
                     yield return row;
                 }
+                reader.Close();
             }
         }
 
