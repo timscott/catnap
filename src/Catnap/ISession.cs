@@ -20,7 +20,7 @@ namespace Catnap
         void SaveOrUpdate<T>(T entity) where T : class, new();
         void SaveOrUpdate<T>(T entity, string parentIdColumnName, object parentId) where T : class, new();
         void Delete<T>(object id) where T : class, new();
-        IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command);
+        IList<IDictionary<string, object>> ExecuteQuery(IDbCommand command);
         void ExecuteNonQuery(IDbCommandSpec commandSpec);
         T ExecuteScalar<T>(IDbCommandSpec commandSpec);
         object ExecuteScalar(IDbCommandSpec commandSpec);
