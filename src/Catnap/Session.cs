@@ -145,18 +145,29 @@ namespace Catnap
         {
             GuardNotDisposed();
             command.GuardArgumentNull("command");
-            using (var reader = command.ExecuteReader())
+
+            using(DataTable myTable = new DataTable())
             {
-                while (reader.Read())
-                {
-                    var row = new Dictionary<string, object>();
-                    for (var i = 0; i < reader.FieldCount; i++)
-                    {
-                        row.Add(reader.GetName(i), reader[i]);
-                    }
-                    yield return row;
-                }
-                reader.Close();
+	            using(var reader = command.ExecuteReader())
+	            {
+	            	myTable.Load(reader);
+	            }
+	            
+	            using(var reader = myTable.CreateDataReader())
+	            {
+		            while (reader.Read())
+		            {
+		                var row = new Dictionary<string, object>();
+		                for (var i = 0; i < reader.FieldCount; i++)
+		                {
+		                    row.Add(reader.GetName(i), reader[i]);
+		                }
+		                
+		                yield return row;
+		            }
+		            
+		            reader.Close();
+	            }
             }
         }
 

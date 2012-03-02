@@ -42,6 +42,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Citeria\Conditions\ColumnValueCondition.cs" />
@@ -56,6 +57,8 @@
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Criteria.cs" />
     <Compile Include="Database\BaseDbAdapter.cs" />
+    <Compile Include="Database\MySQL\MySqlAdapter.cs" />
+    <Compile Include="Database\MySQL\MySqlValueConverter.cs" />
     <Compile Include="Database\SqlServerCe\SqlServerCeAdapter.cs" />
     <Compile Include="Database\SqlServerCe\SqlServerCeValueConverter.cs" />
     <Compile Include="Database\Types\BooleanIntType.cs" />
@@ -168,6 +171,7 @@
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Database\MySQL" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
