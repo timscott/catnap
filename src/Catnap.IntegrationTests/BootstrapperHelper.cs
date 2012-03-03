@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Data.SqlServerCe;
 using System.IO;
 using Catnap.Database;
@@ -13,12 +14,12 @@ namespace Catnap.IntegrationTests
     {
         public static ISessionFactory BootstrapSqlite()
         {
-            return Bootstrap(new CreateSchema_Sqlite(), DbAdapter.Sqlite, null);
+            return BootstrapEmbeddedDb(new CreateSchema_Sqlite(), DbAdapter.Sqlite, null);
         }
 
         public static ISessionFactory BootstrapSqlServerCe()
         {
-            return Bootstrap(new CreateSchema_SqlServerCe(), DbAdapter.SqlServerCe, cs =>
+            return BootstrapEmbeddedDb(new CreateSchema_SqlServerCe(), DbAdapter.SqlServerCe, cs =>
             {
                 var engine = new SqlCeEngine(cs);
                 engine.CreateDatabase();
@@ -28,10 +29,10 @@ namespace Catnap.IntegrationTests
         public static ISessionFactory BootstrapMySql()
         {
         	var sessionFactory = Fluently.Configure
-        	.ConnectionString(System.Configuration.ConfigurationManager.ConnectionStrings["MySql"].ConnectionString)
-		    .DatabaseAdapter(DbAdapter.MySql)
-			.Domain(Catnap.Tests.Core.DomainMapping.Get())
-		    .Build();
+        	    .ConnectionString(ConfigurationManager.ConnectionStrings["MySql"].ConnectionString)
+		        .DatabaseAdapter(DbAdapter.MySql)
+			    .Domain(DomainMapping.Get())
+		        .Build();
 
 			UnitOfWork.Initialize(sessionFactory);
 			using (var s = sessionFactory.Create())
@@ -55,7 +56,7 @@ namespace Catnap.IntegrationTests
         	return sessionFactory;        	
         }
 
-        private static ISessionFactory Bootstrap(IDatabaseMigration createSchema, IDbAdapter dbAdapter, Action<string> createDatabaseFunc)
+        private static ISessionFactory BootstrapEmbeddedDb(IDatabaseMigration createSchema, IDbAdapter dbAdapter, Action<string> createDatabaseFunc)
         {
             Log.Level = LogLevel.Off;
             const string dbFileName = "main.db";

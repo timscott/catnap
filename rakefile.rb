@@ -4,13 +4,15 @@ require 'fileutils'
 
 PRODUCT_NAME = "Catnap"
 BASE_PATH = File.expand_path ""
-SOURCE_PATH = "#{BASE_PATH}/src/"
-OUTPUT_PATH = "#{BASE_PATH}/output/"
-UNIT_TESTS_PATH = "#{SOURCE_PATH}/#{PRODUCT_NAME}.UnitTests/bin/Release/"
-INTEGRATION_TESTS_PATH = "#{SOURCE_PATH}/#{PRODUCT_NAME}.IntegrationTests/bin/Release/"
+SOURCE_PATH = "#{BASE_PATH}/src"
+OUTPUT_PATH = "#{BASE_PATH}/output"
+UNIT_TESTS_PATH = "#{SOURCE_PATH}/#{PRODUCT_NAME}.UnitTests"
+INTEGRATION_TESTS_PATH = "#{SOURCE_PATH}/#{PRODUCT_NAME}.IntegrationTests"
+CONNECTIONS_DEFAULT_PATH = "#{INTEGRATION_TESTS_PATH}/default.connections.config"
+CONNECTIONS_PATH = "#{INTEGRATION_TESTS_PATH}/connections.config"
 UNIT_TESTS_OUTPUT_PATH = "#{OUTPUT_PATH}/unit_tests"
 PACKAGE_OUTPUT_PATH = "#{OUTPUT_PATH}/package/"
-PACKAGE_OUTPUT_LIB_PATH = "#{PACKAGE_OUTPUT_PATH}/lib/"
+PACKAGE_OUTPUT_LIB_PATH = "#{PACKAGE_OUTPUT_PATH}/lib"
 INTEGRATION_TESTS_OUTPUT_PATH =  "#{OUTPUT_PATH}/integration_tests"
 TEST_REPORT_PATH =  "#{OUTPUT_PATH}/report"
 COMMON_ASSEMBY_INFO_FILE = "#{SOURCE_PATH}/CommonAssemblyInfo.cs"
@@ -20,7 +22,7 @@ NUSPEC_FILENAME = "#{PRODUCT_NAME}.nuspec"
 NUSPEC_PATH = "#{PACKAGE_PATH}/#{NUSPEC_FILENAME}"
 
 task :default => [:standard]
-task :standard => [:assemblyInfo,:build,:output,:test,:define_package]
+task :standard => [:assemblyInfo,:config,:build,:output,:test,:define_package]
 task :package => [:standard,:create_package]
 
 msbuild :build do |msb|
@@ -40,8 +42,8 @@ task :output do
 	FileUtils.mkdir PACKAGE_OUTPUT_LIB_PATH
 	FileUtils.rmtree PACKAGE_PATH
 	FileUtils.mkdir PACKAGE_PATH
-	FileUtils.cp_r "#{UNIT_TESTS_PATH}.", UNIT_TESTS_OUTPUT_PATH
-	FileUtils.cp_r "#{INTEGRATION_TESTS_PATH}.", INTEGRATION_TESTS_OUTPUT_PATH
+	FileUtils.cp_r "#{UNIT_TESTS_PATH}/bin/Release/.", UNIT_TESTS_OUTPUT_PATH
+	FileUtils.cp_r "#{INTEGRATION_TESTS_PATH}/bin/Release/.", INTEGRATION_TESTS_OUTPUT_PATH
 	copy_files UNIT_TESTS_PATH, PACKAGE_OUTPUT_LIB_PATH, PRODUCT_NAME, ["dll", "pdb", "xml"]
 end
 
@@ -61,6 +63,12 @@ assemblyinfo :assemblyInfo do |asm|
 	asm.version = VERSION
 	asm.file_version = VERSION
 	asm.copyright = "Copyright (c) 2011 Lunaverse Software"
+end
+
+task :config do
+	if !File.exists? CONNECTIONS_PATH
+		FileUtils.cp CONNECTIONS_DEFAULT_PATH, CONNECTIONS_PATH
+	end
 end
 
 desc "Create the Catnap nuspec file"
