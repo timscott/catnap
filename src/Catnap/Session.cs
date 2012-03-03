@@ -42,7 +42,7 @@ namespace Catnap
         {
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec.Parameters, commandSpec.CommandText);
-            return Try(() => ExecuteQuery(command)).ToList();
+            return Try(() => ExecuteQuery(command));
         }
 
         public IList<T> List<T>(IDbCommandSpec commandSpec) where T : class, new()
@@ -141,33 +141,24 @@ namespace Catnap
             Try(command.ExecuteNonQuery);
         }
 
-        public IEnumerable<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
+        public IList<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
         {
             GuardNotDisposed();
             command.GuardArgumentNull("command");
-
-            using(DataTable myTable = new DataTable())
+            var result = new List<IDictionary<string, object>>();
+            using (var reader = command.ExecuteReader())
             {
-	            using(var reader = command.ExecuteReader())
-	            {
-	            	myTable.Load(reader);
-	            }
-	            
-	            using(var reader = myTable.CreateDataReader())
-	            {
-		            while (reader.Read())
-		            {
-		                var row = new Dictionary<string, object>();
-		                for (var i = 0; i < reader.FieldCount; i++)
-		                {
-		                    row.Add(reader.GetName(i), reader[i]);
-		                }
-		                
-		                yield return row;
-		            }
-		            
-		            reader.Close();
-	            }
+                while (reader.Read())
+                {
+                    var row = new Dictionary<string, object>();
+                    for (var i = 0; i < reader.FieldCount; i++)
+                    {
+                        row.Add(reader.GetName(i), reader[i]);
+                    }
+                    result.Add(row);
+                }
+                reader.Close();
+                return result;
             }
         }
 
@@ -191,7 +182,7 @@ namespace Catnap
         public bool TableExists(string tableName)
         {
             var getTableMetadataCommand = DbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
-            var result = ExecuteQuery(getTableMetadataCommand).ToList();
+            var result = ExecuteQuery(getTableMetadataCommand);
             return result.Count > 0;
         }
 
