@@ -11,7 +11,7 @@ namespace Catnap.Mapping
         IIdPropertyMappable<T, TProperty, IdPropertyMap<T, TProperty>> Id<TProperty>(Expression<Func<T, TProperty>> property);
         IPropertyWithColumnMappable<T, TProperty, ValuePropertyMap<T, TProperty>> Property<TProperty>(Expression<Func<T, TProperty>> property);
         IListPropertyMappable<T, TListMember> List<TListMember>(Expression<Func<T, IEnumerable<TListMember>>> property) where TListMember : class, new();
-        IPropertyMappable<T, TProperty, BelongsToPropertyMap<T, TProperty>> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property) where TProperty : class, new();
+        IPropertyWithColumnMappable<T, TProperty, BelongsToPropertyMap<T, TProperty>> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property) where TProperty : class, new();
         IEntityMappable<T> Table(string tableName);
     }
 }

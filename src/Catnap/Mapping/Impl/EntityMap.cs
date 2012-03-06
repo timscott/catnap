@@ -96,7 +96,7 @@ namespace Catnap.Mapping.Impl
             return map;
         }
 
-        public IPropertyMappable<T, TProperty, BelongsToPropertyMap<T, TProperty>> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
+        public IPropertyWithColumnMappable<T, TProperty, BelongsToPropertyMap<T, TProperty>> BelongsTo<TProperty>(Expression<Func<T, TProperty>> property)
             where TProperty : class, new()
         {
             var map = new BelongsToPropertyMap<T, TProperty>(property);

@@ -11,8 +11,8 @@ namespace Catnap.Tests.Core
             return d =>
             {
                 //d.IdConvention().Column(x => x.EntityType.Name + "Id").Access(Access.Property).Generator(Generator.GuidComb);
-                //d.ListParentIdColumnNameConvention(x => x.ParentType.Name + "_id");
-                //d.BelongsToColumnNameConvention(x => x.PropertyName + "_id");
+                //d.ListParentIdColumnNameConvention(x => string.Format("{0}{1}Fk", x.ParentType.Name, x.ItemType.Name));
+                //d.BelongsToColumnNameConvention(x => string.Format("{0}{1}Fk", x.EntityType.Name, x.PropertyType.Name));
 
                 d.Entity<PersonGuid>(e => {
                     e.Id(x => x.Id).Access(Access.Property).Generator(Generator.GuidComb);

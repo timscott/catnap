@@ -37,6 +37,11 @@ namespace Catnap.Mapping.Impl
             entityMap = map;
         }
 
+        public Type EntityType
+        {
+            get { return typeof(TEntity); }
+        }
+
         public Type PropertyType
         {
             get { return typeof(TProperty); }
