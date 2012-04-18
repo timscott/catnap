@@ -48,7 +48,7 @@ task :output do
 end
 
 mspec :test do |mspec|
-	mspec.command = "#{SOURCE_PATH}/packages/Machine.Specifications.0.4.13.0/tools/mspec.exe"
+	mspec.command = "#{SOURCE_PATH}/packages/Machine.Specifications.0.4.13.0/tools/mspec-x86.exe"
 	mspec.assemblies = "#{UNIT_TESTS_OUTPUT_PATH}/#{PRODUCT_NAME}.UnitTests.dll", "#{INTEGRATION_TESTS_OUTPUT_PATH}/#{PRODUCT_NAME}.IntegrationTests.dll"
 	mspec.html_output = TEST_REPORT_PATH
 end

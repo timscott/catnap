@@ -1,6 +1,5 @@
 using System;
 using System.Configuration;
-using System.Data.SqlServerCe;
 using System.IO;
 using Catnap.Database;
 using Catnap.IntegrationTests.Migrations;
@@ -17,14 +16,14 @@ namespace Catnap.IntegrationTests
             return BootstrapEmbeddedDb(new CreateSchema_Sqlite(), DbAdapter.Sqlite, null);
         }
 
-        public static ISessionFactory BootstrapSqlServerCe()
-        {
-            return BootstrapEmbeddedDb(new CreateSchema_SqlServerCe(), DbAdapter.SqlServerCe, cs =>
-            {
-                var engine = new SqlCeEngine(cs);
-                engine.CreateDatabase();
-            });
-        }
+        //public static ISessionFactory BootstrapSqlServerCe()
+        //{
+        //    return BootstrapEmbeddedDb(new CreateSchema_SqlServerCe(), DbAdapter.SqlServerCe, cs =>
+        //    {
+        //        var engine = new SqlCeEngine(cs);
+        //        engine.CreateDatabase();
+        //    });
+        //}
         
         public static ISessionFactory BootstrapMySql()
         {
