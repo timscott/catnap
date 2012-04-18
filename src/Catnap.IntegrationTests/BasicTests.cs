@@ -13,9 +13,9 @@ namespace Catnap.IntegrationTests
 
         Establish context = () =>
         {
-            //sessionFactory = Bootstrapper.BootstrapSqlite();
+            sessionFactory = Bootstrapper.BootstrapSqlite();
             //sessionFactory = Bootstrapper.BootstrapSqlServerCe();
-            sessionFactory = Bootstrapper.BootstrapMySql();
+            //sessionFactory = Bootstrapper.BootstrapMySql();
         };
 
         protected static void InSession(Action<ISession> action)
