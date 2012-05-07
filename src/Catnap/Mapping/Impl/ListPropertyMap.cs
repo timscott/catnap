@@ -114,7 +114,7 @@ namespace Catnap.Mapping.Impl
             }
             else
             {
-                list = Load(session, instance);
+                list = Load(session, parentId);
             }
             accessStrategy.Setter(instance, list);
         }

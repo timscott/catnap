@@ -42,7 +42,7 @@ namespace Catnap.Tests.Core
                     e.Property(x => x.MemberSince);
                 });
                 d.Entity<Forum>(e => {
-                    e.List(x => x.Posts);
+                    e.List(x => x.Posts).Lazy(false);
                     e.Property(x => x.Name);
                     e.Property(x => x.TimeOfDayLastUpdated);
                 });
