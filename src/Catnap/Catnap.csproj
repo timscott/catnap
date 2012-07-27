@@ -88,6 +88,7 @@
     <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
     <Compile Include="DbCommandFactory.cs" />
     <Compile Include="EntitySessionKey.cs" />
+    <Compile Include="Exceptions\ExpectedColumnMissingException.cs" />
     <Compile Include="Exceptions\LazyLoadException.cs" />
     <Compile Include="Exceptions\SessionDisposedException.cs" />
     <Compile Include="Fluently.cs" />
@@ -171,7 +172,6 @@
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Database\MySQL" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

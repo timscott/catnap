@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using Catnap.Database;
+using Catnap.Exceptions;
 using Catnap.Extensions;
 using Catnap.Logging;
 
@@ -150,12 +151,21 @@ namespace Catnap.Mapping.Impl
             SetId(instance, id, session);
             foreach (var map in propertyMaps)
             {
-                if (map is IPropertyMapWithColumn<T>)
+                var propertyWithColumnMap = map as IPropertyMapWithColumn<T>;
+                if (propertyWithColumnMap != null)
                 {
-                    map.SetValue(instance, record[((IPropertyMapWithColumn<T>)map).ColumnName], session);
+                    if (!record.ContainsKey(propertyWithColumnMap.ColumnName))
+                    {
+                        throw new ExpectedColumnMissingException<T>(propertyWithColumnMap, TableName);
+                    }
+                    map.SetValue(instance, record[propertyWithColumnMap.ColumnName], session);
                 }
                 else if (map is IListPropertyMap<T>)
                 {
+                    if (!record.ContainsKey(idColumnName))
+                    {
+                        throw new ExpectedColumnMissingException<T>(idProperty, TableName);
+                    }
                     map.SetValue(instance, record[idColumnName], session);
                 }
             }
