@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DAA3814A-CC0D-40F8-8DDD-EC00687BC1FA}</ProjectGuid>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Catnap</RootNamespace>
+    <AssemblyName>Catnap</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Citeria\Conditions\ColumnValueCondition.cs" />
+    <Compile Include="Citeria\Conditions\ColumnValuesCondition.cs" />
+    <Compile Include="Citeria\Conditions\IsIn.cs" />
+    <Compile Include="Citeria\Conditions\IsNotNull.cs" />
+    <Compile Include="Citeria\Conditions\IsNull.cs" />
+    <Compile Include="Citeria\Conditions\PropertyValueCondition.cs" />
+    <Compile Include="Citeria\Conditions\PropertyValuesCondition.cs" />
+    <Compile Include="Citeria\Conditions\ValueCondition.cs" />
+    <Compile Include="Citeria\Conditions\ValuesCondition.cs" />
+    <Compile Include="Configuration\Impl\Configurator.cs" />
+    <Compile Include="Criteria.cs" />
+    <Compile Include="Database\BaseDbAdapter.cs" />
+    <Compile Include="Database\MySQL\MySqlAdapter.cs" />
+    <Compile Include="Database\MySQL\MySqlValueConverter.cs" />
+    <Compile Include="Database\SqlServerCe\SqlServerCeAdapter.cs" />
+    <Compile Include="Database\SqlServerCe\SqlServerCeValueConverter.cs" />
+    <Compile Include="Database\Types\BooleanIntType.cs" />
+    <Compile Include="Database\Types\DateTimeTicksType.cs" />
+    <Compile Include="Database\Types\DefaultType.cs" />
+    <Compile Include="Database\Types\GuidStringType.cs" />
+    <Compile Include="Database\Types\IType.cs" />
+    <Compile Include="Database\NullDbAdapter.cs" />
+    <Compile Include="Database\Sqlite\BaseSqliteAdapter.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Database\IDbAdapter.cs" />
+    <Compile Include="Database\Parameter.cs" />
+    <Compile Include="DbAdapter.cs" />
+    <Compile Include="Citeria\Conditions\ColumnCondition.cs" />
+    <Compile Include="Citeria\Conditions\Criteria.cs" />
+    <Compile Include="Citeria\Conditions\Equal.cs" />
+    <Compile Include="Citeria\Conditions\GreaterThan.cs" />
+    <Compile Include="Citeria\Conditions\GreaterThanOrEqual.cs" />
+    <Compile Include="Citeria\Conditions\IConditionMarker.cs" />
+    <Compile Include="Citeria\Conditions\ICriteria.cs" />
+    <Compile Include="Citeria\Conditions\LeftRightCondition.cs" />
+    <Compile Include="Citeria\Conditions\LessThan.cs" />
+    <Compile Include="Citeria\Conditions\LessThanOrEqual.cs" />
+    <Compile Include="Citeria\Conditions\NotEqual.cs" />
+    <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
+    <Compile Include="DbCommandFactory.cs" />
+    <Compile Include="EntitySessionKey.cs" />
+    <Compile Include="Exceptions\ExpectedColumnMissingException.cs" />
+    <Compile Include="Exceptions\LazyLoadException.cs" />
+    <Compile Include="Exceptions\SessionDisposedException.cs" />
+    <Compile Include="Fluently.cs" />
+    <Compile Include="Configuration\IConfigurator.cs" />
+    <Compile Include="Database\IDbValueConverter.cs" />
+    <Compile Include="Database\Sqlite\SqliteValueConverter.cs" />
+    <Compile Include="Database\Types\TimespanTicksType.cs" />
+    <Compile Include="Database\Types\TypeHelper.cs" />
+    <Compile Include="Database\ValueConverter.cs" />
+    <Compile Include="DbCommandSpec.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="IDbCommandFactory.cs" />
+    <Compile Include="IDbCommandSpec.cs" />
+    <Compile Include="ISessionCache.cs" />
+    <Compile Include="ISessionFactory.cs" />
+    <Compile Include="IUnitOfWork.cs" />
+    <Compile Include="Logging\Impl\ConsoleLogger.cs" />
+    <Compile Include="Logging\Impl\FileLogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Mapping\IAccessStrategy.cs" />
+    <Compile Include="Mapping\IAccessStrategyFactory.cs" />
+    <Compile Include="Mapping\IBelongsToPropertyMap.cs" />
+    <Compile Include="Mapping\IBelongsToPropertyMapDescriptor.cs" />
+    <Compile Include="Mapping\IDomainMappable.cs" />
+    <Compile Include="Mapping\IEntityMapDescriptor.cs" />
+    <Compile Include="Mapping\IEntityMappable.cs" />
+    <Compile Include="Mapping\Conventions\IIdMappingConventionable.cs" />
+    <Compile Include="Mapping\IIdPropertyMap.cs" />
+    <Compile Include="Mapping\IIdPropertyMappable.cs" />
+    <Compile Include="Mapping\IIdValueGenerator.cs" />
+    <Compile Include="Mapping\Access.cs" />
+    <Compile Include="Mapping\IListPropertyMapDescriptor.cs" />
+    <Compile Include="Mapping\IListPropertyMappable.cs" />
+    <Compile Include="Mapping\Impl\AccessStrategy.cs" />
+    <Compile Include="Mapping\Conventions\BelongsToColumnNameConvention.cs" />
+    <Compile Include="Mapping\Impl\BelongsToPropertyMap.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="EntityEqualityComaparer.cs" />
+    <Compile Include="Mapping\Impl\DomainMap.cs" />
+    <Compile Include="Mapping\IDomainMap.cs" />
+    <Compile Include="Mapping\Impl\FieldAccessStrategy.cs" />
+    <Compile Include="Mapping\Generator.cs" />
+    <Compile Include="Mapping\Conventions\Impl\IdMappingConvention.cs" />
+    <Compile Include="Mapping\Impl\GuidCombGenerator.cs" />
+    <Compile Include="Mapping\Impl\GuidGenerator.cs" />
+    <Compile Include="Mapping\Impl\IdPropertyMap.cs" />
+    <Compile Include="Mapping\Conventions\ListParentIdColumnNameConvention.cs" />
+    <Compile Include="Mapping\Impl\PropertyAccessStrategy.cs" />
+    <Compile Include="Mapping\Impl\PropertyWithColumnMap.cs" />
+    <Compile Include="Mapping\IPropertyMapDescriptor.cs" />
+    <Compile Include="Mapping\IPropertyMappable.cs" />
+    <Compile Include="Mapping\IPropertyMapWithColumnMappable.cs" />
+    <Compile Include="Migration\BaseMigration.cs" />
+    <Compile Include="Migration\IDatabaseMigration.cs" />
+    <Compile Include="Migration\DatabaseMigratorUtility.cs" />
+    <Compile Include="Extensions\ExpressionExtensions.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="Mapping\IEntityMap.cs" />
+    <Compile Include="Mapping\IListPropertyMap.cs" />
+    <Compile Include="Mapping\IPropertyMap.cs" />
+    <Compile Include="Mapping\IPropertyMapWithColumn.cs" />
+    <Compile Include="IRepository.cs" />
+    <Compile Include="Mapping\Impl\EntityMap.cs" />
+    <Compile Include="ISession.cs" />
+    <Compile Include="LazyList.cs" />
+    <Compile Include="Mapping\Impl\ListPropertyMap.cs" />
+    <Compile Include="Citeria\PredicateBuilder.cs" />
+    <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
+    <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
+    <Compile Include="NullSessionCache.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SessionCache.cs" />
+    <Compile Include="SessionFactory.cs" />
+    <Compile Include="Citeria\CriteriaPredicateBuilder.cs" />
+    <Compile Include="UnitOfWork.cs" />
+    <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
