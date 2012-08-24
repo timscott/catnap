@@ -16,13 +16,11 @@
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,7 +28,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -45,15 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Citeria\Conditions\ColumnValueCondition.cs" />
-    <Compile Include="Citeria\Conditions\ColumnValuesCondition.cs" />
-    <Compile Include="Citeria\Conditions\IsIn.cs" />
-    <Compile Include="Citeria\Conditions\IsNotNull.cs" />
-    <Compile Include="Citeria\Conditions\IsNull.cs" />
-    <Compile Include="Citeria\Conditions\PropertyValueCondition.cs" />
-    <Compile Include="Citeria\Conditions\PropertyValuesCondition.cs" />
-    <Compile Include="Citeria\Conditions\ValueCondition.cs" />
-    <Compile Include="Citeria\Conditions\ValuesCondition.cs" />
     <Compile Include="Configuration\Impl\Configurator.cs" />
     <Compile Include="Criteria.cs" />
     <Compile Include="Database\BaseDbAdapter.cs" />
@@ -74,18 +63,6 @@
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\Parameter.cs" />
     <Compile Include="DbAdapter.cs" />
-    <Compile Include="Citeria\Conditions\ColumnCondition.cs" />
-    <Compile Include="Citeria\Conditions\Criteria.cs" />
-    <Compile Include="Citeria\Conditions\Equal.cs" />
-    <Compile Include="Citeria\Conditions\GreaterThan.cs" />
-    <Compile Include="Citeria\Conditions\GreaterThanOrEqual.cs" />
-    <Compile Include="Citeria\Conditions\IConditionMarker.cs" />
-    <Compile Include="Citeria\Conditions\ICriteria.cs" />
-    <Compile Include="Citeria\Conditions\LeftRightCondition.cs" />
-    <Compile Include="Citeria\Conditions\LessThan.cs" />
-    <Compile Include="Citeria\Conditions\LessThanOrEqual.cs" />
-    <Compile Include="Citeria\Conditions\NotEqual.cs" />
-    <Compile Include="Citeria\Conditions\PropertyCondition.cs" />
     <Compile Include="DbCommandFactory.cs" />
     <Compile Include="EntitySessionKey.cs" />
     <Compile Include="Exceptions\ExpectedColumnMissingException.cs" />
@@ -159,7 +136,6 @@
     <Compile Include="ISession.cs" />
     <Compile Include="LazyList.cs" />
     <Compile Include="Mapping\Impl\ListPropertyMap.cs" />
-    <Compile Include="Citeria\PredicateBuilder.cs" />
     <Compile Include="Mapping\Impl\BasePropertyMap.cs" />
     <Compile Include="Database\Sqlite\SqliteAdapter.cs" />
     <Compile Include="NullSessionCache.cs" />
@@ -167,9 +143,31 @@
     <Compile Include="Session.cs" />
     <Compile Include="SessionCache.cs" />
     <Compile Include="SessionFactory.cs" />
-    <Compile Include="Citeria\CriteriaPredicateBuilder.cs" />
     <Compile Include="UnitOfWork.cs" />
     <Compile Include="Mapping\Impl\ValuePropertyMap.cs" />
+    <Compile Include="Criteria\Conditions\ColumnValueCondition.cs" />
+    <Compile Include="Criteria\Conditions\ColumnValuesCondition.cs" />
+    <Compile Include="Criteria\Conditions\IsIn.cs" />
+    <Compile Include="Criteria\Conditions\IsNotNull.cs" />
+    <Compile Include="Criteria\Conditions\IsNull.cs" />
+    <Compile Include="Criteria\Conditions\PropertyValueCondition.cs" />
+    <Compile Include="Criteria\Conditions\PropertyValuesCondition.cs" />
+    <Compile Include="Criteria\Conditions\ValueCondition.cs" />
+    <Compile Include="Criteria\Conditions\ValuesCondition.cs" />
+    <Compile Include="Criteria\Conditions\ColumnCondition.cs" />
+    <Compile Include="Criteria\Conditions\Criteria.cs" />
+    <Compile Include="Criteria\Conditions\Equal.cs" />
+    <Compile Include="Criteria\Conditions\GreaterThan.cs" />
+    <Compile Include="Criteria\Conditions\GreaterThanOrEqual.cs" />
+    <Compile Include="Criteria\Conditions\IConditionMarker.cs" />
+    <Compile Include="Criteria\Conditions\ICriteria.cs" />
+    <Compile Include="Criteria\Conditions\LeftRightCondition.cs" />
+    <Compile Include="Criteria\Conditions\LessThan.cs" />
+    <Compile Include="Criteria\Conditions\LessThanOrEqual.cs" />
+    <Compile Include="Criteria\Conditions\NotEqual.cs" />
+    <Compile Include="Criteria\Conditions\PropertyCondition.cs" />
+    <Compile Include="Criteria\PredicateBuilder.cs" />
+    <Compile Include="Criteria\CriteriaPredicateBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
