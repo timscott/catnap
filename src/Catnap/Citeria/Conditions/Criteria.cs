@@ -258,8 +258,12 @@ namespace Catnap.Citeria.Conditions
                 conditionSqls.Add(commandSpec.CommandText);
                 parameters.AddRange(commandSpec.Parameters);
             }
-            commandText = string.Format("({0})",
-                string.Join(string.Format(" {0} ", conjunction.Trim()), conditionSqls.ToArray()));
+			if (conditionSqls.Count > 0) {
+				commandText = string.Format ("({0})",
+				                             string.Join (string.Format (" {0} ", conjunction.Trim ()), conditionSqls.ToArray ()));
+			} else {
+				commandText = string.Empty;
+			}
         }
 
         private string Visit(IConditionMarker condition, ISession session)
