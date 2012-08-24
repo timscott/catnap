@@ -247,19 +247,24 @@ namespace Catnap.Citeria.Conditions
                 .AddParameters(parameters.ToArray());
         }
 
-        private void Build(ISession session, int currentParameterCount)
-        {
-            parameterCount = currentParameterCount;
-            var conditionSqls = conditions.Select(x => Visit(x, session)).ToList();
-            foreach (var predicate in predicates)
-            {
-                var commandSpec = new CriteriaPredicateBuilder<T>(session, predicate, parameterCount)
-                    .Build(out parameterCount);
-                conditionSqls.Add(commandSpec.CommandText);
-                parameters.AddRange(commandSpec.Parameters);
-            }
-            commandText = string.Format("({0})",
-                string.Join(string.Format(" {0} ", conjunction.Trim()), conditionSqls.ToArray()));
+        private void Build (ISession session, int currentParameterCount)
+		{
+			parameterCount = currentParameterCount;
+
+			var conditionSqls = conditions.Select (x => Visit (x, session)).ToList ();
+			foreach (var predicate in predicates) {
+				var commandSpec = new CriteriaPredicateBuilder<T> (session, predicate, parameterCount)
+						.Build (out parameterCount);
+				conditionSqls.Add (commandSpec.CommandText);
+				parameters.AddRange (commandSpec.Parameters);
+			}
+
+			if (conditionSqls.Count > 0) {
+				commandText = string.Format ("({0})",
+				                             string.Join (string.Format (" {0} ", conjunction.Trim ()), conditionSqls.ToArray ()));
+			} else {
+				commandText = string.Empty;
+			}
         }
 
         private string Visit(IConditionMarker condition, ISession session)

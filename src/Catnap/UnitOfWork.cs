@@ -10,6 +10,11 @@ namespace Catnap
         [ThreadStatic]
         private static UnitOfWork current;
 
+		public static bool IsStarted ()
+		{
+			return current != null;
+		}
+
         public static void Initialize(ISessionFactory sessionFactory)
         {
             UnitOfWork.sessionFactory = sessionFactory;

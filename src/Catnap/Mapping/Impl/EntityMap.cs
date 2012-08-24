@@ -179,7 +179,12 @@ namespace Catnap.Mapping.Impl
 
         public IDbCommand GetListCommand(IEnumerable<Parameter> parameters, string whereSql, IDbCommandFactory commandFactory)
         {
-            return commandFactory.Create(parameters, BaseSelectSql + " where " + whereSql);
+			string sql = BaseSelectSql;
+			if (!string.IsNullOrEmpty(whereSql))
+			{
+				sql = sql + " where " + whereSql;
+			}
+            return commandFactory.Create(parameters, sql);
         }
 
         public IDbCommand GetListAllCommand(IDbCommandFactory commandFactory)
