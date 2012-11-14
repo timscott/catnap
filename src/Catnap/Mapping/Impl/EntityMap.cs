@@ -279,7 +279,7 @@ namespace Catnap.Mapping.Impl
                 dbAdapter.Quote(TableName),
                 string.Join(",", setPairs.ToArray()),
                 dbAdapter.Quote(idColumnName),
-                dbAdapter.FormatParameterName("Id"));
+                dbAdapter.FormatParameterName(idColumnName));
             
             var columnParamters = columnProperties.Select(map => new Parameter(map.ColumnName, map.GetValue((T)entity)));
             parameters.AddRange(columnParamters);
