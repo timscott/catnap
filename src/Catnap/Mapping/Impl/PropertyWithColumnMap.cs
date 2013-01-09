@@ -32,7 +32,7 @@ namespace Catnap.Mapping.Impl
 
         public override void Done(IDomainMap domainMap)
         {
-            base.Done(domainMap);
+            //base.Done(domainMap); RD removed call.
             ColumnName = ColumnName ?? GetDeafultColumnName(domainMap);
         }
 

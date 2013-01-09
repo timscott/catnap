@@ -42,7 +42,9 @@ namespace Catnap
         {
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec.Parameters, commandSpec.CommandText);
-            return Try(() => ExecuteQuery(command));
+            var result = Try(() => ExecuteQuery(command));
+            command.Dispose (); //RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
+            return result;
         }
 
         public IList<T> List<T>(IDbCommandSpec commandSpec) where T : class, new()
@@ -60,6 +62,7 @@ namespace Catnap
             var command = entityMap.GetListCommand(predicateSpec.Parameters, predicateSpec.CommandText, commandFactory);
             var results = ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
             StoreAll(entityMap, results);
+            command.Dispose ();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
             return results;
         }
 
@@ -75,6 +78,7 @@ namespace Catnap
             var command = entityMap.GetListAllCommand(commandFactory);
             var results = ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).ToList();
             StoreAll(entityMap, results);
+            command.Dispose();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
             return results;
         }
 
@@ -90,6 +94,7 @@ namespace Catnap
             var command = entityMap.GetGetCommand(id, commandFactory);
             var result = ExecuteQuery(command).Select(x => entityMap.BuildFrom(x, this)).FirstOrDefault();
             sessionCache.Store(id, result);
+            command.Dispose ();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
             return result;
         }
 
@@ -113,6 +118,7 @@ namespace Catnap
             }
             sessionCache.Store(entityMap.GetId(entity), entity);
             Cascade(entityMap, entity);
+            command.Dispose();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
         }
 
         private void Cascade<T>(IEntityMap<T> entityMap, T entity) where T : class, new()
@@ -131,6 +137,7 @@ namespace Catnap
             var deleteCommand = map.GetDeleteCommand(id, commandFactory);
             Try(deleteCommand.ExecuteNonQuery);
             sessionCache.Store<T>(id, null);
+            deleteCommand.Dispose ();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
         }
 
         public void ExecuteNonQuery(IDbCommandSpec commandSpec)
@@ -139,6 +146,7 @@ namespace Catnap
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             Try(command.ExecuteNonQuery);
+            command.Dispose ();	//RD
         }
 
         public IList<IDictionary<string, object>> ExecuteQuery(IDbCommand command)
@@ -158,6 +166,7 @@ namespace Catnap
                     result.Add(row);
                 }
                 reader.Close();
+                command.Dispose ();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
                 return result;
             }
         }
@@ -167,7 +176,9 @@ namespace Catnap
             GuardNotDisposed();
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
-            return Try(command.ExecuteScalar);
+            object result = Try(command.ExecuteScalar);
+            command.Dispose();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
+            return result;
         }
 
         public T ExecuteScalar<T>(IDbCommandSpec commandSpec)
@@ -176,6 +187,7 @@ namespace Catnap
             commandSpec.GuardArgumentNull("commandSpec");
             var command = commandFactory.Create(commandSpec);
             var result = Try(command.ExecuteScalar);
+            command.Dispose ();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
             return (T)result;
         }
 
@@ -183,6 +195,7 @@ namespace Catnap
         {
             var getTableMetadataCommand = DbAdapter.CreateGetTableMetadataCommand(tableName, commandFactory);
             var result = ExecuteQuery(getTableMetadataCommand);
+            getTableMetadataCommand.Dispose ();	//RD see http://www.aaronheise.com/2012/12/monotouch-sqlite-sigsegv/
             return result.Count > 0;
         }
 
