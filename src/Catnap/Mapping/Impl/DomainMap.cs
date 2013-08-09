@@ -10,8 +10,10 @@ namespace Catnap.Mapping.Impl
 {
     public class DomainMap : IDomainMap, IDomainMappable
     {
-        private readonly IDbAdapter dbAdapter;
-        private readonly IDictionary<Type, IEntityMap> entityMaps = new Dictionary<Type, IEntityMap>();
+        private IDbAdapter dbAdapter;
+        // -- Changed by RD to overcome Monotouch limitations when Value types are used as Dictionary Keys
+        // -- see http://docs.xamarin.com/ios/guides/advanced_topics/limitations
+        private Dictionary<string, IEntityMap> entityMaps = new Dictionary<string, IEntityMap>();	// - RD
 
         public DomainMap(IDbAdapter dbAdapter)
         {
@@ -25,12 +27,12 @@ namespace Catnap.Mapping.Impl
 
         public IEntityMappable<T> Entity<T>(Action<IEntityMappable<T>> propertyMappings) where T : class, new()
         {
-            if (entityMaps.ContainsKey(typeof(T)))
+            if (entityMaps.ContainsKey(typeof(T).Name)) // RD - change
             {
                 throw new ApplicationException(string.Format("Cannot map type '{0}' because it is already mapped.", typeof(T)));
             }
             var map = new EntityMap<T>(propertyMappings);
-            entityMaps.Add(typeof(T), map);
+            entityMaps.Add(typeof(T).Name, map);
             return map;
         }
 
@@ -58,23 +60,32 @@ namespace Catnap.Mapping.Impl
 
         public IEntityMap<T> GetMapFor<T>() where T : class, new()
         {
-            return (IEntityMap<T>)entityMaps.First(x => x.Key == typeof(T)).Value;
+            return (IEntityMap<T>)entityMaps.First(x => x.Key == typeof(T).Name).Value; // RD - change
         }
 
         public IEntityMap GetMapFor(Type type)
         {
-            return entityMaps.First(x => x.Key == type).Value; 
+            return entityMaps.First(x => x.Key == type.Name).Value;  // RD - change
         }
 
-        public void Done()
+        // -- RD wrapped done calls with exception handling - probably not needed.
+        public void Done ()
         {
-            if (IdMappingConvention ==  null)
+            if (IdMappingConvention == null)
             {
-                IdMappingConvention = new IdMappingConvention();
+	            IdMappingConvention = new IdMappingConvention ();
             }
             foreach (var map in entityMaps.Values)
             {
-                map.Done(this, dbAdapter);
+	            try
+	            {
+		            map.Done(this, dbAdapter);
+	            }
+	            catch (Exception e)
+	            {
+		            Console.WriteLine("FAILED Done for " + map.TableName + " " + e);
+	            }
+
             }
         }
     }
