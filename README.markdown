@@ -1,7 +1,7 @@
 # About Catnap
 
 Catnap is a basic lightweight ORM for .NET. It uses the ADO.NET API. The project includes an adapter for Sqlite, and it 
-is tested with System.Data.Sqlite and Mono.Data.Sqlite.
+is tested with ```System.Data.Sqlite``` and ```Mono.Data.Sqlite```.
 
 Catnap was created to alleviate the of pain hand-rolling data access and dynamic SQL for applications that target an 
 environment where a full featured ORM (such as NHibernate) is incompatible or too heavy. More specifically Catnap was created to 
